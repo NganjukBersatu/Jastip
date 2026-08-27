@@ -9,7 +9,7 @@
 </script>
 
 <svelte:head>
-  <title>Titipa — Titip apa aja, ke mana aja di Jawa Timur</title>
+  <title>Nitip — Nitip apa aja, ke mana aja di Jawa Timur</title>
 </svelte:head>
 
 <Navbar active="beranda" />

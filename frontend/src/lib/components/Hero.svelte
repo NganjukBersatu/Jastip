@@ -7,7 +7,7 @@
       </div>
 
       <h1 class="text-[40px] md:text-[68px] leading-[1.02] text-white">
-        Titip apa aja,<br /><em class="not-italic font-display italic text-accent">ke mana</em> aja.
+        Nitip apa aja,<br /><em class="not-italic font-display italic text-accent">ke mana</em> aja.
       </h1>
 
       <p class="mt-5 text-lg max-w-[460px] text-white/85">
