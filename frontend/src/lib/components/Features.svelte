@@ -31,7 +31,7 @@
   <div class="max-w-[1180px] mx-auto px-8">
     <div class="flex justify-between items-end gap-6 flex-wrap mb-14">
       <h2 class="text-[30px] md:text-[42px] max-w-[560px]">
-        Kenapa titip lewat Titipa, bukan chat WA biasa
+        Kenapa titip lewat Nitip, bukan chat WA biasa
       </h2>
       <p class="max-w-[340px] text-ink-soft text-[15.5px]">
         Semua rapi dalam satu dashboard — nggak ada lagi chat yang tenggelam atau pesanan yang kelupaan.
