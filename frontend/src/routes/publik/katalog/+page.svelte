@@ -1,10 +1,29 @@
 <script>
+  import { goto } from '$app/navigation';
+
   const kategoriList = ['Semua', 'Makanan', 'Skincare', 'Tiket & Event', 'Fashion', 'Elektronik', 'Barang Langka'];
   const areaList = ['Semua Area', 'Surabaya', 'Malang', 'Kediri', 'Jember', 'Banyuwangi', 'Madiun'];
+
+  /** @typedef {typeof produk[number]} Produk */
 
   let kategoriAktif = $state('Semua');
   let areaAktif = $state('Semua Area');
   let keyword = $state('');
+  /** @type {Produk | null} */
+  let produkDipilih = $state(null);
+
+  /** @param {Produk} p */
+  function bukaDetail(p) {
+    produkDipilih = p;
+  }
+
+  function tutupDetail() {
+    produkDipilih = null;
+  }
+
+  function hubungiJastiper() {
+    goto('/publik/pesan');
+  }
 
   const produk = [
     {
@@ -39,6 +58,8 @@
 <svelte:head>
   <title>Katalog — Nitip.</title>
 </svelte:head>
+
+<svelte:window onkeydown={(e) => produkDipilih && e.key === 'Escape' && tutupDetail()} />
 
 <!-- ===== NAVBAR ===== -->
 <nav class="sticky top-0 z-50 bg-bg border-b border-ink/10">
@@ -122,9 +143,9 @@
     {#if hasilFilter.length > 0}
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {#each hasilFilter as p}
-          <a
-            href="/katalog/{p.title}"
-            class="block bg-white rounded-[26px] overflow-hidden shadow-[0_10px_30px_rgba(42,26,14,0.06)]
+          <button
+            onclick={() => bukaDetail(p)}
+            class="text-left block w-full bg-white rounded-[26px] overflow-hidden shadow-[0_10px_30px_rgba(42,26,14,0.06)]
                    transition-transform hover:-translate-y-1.5"
           >
             <!-- Area gambar/thumbnail -->
@@ -137,7 +158,8 @@
                 <span class="text-6xl select-none drop-shadow-sm">{p.emoji}</span>
               {/if}
 
-              <span class="absolute top-3.5 left-3.5 bg-white/95 text-ink text-[11.5px] font-extrabold px-3 py-1.5 rounded-full shadow-sm">
+              <span class="absolute top-3.5 left-3.5 text-[11.5px] font-extrabold px-3 py-1.5 rounded-full shadow-sm
+                           {p.badge === 'Bisa nego' ? 'bg-accent text-ink' : 'bg-white/95 text-ink'}">
                 {p.badge}
               </span>
             </div>
@@ -160,7 +182,7 @@
                 </div>
               </div>
             </div>
-          </a>
+          </button>
         {/each}
       </div>
     {:else}
@@ -171,6 +193,90 @@
     {/if}
   </div>
 </section>
+
+<!-- ===== MODAL DETAIL PRODUK ===== -->
+{#if produkDipilih}
+  <div
+    class="fixed inset-0 z-[100] bg-ink/40 backdrop-blur-[2px] flex items-center justify-center p-4"
+    role="presentation"
+    onclick={tutupDetail}
+  >
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <div
+      class="bg-white w-full max-w-[440px] rounded-[26px] overflow-hidden shadow-[0_20px_60px_rgba(42,26,14,0.25)]"
+      role="dialog"
+      aria-modal="true"
+      aria-label={produkDipilih.title}
+      tabindex="-1"
+      onclick={(e) => e.stopPropagation()}
+    >
+      <!-- Gambar/hero -->
+      <div class="h-[220px] relative overflow-hidden {produkDipilih.foto ? '' : produkDipilih.img + ' flex items-center justify-center'}">
+        {#if produkDipilih.foto}
+          <img src={produkDipilih.foto} alt={produkDipilih.title} class="w-full h-full object-cover" />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent"></div>
+        {:else}
+          <span class="text-7xl select-none drop-shadow-sm">{produkDipilih.emoji}</span>
+        {/if}
+
+        <span class="absolute top-3.5 left-3.5 text-[11.5px] font-extrabold px-3 py-1.5 rounded-full shadow-sm
+                     {produkDipilih.badge === 'Bisa nego' ? 'bg-accent text-ink' : 'bg-white/95 text-ink'}">
+          {produkDipilih.badge}
+        </span>
+
+        <button
+          onclick={tutupDetail}
+          aria-label="Tutup"
+          class="absolute top-3.5 right-3.5 w-8 h-8 rounded-full bg-white/95 text-ink flex items-center justify-center font-bold shadow-sm hover:bg-white"
+        >
+          ✕
+        </button>
+      </div>
+
+      <!-- Detail -->
+      <div class="px-6 pt-5 pb-6">
+        <div class="flex justify-between items-center">
+          <span class="text-xs font-bold text-primary-dark uppercase tracking-wide">{produkDipilih.loc}</span>
+          <span class="text-xs text-ink-soft">Jastiper {produkDipilih.jastiper}</span>
+        </div>
+
+        <h2 class="font-bold text-xl mt-1.5">{produkDipilih.title}</h2>
+
+        <div class="font-display font-semibold text-2xl mt-2">
+          {produkDipilih.harga}
+          {#if produkDipilih.from}
+            <span class="text-sm font-semibold text-ink-soft font-sans">mulai dari</span>
+          {/if}
+        </div>
+        <p class="text-xs font-semibold mt-1 {produkDipilih.badge === 'Bisa nego' ? 'text-primary-dark' : 'text-ink-soft'}">
+          {produkDipilih.badge === 'Bisa nego' ? 'Harga bisa dinego' : 'Harga pas, tanpa nego'}
+        </p>
+
+        <p class="text-sm text-ink-soft mt-4 leading-relaxed">
+          Detail lengkap produk atau layanan ini akan ditampilkan di sini — deskripsi, kondisi barang, dan estimasi waktu titip dari jastiper {produkDipilih.jastiper}.
+        </p>
+
+        <!-- Tombol aksi: beda tergantung tipe harga -->
+        <div class="mt-6">
+          {#if produkDipilih.badge === 'Bisa nego'}
+            <button
+              onclick={hubungiJastiper}
+              class="w-full py-3.5 rounded-full font-bold text-[15px] bg-accent text-ink transition-transform hover:-translate-y-0.5"
+            >
+              Hubungi Jastiper
+            </button>
+          {:else}
+            <button
+              class="w-full py-3.5 rounded-full font-bold text-[15px] bg-ink text-bg transition-transform hover:-translate-y-0.5"
+            >
+              Beli
+            </button>
+          {/if}
+        </div>
+      </div>
+    </div>
+  </div>
+{/if}
 
 <!-- ===== FOOTER ===== -->
 <footer class="py-16 pb-10 border-t border-ink/10">
