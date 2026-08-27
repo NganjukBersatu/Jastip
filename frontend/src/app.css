@@ -1,0 +1,28 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,900;1,9..144,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import 'tailwindcss';
+
+@theme {
+  --color-bg: #FFF8EC;
+  --color-bg-alt: #FFE9C7;
+  --color-primary: #FF6A1F;
+  --color-primary-dark: #C23B0A;
+  --color-primary-deep: #8F2B08;
+  --color-accent: #FFC93C;
+  --color-ink: #2A1A0E;
+  --color-ink-soft: #7A5E44;
+
+  --font-display: 'Fraunces', serif;
+  --font-sans: 'Plus Jakarta Sans', sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-bg text-ink font-sans antialiased;
+}
+
+h1, h2, h3 {
+  @apply font-display;
+}
