@@ -7,7 +7,7 @@
       </div>
 
       <h1 class="text-[40px] md:text-[68px] leading-[1.02] text-white">
-        Nitip apa aja,<br /><em class="not-italic font-display italic text-accent">ke mana</em> aja.
+        Titip apa aja,<br /><em class="not-italic font-display italic text-accent">ke mana</em> aja.
       </h1>
 
       <p class="mt-5 text-lg max-w-[460px] text-white/85">
@@ -53,5 +53,9 @@
     </div>
   </div>
 
-  <div class="torn-edge absolute left-0 right-0 -bottom-px h-16 bg-bg z-20"></div>
+  <div class="absolute left-0 right-0 -bottom-px z-20 leading-[0]">
+    <svg viewBox="0 0 1440 120" preserveAspectRatio="none" class="w-full h-16 md:h-24 block">
+      <path fill="#FFF8EC" d="M0,64 C240,118 480,4 720,36 C960,68 1200,118 1440,58 L1440,120 L0,120 Z" />
+    </svg>
+  </div>
 </header>
