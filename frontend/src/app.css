@@ -25,21 +25,3 @@ body {
 h1, h2, h3 {
   @apply font-display font-semibold tracking-tight;
 }
-
-/* signature "torn edge" — transisi zigzag di bawah section oranye */
-.torn-edge {
-  clip-path: polygon(
-    0 100%, 0 40%, 4% 55%, 9% 30%, 15% 58%, 21% 22%, 27% 50%,
-    33% 18%, 39% 46%, 45% 26%, 51% 54%, 57% 20%, 63% 48%,
-    69% 24%, 75% 52%, 81% 18%, 87% 46%, 93% 28%, 100% 42%, 100% 100%
-  );
-}
-
-/* animasi ticker berjalan */
-@keyframes ticker-scroll {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
-.animate-ticker {
-  animation: ticker-scroll 26s linear infinite;
-}
