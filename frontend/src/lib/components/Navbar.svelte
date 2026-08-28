@@ -1,6 +1,11 @@
 <script>
+  import { page } from '$app/stores';
+
   // Halaman aktif, dipakai untuk highlight menu — kirim dari parent, mis. active="katalog"
   let { active = '' } = $props();
+
+  let user = $derived($page.data.user);
+  let inisial = $derived(user?.nama?.charAt(0)?.toUpperCase() ?? '?');
 </script>
 
 <nav class="sticky top-0 z-50 bg-bg border-b border-ink/10">
@@ -22,13 +27,25 @@
     </div>
 
     <div class="flex items-center gap-3">
-      <a href="/masuk" class="font-bold text-sm opacity-80 hover:opacity-100 transition">Masuk</a>
-      <a
-        href="/daftar"
-        class="inline-flex items-center justify-center rounded-pill bg-ink text-bg font-bold text-sm px-6 py-3 transition hover:-translate-y-0.5"
-      >
-        Daftar
-      </a>
+      {#if user}
+        <a
+          href="/profile"
+          class="flex items-center gap-2.5 font-bold text-sm opacity-90 hover:opacity-100 transition"
+        >
+          <span class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold">
+            {inisial}
+          </span>
+          {user.nama.split(' ')[0]}
+        </a>
+      {:else}
+        <a href="/publik/masuk" class="font-bold text-sm opacity-80 hover:opacity-100 transition">Masuk</a>
+        <a
+          href="/publik/daftar"
+          class="inline-flex items-center justify-center rounded-pill bg-ink text-bg font-bold text-sm px-6 py-3 transition hover:-translate-y-0.5"
+        >
+          Daftar
+        </a>
+      {/if}
     </div>
   </div>
 </nav>

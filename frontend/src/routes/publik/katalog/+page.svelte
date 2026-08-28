@@ -61,32 +61,6 @@
 
 <svelte:window onkeydown={(e) => produkDipilih && e.key === 'Escape' && tutupDetail()} />
 
-<!-- ===== NAVBAR ===== -->
-<nav class="sticky top-0 z-50 bg-bg border-b border-ink/10">
-  <div class="max-w-[1180px] mx-auto px-5 md:px-8 h-[76px] flex items-center justify-between">
-    <a href="/" class="font-display font-black text-2xl text-primary-dark">
-      Nitip<span class="text-ink">.</span>
-    </a>
-
-    <div class="hidden md:flex gap-9 font-semibold text-[15px]">
-      <a href="/katalog" class="text-primary-dark">Katalog</a>
-      <a href="/#jastiper" class="opacity-75 hover:opacity-100 transition-opacity">Jadi jastiper</a>
-      <a href="/#cara-kerja" class="opacity-75 hover:opacity-100 transition-opacity">Cara kerja</a>
-    </div>
-
-    <div class="flex gap-3 items-center">
-      <a href="/login" class="font-bold text-[15px] opacity-80 hover:opacity-100 transition-opacity">Masuk</a>
-      <a
-        href="/register"
-        class="inline-flex items-center justify-center px-6 py-3 rounded-full font-bold text-[15px]
-               bg-ink text-bg transition-transform hover:-translate-y-0.5"
-      >
-        Daftar
-      </a>
-    </div>
-  </div>
-</nav>
-
 <!-- ===== HEADER KATALOG + PENCARIAN ===== -->
 <section class="bg-gradient-to-br from-primary to-primary-dark text-white py-14">
   <div class="max-w-[1180px] mx-auto px-5 md:px-8">
