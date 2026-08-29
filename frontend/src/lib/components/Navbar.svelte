@@ -15,15 +15,15 @@
     </a>
 
     <div class="hidden md:flex gap-9 font-semibold text-sm">
-      <a href="/publik/katalog" class="opacity-75 hover:opacity-100 transition {active === 'katalog' ? 'opacity-100 text-primary-dark' : ''}">
-        Katalog
-      </a>
-      <a href="/jastiper" class="opacity-75 hover:opacity-100 transition {active === 'jastiper' ? 'opacity-100 text-primary-dark' : ''}">
-        Jadi jastiper
-      </a>
-      <a href="/cara-kerja" class="opacity-75 hover:opacity-100 transition {active === 'cara-kerja' ? 'opacity-100 text-primary-dark' : ''}">
-        Cara kerja
-      </a>
+        <a href="/" class="opacity-75 hover:opacity-100 transition {active === 'home' ? 'opacity-100 text-primary-dark' : ''}">
+    Home
+  </a>
+<a href="/publik/katalog" class="opacity-75 hover:opacity-100 transition {active === 'katalog' ? 'opacity-100 text-primary-dark' : ''}">
+    Katalog
+  </a>
+  <a href="/publik/cara-kerja" class="opacity-75 hover:opacity-100 transition {active === 'cara-kerja' ? 'opacity-100 text-primary-dark' : ''}">
+  Cara kerja
+</a>
     </div>
 
     <div class="flex items-center gap-3">

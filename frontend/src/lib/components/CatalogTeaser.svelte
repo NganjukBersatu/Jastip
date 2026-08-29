@@ -10,7 +10,7 @@
   ]);
 </script>
 
-<section class="bg-bg-alt py-24">
+<section class="bg-bg-alt py-24" id="katalog-preview">
   <div class="max-w-[1180px] mx-auto px-8">
     <div class="flex justify-between items-end gap-6 flex-wrap mb-14">
       <h2 class="text-[30px] md:text-[42px] max-w-[560px]">

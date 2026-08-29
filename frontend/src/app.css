@@ -25,3 +25,7 @@ body {
 h1, h2, h3 {
   @apply font-display font-semibold tracking-tight;
 }
+
+html {
+  scroll-behavior: smooth;
+}
