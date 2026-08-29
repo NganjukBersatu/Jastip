@@ -1,0 +1,674 @@
+{
+  "id": "d4b19506-b2c5-49d2-90b5-6497908f8409",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.jastiper_profiles": {
+      "name": "jastiper_profiles",
+      "schema": "",
+      "columns": {
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "area": {
+          "name": "area",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "deskripsi": {
+          "name": "deskripsi",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "terverifikasi": {
+          "name": "terverifikasi",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "jastiper_profiles_user_id_users_id_fk": {
+          "name": "jastiper_profiles_user_id_users_id_fk",
+          "tableFrom": "jastiper_profiles",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.ongkir_wilayah": {
+      "name": "ongkir_wilayah",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "jastiper_id": {
+          "name": "jastiper_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "wilayah": {
+          "name": "wilayah",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "biaya": {
+          "name": "biaya",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "ongkir_wilayah_jastiper_id_users_id_fk": {
+          "name": "ongkir_wilayah_jastiper_id_users_id_fk",
+          "tableFrom": "ongkir_wilayah",
+          "tableTo": "users",
+          "columnsFrom": [
+            "jastiper_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.pengajuan_harga": {
+      "name": "pengajuan_harga",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "produk_id": {
+          "name": "produk_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pelanggan_id": {
+          "name": "pelanggan_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "harga_diajukan": {
+          "name": "harga_diajukan",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "jumlah": {
+          "name": "jumlah",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "catatan": {
+          "name": "catatan",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "status_pengajuan",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'menunggu'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "pengajuan_harga_produk_id_produk_id_fk": {
+          "name": "pengajuan_harga_produk_id_produk_id_fk",
+          "tableFrom": "pengajuan_harga",
+          "tableTo": "produk",
+          "columnsFrom": [
+            "produk_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "pengajuan_harga_pelanggan_id_users_id_fk": {
+          "name": "pengajuan_harga_pelanggan_id_users_id_fk",
+          "tableFrom": "pengajuan_harga",
+          "tableTo": "users",
+          "columnsFrom": [
+            "pelanggan_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.pesan_chat": {
+      "name": "pesan_chat",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "pengajuan_harga_id": {
+          "name": "pengajuan_harga_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pengirim_id": {
+          "name": "pengirim_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "isi": {
+          "name": "isi",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "pesan_chat_pengajuan_harga_id_pengajuan_harga_id_fk": {
+          "name": "pesan_chat_pengajuan_harga_id_pengajuan_harga_id_fk",
+          "tableFrom": "pesan_chat",
+          "tableTo": "pengajuan_harga",
+          "columnsFrom": [
+            "pengajuan_harga_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "pesan_chat_pengirim_id_users_id_fk": {
+          "name": "pesan_chat_pengirim_id_users_id_fk",
+          "tableFrom": "pesan_chat",
+          "tableTo": "users",
+          "columnsFrom": [
+            "pengirim_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.pesanan": {
+      "name": "pesanan",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "produk_id": {
+          "name": "produk_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pelanggan_id": {
+          "name": "pelanggan_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "jastiper_id": {
+          "name": "jastiper_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pengajuan_harga_id": {
+          "name": "pengajuan_harga_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "jumlah": {
+          "name": "jumlah",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "harga_satuan": {
+          "name": "harga_satuan",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ongkir": {
+          "name": "ongkir",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "total_harga": {
+          "name": "total_harga",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "alamat_kirim": {
+          "name": "alamat_kirim",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "metode_pembayaran": {
+          "name": "metode_pembayaran",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "status_pesanan",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'menunggu_konfirmasi'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "pesanan_produk_id_produk_id_fk": {
+          "name": "pesanan_produk_id_produk_id_fk",
+          "tableFrom": "pesanan",
+          "tableTo": "produk",
+          "columnsFrom": [
+            "produk_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "pesanan_pelanggan_id_users_id_fk": {
+          "name": "pesanan_pelanggan_id_users_id_fk",
+          "tableFrom": "pesanan",
+          "tableTo": "users",
+          "columnsFrom": [
+            "pelanggan_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "pesanan_jastiper_id_users_id_fk": {
+          "name": "pesanan_jastiper_id_users_id_fk",
+          "tableFrom": "pesanan",
+          "tableTo": "users",
+          "columnsFrom": [
+            "jastiper_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "pesanan_pengajuan_harga_id_pengajuan_harga_id_fk": {
+          "name": "pesanan_pengajuan_harga_id_pengajuan_harga_id_fk",
+          "tableFrom": "pesanan",
+          "tableTo": "pengajuan_harga",
+          "columnsFrom": [
+            "pengajuan_harga_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.produk": {
+      "name": "produk",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "jastiper_id": {
+          "name": "jastiper_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nama": {
+          "name": "nama",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "deskripsi": {
+          "name": "deskripsi",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "kategori": {
+          "name": "kategori",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "harga_tipe": {
+          "name": "harga_tipe",
+          "type": "harga_tipe",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'tetap'"
+        },
+        "harga": {
+          "name": "harga",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "gambar_url": {
+          "name": "gambar_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "aktif": {
+          "name": "aktif",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "produk_jastiper_id_users_id_fk": {
+          "name": "produk_jastiper_id_users_id_fk",
+          "tableFrom": "produk",
+          "tableTo": "users",
+          "columnsFrom": [
+            "jastiper_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.sessions": {
+      "name": "sessions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "sessions_user_id_users_id_fk": {
+          "name": "sessions_user_id_users_id_fk",
+          "tableFrom": "sessions",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.users": {
+      "name": "users",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "nama": {
+          "name": "nama",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "password_hash": {
+          "name": "password_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "role": {
+          "name": "role",
+          "type": "role",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pelanggan'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "users_email_unique": {
+          "name": "users_email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "email"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.harga_tipe": {
+      "name": "harga_tipe",
+      "schema": "public",
+      "values": [
+        "tetap",
+        "nego"
+      ]
+    },
+    "public.role": {
+      "name": "role",
+      "schema": "public",
+      "values": [
+        "pelanggan",
+        "jastiper"
+      ]
+    },
+    "public.status_pengajuan": {
+      "name": "status_pengajuan",
+      "schema": "public",
+      "values": [
+        "menunggu",
+        "diterima",
+        "ditolak"
+      ]
+    },
+    "public.status_pesanan": {
+      "name": "status_pesanan",
+      "schema": "public",
+      "values": [
+        "menunggu_konfirmasi",
+        "dibelanjakan",
+        "dikirim",
+        "selesai",
+        "dibatalkan"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
