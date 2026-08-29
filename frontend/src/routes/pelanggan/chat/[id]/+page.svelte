@@ -4,7 +4,7 @@
 
 	let { data } = $props();
 
-	// ===== PERBAIKAN DI SINI =====
+	// Perbaikan warning state_referenced_locally
 /** @type {{ id: string; isi: string; pengirimId: string; createdAt: string | Date }[]} */
 let daftarPesan = $state([]);
 let isiPesan = $state('');
@@ -13,11 +13,10 @@ let isiPesan = $state('');
 	/** @type {ReturnType<typeof setInterval>} */
 	let interval;
 
-	// Isi daftarPesan setiap kali data berubah
+	// Inisialisasi sekali saat data tersedia
 	$effect(() => {
 		daftarPesan = data.daftarPesan;
 	});
-	// =============================
 
 	/** @param {number} angka */
 	function formatRupiah(angka) {
@@ -27,6 +26,17 @@ let isiPesan = $state('');
 	/** @param {string | Date} tanggal */
 	function formatJam(tanggal) {
 		return new Date(tanggal).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+	}
+
+	/** @param {string} status */
+	function labelStatus(status) {
+		/** @type {Record<string, { teks: string, kelas: string }>} */
+		const peta = {
+			menunggu: { teks: 'Menunggu balasan', kelas: 'bg-yellow-100 text-yellow-700' },
+			diterima: { teks: 'Diterima', kelas: 'bg-green-100 text-green-700' },
+			ditolak: { teks: 'Ditolak', kelas: 'bg-red-100 text-red-700' }
+		};
+		return peta[status] ?? { teks: status, kelas: 'bg-gray-100 text-gray-700' };
 	}
 
 	function scrollKeBawah() {
@@ -67,6 +77,8 @@ let isiPesan = $state('');
 			await update({ reset: false });
 		};
 	}
+
+	let statusInfo = $derived(labelStatus(data.item.status));
 </script>
 
 <svelte:head>
@@ -78,31 +90,16 @@ let isiPesan = $state('');
 		<div>
 			<h1 class="text-[24px]">{data.item.produkNama}</h1>
 			<p class="text-ink-soft text-[14px]">
-				Nego dengan <span class="font-semibold text-ink">{data.item.pelangganNama}</span>
+				Nego dengan <span class="font-semibold text-ink">{data.item.jastiperNama}</span>
 			</p>
 		</div>
 		<div class="text-right shrink-0">
 			<div class="font-display font-semibold text-lg text-primary-dark">
 				{formatRupiah(data.item.hargaDiajukan)}
 			</div>
-			<div class="text-[12px] text-ink-soft">× {data.item.jumlah} pcs</div>
+			<span class="text-[11px] font-bold px-2 py-0.5 rounded-full {statusInfo.kelas}">{statusInfo.teks}</span>
 		</div>
 	</div>
-
-	{#if data.item.status === 'menunggu'}
-		<div class="flex gap-3 mt-4">
-			<form method="POST" action="?/terima" use:enhance class="flex-1">
-				<button type="submit" class="w-full rounded-pill bg-ink text-bg font-bold text-[13.5px] py-2.5">
-					Terima harga ini
-				</button>
-			</form>
-			<form method="POST" action="?/tolak" use:enhance class="flex-1">
-				<button type="submit" class="w-full rounded-pill border-2 border-ink/15 text-ink-soft font-bold text-[13.5px] py-2.5 hover:border-red-300 hover:text-red-500">
-					Tolak
-				</button>
-			</form>
-		</div>
-	{/if}
 
 	<div bind:this={elemChat} class="flex-1 overflow-y-auto mt-6 flex flex-col gap-3 pr-1">
 		{#each daftarPesan as pesan (pesan.id)}

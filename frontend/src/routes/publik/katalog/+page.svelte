@@ -27,8 +27,10 @@
 
   const produk = [
     {
+      id: '1',
       foto: '/images/lumpia-basah.jpg',
       badge: 'Harga tetap',
+      hargaTipe: 'tetap',
       kategori: 'Makanan',
       loc: 'Surabaya',
       title: 'Lumpia Basah Ny. Lin',
@@ -36,13 +38,97 @@
       from: false,
       jastiper: 'Dinda'
     },
-    { emoji: '🧴', badge: 'Bisa nego', kategori: 'Skincare', loc: 'Malang', title: 'Skincare lokal batch baru', harga: 'Rp85.000', from: true, jastiper: 'Rani', img: 'bg-gradient-to-br from-bg-alt to-accent' },
-    { emoji: '🎟️', badge: 'Harga tetap', kategori: 'Tiket & Event', loc: 'Kediri', title: 'Tiket festival kuliner', harga: 'Rp25.000', from: false, jastiper: 'Bayu', img: 'bg-gradient-to-br from-[#FFB199] to-primary-dark' },
-    { emoji: '👜', badge: 'Bisa nego', kategori: 'Fashion', loc: 'Surabaya', title: 'Tas rajut handmade', harga: 'Rp120.000', from: true, jastiper: 'Sari', img: 'bg-gradient-to-br from-accent to-primary' },
-    { emoji: '🍪', badge: 'Harga tetap', kategori: 'Makanan', loc: 'Jember', title: 'Kastengel toples 500gr', harga: 'Rp65.000', from: false, jastiper: 'Wulan', img: 'bg-gradient-to-br from-[#FFD08A] to-primary-dark' },
-    { emoji: '📱', badge: 'Bisa nego', kategori: 'Elektronik', loc: 'Surabaya', title: 'Casing HP custom', harga: 'Rp45.000', from: true, jastiper: 'Fajar', img: 'bg-gradient-to-br from-bg-alt to-primary' },
-    { emoji: '🧢', badge: 'Harga tetap', kategori: 'Fashion', loc: 'Banyuwangi', title: 'Topi lukis motif lokal', harga: 'Rp55.000', from: false, jastiper: 'Nadia', img: 'bg-gradient-to-br from-accent to-primary-dark' },
-    { emoji: '🕯️', badge: 'Bisa nego', kategori: 'Barang Langka', loc: 'Madiun', title: 'Lilin aromaterapi edisi terbatas', harga: 'Rp38.000', from: true, jastiper: 'Yoga', img: 'bg-gradient-to-br from-[#FFB199] to-primary' }
+    {
+      id: '2',
+      emoji: '🧴',
+      badge: 'Bisa nego',
+      hargaTipe: 'nego',
+      kategori: 'Skincare',
+      loc: 'Malang',
+      title: 'Skincare lokal batch baru',
+      harga: 'Rp85.000',
+      from: true,
+      jastiper: 'Rani',
+      img: 'bg-gradient-to-br from-bg-alt to-accent'
+    },
+    {
+      id: '3',
+      emoji: '🎟️',
+      badge: 'Harga tetap',
+      hargaTipe: 'tetap',
+      kategori: 'Tiket & Event',
+      loc: 'Kediri',
+      title: 'Tiket festival kuliner',
+      harga: 'Rp25.000',
+      from: false,
+      jastiper: 'Bayu',
+      img: 'bg-gradient-to-br from-[#FFB199] to-primary-dark'
+    },
+    {
+      id: '4',
+      emoji: '👜',
+      badge: 'Bisa nego',
+      hargaTipe: 'nego',
+      kategori: 'Fashion',
+      loc: 'Surabaya',
+      title: 'Tas rajut handmade',
+      harga: 'Rp120.000',
+      from: true,
+      jastiper: 'Sari',
+      img: 'bg-gradient-to-br from-accent to-primary'
+    },
+    {
+      id: '5',
+      emoji: '🍪',
+      badge: 'Harga tetap',
+      hargaTipe: 'tetap',
+      kategori: 'Makanan',
+      loc: 'Jember',
+      title: 'Kastengel toples 500gr',
+      harga: 'Rp65.000',
+      from: false,
+      jastiper: 'Wulan',
+      img: 'bg-gradient-to-br from-[#FFD08A] to-primary-dark'
+    },
+    {
+      id: '6',
+      emoji: '📱',
+      badge: 'Bisa nego',
+      hargaTipe: 'nego',
+      kategori: 'Elektronik',
+      loc: 'Surabaya',
+      title: 'Casing HP custom',
+      harga: 'Rp45.000',
+      from: true,
+      jastiper: 'Fajar',
+      img: 'bg-gradient-to-br from-bg-alt to-primary'
+    },
+    {
+      id: '7',
+      emoji: '🧢',
+      badge: 'Harga tetap',
+      hargaTipe: 'tetap',
+      kategori: 'Fashion',
+      loc: 'Banyuwangi',
+      title: 'Topi lukis motif lokal',
+      harga: 'Rp55.000',
+      from: false,
+      jastiper: 'Nadia',
+      img: 'bg-gradient-to-br from-accent to-primary-dark'
+    },
+    {
+      id: '8',
+      emoji: '🕯️',
+      badge: 'Bisa nego',
+      hargaTipe: 'nego',
+      kategori: 'Barang Langka',
+      loc: 'Madiun',
+      title: 'Lilin aromaterapi edisi terbatas',
+      harga: 'Rp38.000',
+      from: true,
+      jastiper: 'Yoga',
+      img: 'bg-gradient-to-br from-[#FFB199] to-primary'
+    }
   ];
 
   let hasilFilter = $derived(
@@ -117,16 +203,19 @@
     {#if hasilFilter.length > 0}
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {#each hasilFilter as p}
-          <button
+          <!-- Card diubah jadi div supaya form di dalamnya valid -->
+          <div
+            role="button"
+            tabindex="0"
             onclick={() => bukaDetail(p)}
+            onkeydown={(e) => e.key === 'Enter' && bukaDetail(p)}
             class="text-left block w-full bg-white rounded-[26px] overflow-hidden shadow-[0_10px_30px_rgba(42,26,14,0.06)]
-                   transition-transform hover:-translate-y-1.5"
+                   transition-transform hover:-translate-y-1.5 cursor-pointer"
           >
             <!-- Area gambar/thumbnail -->
             <div class="h-[180px] relative overflow-hidden {p.foto ? '' : p.img + ' flex items-center justify-center'}">
               {#if p.foto}
                 <img src={p.foto} alt={p.title} class="w-full h-full object-cover" />
-                <!-- overlay gradasi supaya badge tetap kebaca di atas foto apa pun -->
                 <div class="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent"></div>
               {:else}
                 <span class="text-6xl select-none drop-shadow-sm">{p.emoji}</span>
@@ -144,19 +233,36 @@
                 <span class="text-xs text-ink-soft">Jastiper {p.jastiper}</span>
               </div>
               <div class="font-bold text-[17px] mt-1.5 line-clamp-2">{p.title}</div>
-              <div class="flex justify-between items-center mt-4">
+
+              <div class="flex justify-between items-center mt-4 gap-3">
                 <div class="font-display font-semibold text-lg">
                   {p.harga}
                   {#if p.from}
                     <span class="text-xs font-semibold text-ink-soft font-sans">mulai dari</span>
                   {/if}
                 </div>
-                <div class="w-[38px] h-[38px] rounded-full bg-ink text-white flex items-center justify-center text-base font-bold shrink-0">
-                  →
-                </div>
+
+{#if p.hargaTipe === 'nego'}
+  <!-- stopPropagation dipindah ke button biar tidak kena a11y warning -->
+  <form method="POST" action="?/chatJastiper">
+    <input type="hidden" name="produkId" value={p.id} />
+    <button
+      type="submit"
+      onclick={(e) => e.stopPropagation()}
+      class="rounded-full bg-ink text-bg font-bold text-[13px] px-4 py-2 whitespace-nowrap
+             hover:bg-primary-dark transition-colors"
+    >
+      💬 Chat jastiper
+    </button>
+  </form>
+{:else}
+  <div class="w-[38px] h-[38px] rounded-full bg-ink text-white flex items-center justify-center text-base font-bold shrink-0">
+                        →
+                  </div>
+                {/if}
               </div>
             </div>
-          </button>
+          </div>
         {/each}
       </div>
     {:else}
