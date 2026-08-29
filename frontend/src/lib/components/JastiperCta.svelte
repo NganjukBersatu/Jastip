@@ -1,4 +1,4 @@
-<section class="py-24">
+<section class="py-24" id="jadi-jastiper">
   <div class="max-w-[1180px] mx-auto px-8">
     <div class="bg-ink text-bg rounded-[36px] p-10 md:p-16 grid md:grid-cols-[1.2fr_0.8fr] gap-10 items-center">
       <div>
@@ -26,7 +26,7 @@
         </div>
 
         <a
-          href="/jastiper/daftar"
+          href="/publik/daftar"
           class="inline-flex items-center justify-center rounded-pill bg-accent text-primary-deep font-bold text-[15px] px-6.5 py-3.5 mt-8 transition hover:-translate-y-0.5"
         >
           Daftar jadi jastiper

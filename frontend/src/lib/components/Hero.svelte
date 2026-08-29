@@ -116,11 +116,11 @@
       {/each}
     </div>
 
-    <div class="cta-row">
-      <button class="btn-primary" style="color:{active.ctaColor}">Lihat katalog</button>
-      <button class="btn-outline">Jadi jastiper →</button>
-    </div>
-  </div>
+<div class="cta-row">
+  <a href="#katalog-preview" class="btn-primary" style="color:{active.ctaColor}">Lihat katalog</a>
+  <a href="#jadi-jastiper" class="btn-outline">Jadi jastiper →</a>
+</div>
+</div>
 
   <div class="hero-right">
     <div class="blob">
@@ -290,26 +290,32 @@
     gap: 14px;
   }
   .btn-primary {
-    background: #fff;
-    border: none;
-    padding: 15px 28px;
-    border-radius: 999px;
-    font-weight: 700;
-    font-size: 15px;
-    cursor: pointer;
-    transition: color 0.8s ease;
-  }
-  .btn-outline {
-    background: transparent;
-    color: #fff;
-    border: 1.5px solid rgba(255, 255, 255, 0.55);
-    padding: 15px 26px;
-    border-radius: 999px;
-    font-weight: 700;
-    font-size: 15px;
-    cursor: pointer;
-    transition: background 0.25s ease, border-color 0.25s ease;
-  }
+  background: #fff;
+  border: none;
+  padding: 15px 28px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  transition: color 0.8s ease;
+}
+.btn-outline {
+  background: transparent;
+  color: #fff;
+  border: 1.5px solid rgba(255, 255, 255, 0.55);
+  padding: 15px 26px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  transition: background 0.25s ease, border-color 0.25s ease;
+}
   .btn-outline:hover {
     background: rgba(255, 255, 255, 0.12);
     border-color: rgba(255, 255, 255, 0.8);
