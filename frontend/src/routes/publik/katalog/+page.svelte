@@ -1,5 +1,6 @@
 <script>
   import { goto } from '$app/navigation';
+  import { enhance } from '$app/forms';
 
   const kategoriList = ['Semua', 'Makanan', 'Skincare', 'Tiket & Event', 'Fashion', 'Elektronik', 'Barang Langka'];
   const areaList = ['Semua Area', 'Surabaya', 'Malang', 'Kediri', 'Jember', 'Banyuwangi', 'Madiun'];
@@ -33,16 +34,17 @@
       loc: 'Surabaya',
       title: 'Lumpia Basah Ny. Lin',
       harga: 'Rp32.000',
+      hargaAngka: 32000,
       from: false,
       jastiper: 'Dinda'
     },
-    { emoji: '🧴', badge: 'Bisa nego', kategori: 'Skincare', loc: 'Malang', title: 'Skincare lokal batch baru', harga: 'Rp85.000', from: true, jastiper: 'Rani', img: 'bg-gradient-to-br from-bg-alt to-accent' },
-    { emoji: '🎟️', badge: 'Harga tetap', kategori: 'Tiket & Event', loc: 'Kediri', title: 'Tiket festival kuliner', harga: 'Rp25.000', from: false, jastiper: 'Bayu', img: 'bg-gradient-to-br from-[#FFB199] to-primary-dark' },
-    { emoji: '👜', badge: 'Bisa nego', kategori: 'Fashion', loc: 'Surabaya', title: 'Tas rajut handmade', harga: 'Rp120.000', from: true, jastiper: 'Sari', img: 'bg-gradient-to-br from-accent to-primary' },
-    { emoji: '🍪', badge: 'Harga tetap', kategori: 'Makanan', loc: 'Jember', title: 'Kastengel toples 500gr', harga: 'Rp65.000', from: false, jastiper: 'Wulan', img: 'bg-gradient-to-br from-[#FFD08A] to-primary-dark' },
-    { emoji: '📱', badge: 'Bisa nego', kategori: 'Elektronik', loc: 'Surabaya', title: 'Casing HP custom', harga: 'Rp45.000', from: true, jastiper: 'Fajar', img: 'bg-gradient-to-br from-bg-alt to-primary' },
-    { emoji: '🧢', badge: 'Harga tetap', kategori: 'Fashion', loc: 'Banyuwangi', title: 'Topi lukis motif lokal', harga: 'Rp55.000', from: false, jastiper: 'Nadia', img: 'bg-gradient-to-br from-accent to-primary-dark' },
-    { emoji: '🕯️', badge: 'Bisa nego', kategori: 'Barang Langka', loc: 'Madiun', title: 'Lilin aromaterapi edisi terbatas', harga: 'Rp38.000', from: true, jastiper: 'Yoga', img: 'bg-gradient-to-br from-[#FFB199] to-primary' }
+    { emoji: '🧴', badge: 'Bisa nego', kategori: 'Skincare', loc: 'Malang', title: 'Skincare lokal batch baru', harga: 'Rp85.000', hargaAngka: 85000, from: true, jastiper: 'Rani', img: 'bg-gradient-to-br from-bg-alt to-accent' },
+    { emoji: '🎟️', badge: 'Harga tetap', kategori: 'Tiket & Event', loc: 'Kediri', title: 'Tiket festival kuliner', harga: 'Rp25.000', hargaAngka: 25000, from: false, jastiper: 'Bayu', img: 'bg-gradient-to-br from-[#FFB199] to-primary-dark' },
+    { emoji: '👜', badge: 'Bisa nego', kategori: 'Fashion', loc: 'Surabaya', title: 'Tas rajut handmade', harga: 'Rp120.000', hargaAngka: 120000, from: true, jastiper: 'Sari', img: 'bg-gradient-to-br from-accent to-primary' },
+    { emoji: '🍪', badge: 'Harga tetap', kategori: 'Makanan', loc: 'Jember', title: 'Kastengel toples 500gr', harga: 'Rp65.000', hargaAngka: 65000, from: false, jastiper: 'Wulan', img: 'bg-gradient-to-br from-[#FFD08A] to-primary-dark' },
+    { emoji: '📱', badge: 'Bisa nego', kategori: 'Elektronik', loc: 'Surabaya', title: 'Casing HP custom', harga: 'Rp45.000', hargaAngka: 45000, from: true, jastiper: 'Fajar', img: 'bg-gradient-to-br from-bg-alt to-primary' },
+    { emoji: '🧢', badge: 'Harga tetap', kategori: 'Fashion', loc: 'Banyuwangi', title: 'Topi lukis motif lokal', harga: 'Rp55.000', hargaAngka: 55000, from: false, jastiper: 'Nadia', img: 'bg-gradient-to-br from-accent to-primary-dark' },
+    { emoji: '🕯️', badge: 'Bisa nego', kategori: 'Barang Langka', loc: 'Madiun', title: 'Lilin aromaterapi edisi terbatas', harga: 'Rp38.000', hargaAngka: 38000, from: true, jastiper: 'Yoga', img: 'bg-gradient-to-br from-[#FFB199] to-primary' }
   ];
 
   let hasilFilter = $derived(
@@ -170,6 +172,7 @@
 
 <!-- ===== MODAL DETAIL PRODUK ===== -->
 {#if produkDipilih}
+  {@const p = produkDipilih}
   <div
     class="fixed inset-0 z-[100] bg-ink/40 backdrop-blur-[2px] flex items-center justify-center p-4"
     role="presentation"
@@ -180,22 +183,22 @@
       class="bg-white w-full max-w-[440px] rounded-[26px] overflow-hidden shadow-[0_20px_60px_rgba(42,26,14,0.25)]"
       role="dialog"
       aria-modal="true"
-      aria-label={produkDipilih.title}
+      aria-label={p.title}
       tabindex="-1"
       onclick={(e) => e.stopPropagation()}
     >
       <!-- Gambar/hero -->
-      <div class="h-[220px] relative overflow-hidden {produkDipilih.foto ? '' : produkDipilih.img + ' flex items-center justify-center'}">
-        {#if produkDipilih.foto}
-          <img src={produkDipilih.foto} alt={produkDipilih.title} class="w-full h-full object-cover" />
+      <div class="h-[220px] relative overflow-hidden {p.foto ? '' : p.img + ' flex items-center justify-center'}">
+        {#if p.foto}
+          <img src={p.foto} alt={p.title} class="w-full h-full object-cover" />
           <div class="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent"></div>
         {:else}
-          <span class="text-7xl select-none drop-shadow-sm">{produkDipilih.emoji}</span>
+          <span class="text-7xl select-none drop-shadow-sm">{p.emoji}</span>
         {/if}
 
         <span class="absolute top-3.5 left-3.5 text-[11.5px] font-extrabold px-3 py-1.5 rounded-full shadow-sm
-                     {produkDipilih.badge === 'Bisa nego' ? 'bg-accent text-ink' : 'bg-white/95 text-ink'}">
-          {produkDipilih.badge}
+                     {p.badge === 'Bisa nego' ? 'bg-accent text-ink' : 'bg-white/95 text-ink'}">
+          {p.badge}
         </span>
 
         <button
@@ -210,29 +213,29 @@
       <!-- Detail -->
       <div class="px-6 pt-5 pb-6">
         <div class="flex justify-between items-center">
-          <span class="text-xs font-bold text-primary-dark uppercase tracking-wide">{produkDipilih.loc}</span>
-          <span class="text-xs text-ink-soft">Jastiper {produkDipilih.jastiper}</span>
+          <span class="text-xs font-bold text-primary-dark uppercase tracking-wide">{p.loc}</span>
+          <span class="text-xs text-ink-soft">Jastiper {p.jastiper}</span>
         </div>
 
-        <h2 class="font-bold text-xl mt-1.5">{produkDipilih.title}</h2>
+        <h2 class="font-bold text-xl mt-1.5">{p.title}</h2>
 
         <div class="font-display font-semibold text-2xl mt-2">
-          {produkDipilih.harga}
-          {#if produkDipilih.from}
+          {p.harga}
+          {#if p.from}
             <span class="text-sm font-semibold text-ink-soft font-sans">mulai dari</span>
           {/if}
         </div>
-        <p class="text-xs font-semibold mt-1 {produkDipilih.badge === 'Bisa nego' ? 'text-primary-dark' : 'text-ink-soft'}">
-          {produkDipilih.badge === 'Bisa nego' ? 'Harga bisa dinego' : 'Harga pas, tanpa nego'}
+        <p class="text-xs font-semibold mt-1 {p.badge === 'Bisa nego' ? 'text-primary-dark' : 'text-ink-soft'}">
+          {p.badge === 'Bisa nego' ? 'Harga bisa dinego' : 'Harga pas, tanpa nego'}
         </p>
 
         <p class="text-sm text-ink-soft mt-4 leading-relaxed">
-          Detail lengkap produk atau layanan ini akan ditampilkan di sini — deskripsi, kondisi barang, dan estimasi waktu titip dari jastiper {produkDipilih.jastiper}.
+          Detail lengkap produk atau layanan ini akan ditampilkan di sini — deskripsi, kondisi barang, dan estimasi waktu titip dari jastiper {p.jastiper}.
         </p>
 
         <!-- Tombol aksi: beda tergantung tipe harga -->
         <div class="mt-6">
-          {#if produkDipilih.badge === 'Bisa nego'}
+          {#if p.badge === 'Bisa nego'}
             <button
               onclick={hubungiJastiper}
               class="w-full py-3.5 rounded-full font-bold text-[15px] bg-accent text-ink transition-transform hover:-translate-y-0.5"
@@ -240,11 +243,19 @@
               Hubungi Jastiper
             </button>
           {:else}
-            <button
-              class="w-full py-3.5 rounded-full font-bold text-[15px] bg-ink text-bg transition-transform hover:-translate-y-0.5"
-            >
-              Beli
-            </button>
+            <form method="POST" action="?/tambahKeranjang" use:enhance>
+              <input type="hidden" name="namaProduk" value={p.title} />
+              <input type="hidden" name="hargaSatuan" value={p.hargaAngka} />
+              <input type="hidden" name="lokasi" value={p.loc} />
+              <input type="hidden" name="jastiperNama" value={p.jastiper} />
+              <input type="hidden" name="gambarUrl" value={p.foto ?? ''} />
+              <button
+                type="submit"
+                class="w-full py-3.5 rounded-full font-bold text-[15px] bg-ink text-bg transition-transform hover:-translate-y-0.5"
+              >
+                Beli
+              </button>
+            </form>
           {/if}
         </div>
       </div>

@@ -118,3 +118,19 @@ export const pesanan = pgTable('pesanan', {
 	createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 	updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow()
 });
+
+// Keranjang belanja pelanggan — belum terikat ke tabel produk (masih dummy di frontend),
+// jadi data produk disalin langsung ke sini
+export const keranjangItem = pgTable('keranjang_item', {
+	id: text('id').primaryKey(),
+	pelangganId: text('pelanggan_id')
+		.notNull()
+		.references(() => users.id, { onDelete: 'cascade' }),
+	namaProduk: text('nama_produk').notNull(),
+	hargaSatuan: integer('harga_satuan').notNull(),
+	jumlah: integer('jumlah').notNull().default(1),
+	lokasi: text('lokasi'),
+	jastiperNama: text('jastiper_nama'),
+	gambarUrl: text('gambar_url'),
+	createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
+});
