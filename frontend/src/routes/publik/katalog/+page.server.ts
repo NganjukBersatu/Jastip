@@ -2,6 +2,7 @@ import { fail, redirect } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
 import { produk, users, jastiperProfiles, pengajuanHarga, keranjangItem } from '$lib/server/db/schema';
 import { eq, and } from 'drizzle-orm';
+import { randomUUID } from 'node:crypto';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async () => {
@@ -41,9 +42,9 @@ export const actions: Actions = {
 			return fail(400, { error: 'Produk tidak tersedia.' });
 		}
 
-		const [itemLama] = await db
-			.select()
-			.from(keranjangItem)
+		const [pengajuanLama] = await db
+			.select({ id: pengajuanHarga.id })
+			.from(pengajuanHarga)
 			.where(
 				and(
 					eq(pengajuanHarga.produkId, produkId),
@@ -52,17 +53,17 @@ export const actions: Actions = {
 				)
 			);
 
-		if (itemLama) {
-			await db
-				.update(keranjangItem)
-				.set({ jumlah: itemLama.jumlah + 1 })
-				.where(eq(keranjangItem.id, itemLama.id));
-		} else {
-			await db.insert(keranjangItem).values({
-				id: randomUUID(),
+		let pengajuanId = pengajuanLama?.id;
+
+		if (!pengajuanId) {
+			pengajuanId = randomUUID();
+			await db.insert(pengajuanHarga).values({
+				id: pengajuanId,
+				produkId,
+				namaProduk: produkAsli.nama,
 				pelangganId: locals.user.id,
 				jastiperId: produkAsli.jastiperId,
-				hargaDiajukan: produkAsli.harga, // default ke harga produk, bisa dinego lewat chat
+				hargaDiajukan: produkAsli.harga,
 				jumlah: 1,
 				status: 'menunggu'
 			});
@@ -94,81 +95,9 @@ export const actions: Actions = {
 		if (itemLama) {
 			await db.update(keranjangItem).set({ jumlah: itemLama.jumlah + 1 }).where(eq(keranjangItem.id, itemLama.id));
 		} else {
-			await db.insert(keranjangItem).values({ id: crypto.randomUUID(), pelangganId: locals.user.id, produkId, jumlah: 1 });
+			await db.insert(keranjangItem).values({ id: randomUUID(), pelangganId: locals.user.id, produkId, jumlah: 1 });
 		}
 
 		throw redirect(303, '/keranjang');
-	},
-
-	chatJastiper: async ({ request, locals }) => {
-		if (!locals.user) {
-			throw redirect(303, '/publik/masuk');
-		}
-		if (locals.user.role !== 'pelanggan') {
-			return fail(403, { error: 'Hanya pelanggan yang bisa menghubungi jastiper.' });
-		}
-
-		const data = await request.formData();
-		const namaProduk = data.get('namaProduk')?.toString();
-		const hargaAngkaRaw = data.get('hargaAngka')?.toString();
-
-		if (!namaProduk || !hargaAngkaRaw) {
-			return fail(400, { error: 'Data produk tidak lengkap.' });
-		}
-
-		const hargaAngka = parseInt(hargaAngkaRaw, 10);
-		if (Number.isNaN(hargaAngka)) {
-			return fail(400, { error: 'Harga produk tidak valid.' });
-		}
-
-		// Cek dulu apakah sudah pernah ada percakapan/nego untuk produk yang sama
-		const [percakapanLama] = await db
-			.select()
-			.from(pengajuanHarga)
-			.where(
-				and(
-					eq(pengajuanHarga.pelangganId, locals.user.id),
-					eq(pengajuanHarga.namaProduk, namaProduk)
-				)
-			);
-
-		if (percakapanLama) {
-			// Sudah pernah chat produk ini sebelumnya -> langsung buka lagi percakapan yang sama
-			throw redirect(303, `/publik/pesan?percakapan=${percakapanLama.id}`);
-		}
-
-		// Sementara: pakai akun jastiper pertama yang terdaftar (mis. Nia), karena produk masih dummy
-		const [jastiperDefault] = await db
-			.select()
-			.from(users)
-			.where(eq(users.role, 'jastiper'));
-
-		if (!jastiperDefault) {
-			return fail(500, { error: 'Belum ada akun jastiper terdaftar di sistem.' });
-		}
-
-		const percakapanId = randomUUID();
-
-		await db.insert(pengajuanHarga).values({
-			id: percakapanId,
-			produkId: null,
-			namaProduk,
-			pelangganId: locals.user.id,
-			jastiperId: jastiperDefault.id,
-			hargaDiajukan: hargaAngka,
-			jumlah: 1,
-			status: 'menunggu'
-		});
-
-		// Pesan pembuka otomatis dari pelanggan
-		await db.insert(pesanChat).values({
-			id: randomUUID(),
-			pengajuanHargaId: percakapanId,
-			pengirimId: locals.user.id,
-			isi: `Halo kak, saya tertarik dengan produk "${namaProduk}" ini.`,
-			jenis: 'teks'
-		});
-
-		throw redirect(303, `/publik/pesan?percakapan=${percakapanId}`);
 	}
 };
