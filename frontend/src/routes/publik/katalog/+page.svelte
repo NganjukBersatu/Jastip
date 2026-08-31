@@ -2,7 +2,10 @@
   import { goto } from '$app/navigation';
   import { enhance } from '$app/forms';
 
-    let { form } = $props();
+  /** @type {{ data: import('./$types').PageData, form: any }} */
+  let { data, form } = $props();
+
+  /** @typedef {import('./$types').PageData['daftarProduk'][number]} Produk */
 
   const kategoriList = ['Semua', 'Makanan', 'Skincare', 'Tiket & Event', 'Fashion', 'Elektronik', 'Barang Langka'];
   const areaList = ['Semua Area', 'Surabaya', 'Malang', 'Kediri', 'Jember', 'Banyuwangi', 'Madiun'];
@@ -142,22 +145,21 @@
                   {/if}
                 </div>
 
-{#if p.hargaTipe === 'nego'}
-  <form method="POST" action="?/chatJastiper" use:enhance>
-    <input type="hidden" name="namaProduk" value={p.title} />
-    <input type="hidden" name="hargaAngka" value={p.hargaAngka} />
-    <button
-      type="submit"
-      onclick={(e) => e.stopPropagation()}
-      class="rounded-full bg-ink text-bg font-bold text-[13px] px-4 py-2 whitespace-nowrap
-             hover:bg-primary-dark transition-colors"
-    >
-      💬 Chat jastiper
-    </button>
-  </form>
-{:else}
-  <div class="w-[38px] h-[38px] rounded-full bg-ink text-white flex items-center justify-center text-base font-bold shrink-0">
-                        →
+                {#if p.hargaTipe === 'nego'}
+                  <form method="POST" action="?/chatJastiper" use:enhance>
+                    <input type="hidden" name="produkId" value={p.id} />
+                    <button
+                      type="submit"
+                      onclick={(e) => e.stopPropagation()}
+                      class="rounded-full bg-ink text-bg font-bold text-[13px] px-4 py-2 whitespace-nowrap
+                             hover:bg-primary-dark transition-colors"
+                    >
+                      💬 Chat jastiper
+                    </button>
+                  </form>
+                {:else}
+                  <div class="w-[38px] h-[38px] rounded-full bg-ink text-white flex items-center justify-center text-base font-bold shrink-0">
+                    →
                   </div>
                 {/if}
               </div>

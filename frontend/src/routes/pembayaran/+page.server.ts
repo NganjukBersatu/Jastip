@@ -1,6 +1,6 @@
 import { redirect, fail } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
-import { keranjangItem, produk } from '$lib/server/db/schema';
+import { keranjangItem, produk, pesanan } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
 import { randomUUID } from 'node:crypto';
 import type { Actions, PageServerLoad } from './$types';
@@ -41,35 +41,32 @@ export const actions: Actions = {
 			return fail(400, { error: 'Pilih metode pembayaran dulu.' });
 		}
 
+		// Ambil item keranjang berikut harga & pemilik produk yang asli
 		const items = await db
-			.select()
+			.select({
+				produkId: keranjangItem.produkId,
+				jumlah: keranjangItem.jumlah,
+				hargaSatuan: produk.harga,
+				jastiperId: produk.jastiperId
+			})
 			.from(keranjangItem)
+			.innerJoin(produk, eq(keranjangItem.produkId, produk.id))
 			.where(eq(keranjangItem.pelangganId, locals.user.id));
 
 		if (items.length === 0) {
 			return fail(400, { error: 'Keranjang kamu kosong.' });
 		}
 
-		// Sementara: pakai akun jastiper pertama yang terdaftar (mis. Nia) sebagai jastiperId,
-		// karena produk masih dummy dan belum terikat ke jastiper aslinya masing-masing.
-		const [jastiperDefault] = await db
-			.select()
-			.from(users)
-			.where(eq(users.role, 'jastiper'));
-
-		if (!jastiperDefault) {
-			return fail(500, { error: 'Belum ada akun jastiper terdaftar di sistem.' });
-		}
-
-		// Bikin satu baris pesanan untuk tiap item di keranjang
+		// Bikin satu baris pesanan untuk tiap item — produkId & jastiperId sekarang
+		// diambil langsung dari produk aslinya (bukan dummy/jastiper default lagi)
 		for (const item of items) {
 			const totalHarga = item.hargaSatuan * item.jumlah;
 
 			await db.insert(pesanan).values({
 				id: randomUUID(),
-				produkId: null, // produk masih dummy, belum ada produkId asli
+				produkId: item.produkId,
 				pelangganId: locals.user.id,
-				jastiperId: jastiperDefault.id,
+				jastiperId: item.jastiperId,
 				pengajuanHargaId: null,
 				jumlah: item.jumlah,
 				hargaSatuan: item.hargaSatuan,
@@ -81,7 +78,6 @@ export const actions: Actions = {
 			});
 		}
 
-		// Kosongkan keranjang setelah pesanan dibuat
 		await db.delete(keranjangItem).where(eq(keranjangItem.pelangganId, locals.user.id));
 
 		throw redirect(303, '/pembayaran/selesai');
