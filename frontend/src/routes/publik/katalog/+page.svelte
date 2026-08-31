@@ -2,6 +2,8 @@
   import { goto } from '$app/navigation';
   import { enhance } from '$app/forms';
 
+    let { form } = $props();
+
   const kategoriList = ['Semua', 'Makanan', 'Skincare', 'Tiket & Event', 'Fashion', 'Elektronik', 'Barang Langka'];
   const areaList = ['Semua Area', 'Surabaya', 'Malang', 'Kediri', 'Jember', 'Banyuwangi', 'Madiun'];
 
@@ -41,96 +43,103 @@
       jastiper: 'Dinda'
     },
     {
-      id: '2',
-      emoji: '🧴',
-      badge: 'Bisa nego',
-      hargaTipe: 'nego',
-      kategori: 'Skincare',
-      loc: 'Malang',
-      title: 'Skincare lokal batch baru',
-      harga: 'Rp85.000',
-      from: true,
-      jastiper: 'Rani',
-      img: 'bg-gradient-to-br from-bg-alt to-accent'
-    },
-    {
-      id: '3',
-      emoji: '🎟️',
-      badge: 'Harga tetap',
-      hargaTipe: 'tetap',
-      kategori: 'Tiket & Event',
-      loc: 'Kediri',
-      title: 'Tiket festival kuliner',
-      harga: 'Rp25.000',
-      from: false,
-      jastiper: 'Bayu',
-      img: 'bg-gradient-to-br from-[#FFB199] to-primary-dark'
-    },
-    {
-      id: '4',
-      emoji: '👜',
-      badge: 'Bisa nego',
-      hargaTipe: 'nego',
-      kategori: 'Fashion',
-      loc: 'Surabaya',
-      title: 'Tas rajut handmade',
-      harga: 'Rp120.000',
-      from: true,
-      jastiper: 'Sari',
-      img: 'bg-gradient-to-br from-accent to-primary'
-    },
-    {
-      id: '5',
-      emoji: '🍪',
-      badge: 'Harga tetap',
-      hargaTipe: 'tetap',
-      kategori: 'Makanan',
-      loc: 'Jember',
-      title: 'Kastengel toples 500gr',
-      harga: 'Rp65.000',
-      from: false,
-      jastiper: 'Wulan',
-      img: 'bg-gradient-to-br from-[#FFD08A] to-primary-dark'
-    },
-    {
-      id: '6',
-      emoji: '📱',
-      badge: 'Bisa nego',
-      hargaTipe: 'nego',
-      kategori: 'Elektronik',
-      loc: 'Surabaya',
-      title: 'Casing HP custom',
-      harga: 'Rp45.000',
-      from: true,
-      jastiper: 'Fajar',
-      img: 'bg-gradient-to-br from-bg-alt to-primary'
-    },
-    {
-      id: '7',
-      emoji: '🧢',
-      badge: 'Harga tetap',
-      hargaTipe: 'tetap',
-      kategori: 'Fashion',
-      loc: 'Banyuwangi',
-      title: 'Topi lukis motif lokal',
-      harga: 'Rp55.000',
-      from: false,
-      jastiper: 'Nadia',
-      img: 'bg-gradient-to-br from-accent to-primary-dark'
-    },
-    {
-      id: '8',
-      emoji: '🕯️',
-      badge: 'Bisa nego',
-      hargaTipe: 'nego',
-      kategori: 'Barang Langka',
-      loc: 'Madiun',
-      title: 'Lilin aromaterapi edisi terbatas',
-      harga: 'Rp38.000',
-      from: true,
-      jastiper: 'Yoga',
-      img: 'bg-gradient-to-br from-[#FFB199] to-primary'
-    }
+  id: '2',
+  emoji: '🧴',
+  badge: 'Bisa nego',
+  hargaTipe: 'nego',
+  kategori: 'Skincare',
+  loc: 'Malang',
+  title: 'Skincare lokal batch baru',
+  harga: 'Rp85.000',
+  hargaAngka: 85000,
+  from: true,
+  jastiper: 'Rani',
+  img: 'bg-gradient-to-br from-bg-alt to-accent'
+},
+{
+  id: '3',
+  emoji: '🎟️',
+  badge: 'Harga tetap',
+  hargaTipe: 'tetap',
+  kategori: 'Tiket & Event',
+  loc: 'Kediri',
+  title: 'Tiket festival kuliner',
+  harga: 'Rp25.000',
+  hargaAngka: 25000,        // ← tambahkan ini
+  from: false,
+  jastiper: 'Bayu',
+  img: 'bg-gradient-to-br from-[#FFB199] to-primary-dark'
+},
+{
+  id: '4',
+  emoji: '👜',
+  badge: 'Bisa nego',
+  hargaTipe: 'nego',
+  kategori: 'Fashion',
+  loc: 'Surabaya',
+  title: 'Tas rajut handmade',
+  harga: 'Rp120.000',
+  hargaAngka: 120000,
+  from: true,
+  jastiper: 'Sari',
+  img: 'bg-gradient-to-br from-accent to-primary'
+},
+{
+  id: '5',
+  emoji: '🍪',
+  badge: 'Harga tetap',
+  hargaTipe: 'tetap',
+  kategori: 'Makanan',
+  loc: 'Jember',
+  title: 'Kastengel toples 500gr',
+  harga: 'Rp65.000',
+  hargaAngka: 65000,
+  from: false,
+  jastiper: 'Wulan',
+  img: 'bg-gradient-to-br from-[#FFD08A] to-primary-dark'
+},
+{
+  id: '6',
+  emoji: '📱',
+  badge: 'Bisa nego',
+  hargaTipe: 'nego',
+  kategori: 'Elektronik',
+  loc: 'Surabaya',
+  title: 'Casing HP custom',
+  harga: 'Rp45.000',
+  hargaAngka: 45000,
+  from: true,
+  jastiper: 'Fajar',
+  img: 'bg-gradient-to-br from-bg-alt to-primary'
+},
+{
+  id: '7',
+  emoji: '🧢',
+  badge: 'Harga tetap',
+  hargaTipe: 'tetap',
+  kategori: 'Fashion',
+  loc: 'Banyuwangi',
+  title: 'Topi lukis motif lokal',
+  harga: 'Rp55.000',
+  hargaAngka: 55000,
+  from: false,
+  jastiper: 'Nadia',
+  img: 'bg-gradient-to-br from-accent to-primary-dark'
+},  
+{
+  id: '8',
+  emoji: '🕯️',
+  badge: 'Bisa nego',
+  hargaTipe: 'nego',
+  kategori: 'Barang Langka',
+  loc: 'Madiun',
+  title: 'Lilin aromaterapi edisi terbatas',
+  harga: 'Rp38.000',
+  hargaAngka: 38000,
+  from: true,
+  jastiper: 'Yoga',
+  img: 'bg-gradient-to-br from-[#FFB199] to-primary'
+},
   ];
 
   let hasilFilter = $derived(
@@ -148,6 +157,12 @@
 </svelte:head>
 
 <svelte:window onkeydown={(e) => produkDipilih && e.key === 'Escape' && tutupDetail()} />
+
+{#if form?.error}
+  <div class="fixed top-4 left-1/2 -translate-x-1/2 z-[200] bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-5 py-3 shadow-lg">
+    {form.error}
+  </div>
+{/if}
 
 <!-- ===== HEADER KATALOG + PENCARIAN ===== -->
 <section class="bg-gradient-to-br from-primary to-primary-dark text-white py-14">
@@ -245,9 +260,9 @@
                 </div>
 
 {#if p.hargaTipe === 'nego'}
-  <!-- stopPropagation dipindah ke button biar tidak kena a11y warning -->
-  <form method="POST" action="?/chatJastiper">
-    <input type="hidden" name="produkId" value={p.id} />
+  <form method="POST" action="?/chatJastiper" use:enhance>
+    <input type="hidden" name="namaProduk" value={p.title} />
+    <input type="hidden" name="hargaAngka" value={p.hargaAngka} />
     <button
       type="submit"
       onclick={(e) => e.stopPropagation()}
@@ -339,16 +354,21 @@
           Detail lengkap produk atau layanan ini akan ditampilkan di sini — deskripsi, kondisi barang, dan estimasi waktu titip dari jastiper {p.jastiper}.
         </p>
 
-        <!-- Tombol aksi: beda tergantung tipe harga -->
-        <div class="mt-6">
-          {#if p.badge === 'Bisa nego'}
-            <button
-              onclick={hubungiJastiper}
-              class="w-full py-3.5 rounded-full font-bold text-[15px] bg-accent text-ink transition-transform hover:-translate-y-0.5"
-            >
-              Hubungi Jastiper
-            </button>
-          {:else}
+        
+<!-- Tombol aksi: beda tergantung tipe harga -->
+<div class="mt-6">
+  {#if p.badge === 'Bisa nego'}
+  <form method="POST" action="?/chatJastiper" use:enhance>
+    <input type="hidden" name="namaProduk" value={p.title} />
+    <input type="hidden" name="hargaAngka" value={p.hargaAngka} />
+    <button
+      type="submit"
+      class="w-full py-3.5 rounded-full font-bold text-[15px] bg-accent text-ink transition-transform hover:-translate-y-0.5"
+    >
+      Hubungi Jastiper
+    </button>
+  </form>
+{:else}
             <form method="POST" action="?/tambahKeranjang" use:enhance>
               <input type="hidden" name="namaProduk" value={p.title} />
               <input type="hidden" name="hargaSatuan" value={p.hargaAngka} />

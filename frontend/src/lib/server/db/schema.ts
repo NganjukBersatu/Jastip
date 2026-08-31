@@ -10,6 +10,7 @@ export const statusPesananEnum = pgEnum('status_pesanan', [
 	'selesai',
 	'dibatalkan'
 ]);
+export const jenisPesanEnum = pgEnum('jenis_pesan', ['teks', 'tawaran']);
 
 export const users = pgTable('users', {
 	id: text('id').primaryKey(), // pakai UUID string, di-generate saat insert
@@ -69,10 +70,12 @@ export const ongkirWilayah = pgTable('ongkir_wilayah', {
 // Pelanggan ajukan harga hasil chat, jastiper terima/tolak.
 export const pengajuanHarga = pgTable('pengajuan_harga', {
 	id: text('id').primaryKey(),
-	produkId: text('produk_id')
-		.notNull()
-		.references(() => produk.id, { onDelete: 'cascade' }),
+	produkId: text('produk_id').references(() => produk.id, { onDelete: 'cascade' }), // nullable, produk masih dummy
+	namaProduk: text('nama_produk').notNull(), // disalin langsung, karena produk masih dummy
 	pelangganId: text('pelanggan_id')
+		.notNull()
+		.references(() => users.id, { onDelete: 'cascade' }),
+	jastiperId: text('jastiper_id')
 		.notNull()
 		.references(() => users.id, { onDelete: 'cascade' }),
 	hargaDiajukan: integer('harga_diajukan').notNull(),
@@ -92,6 +95,8 @@ export const pesanChat = pgTable('pesan_chat', {
 		.notNull()
 		.references(() => users.id, { onDelete: 'cascade' }),
 	isi: text('isi').notNull(),
+	jenis: jenisPesanEnum('jenis').notNull().default('teks'),
+	nominal: integer('nominal'), // diisi kalau jenis = 'tawaran'
 	createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
 });
 
@@ -99,7 +104,6 @@ export const pesanChat = pgTable('pesan_chat', {
 export const pesanan = pgTable('pesanan', {
 	id: text('id').primaryKey(),
 	produkId: text('produk_id')
-		.notNull()
 		.references(() => produk.id),
 	pelangganId: text('pelanggan_id')
 		.notNull()

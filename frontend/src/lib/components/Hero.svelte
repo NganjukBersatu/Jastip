@@ -150,6 +150,13 @@
 </div>
 </div>
 
+  <!-- Gambar khusus mobile: vertical crop, ikut kategori aktif -->
+  <div class="hero-mobile-img">
+    {#each categories as c, i}
+      <img src={c.image} alt={c.imageAlt} class:active={i === current} />
+    {/each}
+  </div>
+
   <div class="hero-curve">
     <svg viewBox="0 0 1440 80" preserveAspectRatio="none">
       <path d="M0,40 C 240,90 420,0 720,20 C 1020,40 1200,90 1440,30 L1440,80 L0,80 Z" />
@@ -436,20 +443,114 @@
     color: #4a3524;
   }
 
+  /* Gambar vertical khusus mobile - disembunyikan di desktop */
+  .hero-mobile-img {
+    display: none;
+  }
+
+  /* ===== MOBILE & TABLET (<= 900px) ===== */
   @media (max-width: 900px) {
     .hero {
-      grid-template-columns: 1fr;
-      padding: 48px 24px 60px;
+      grid-template-columns: 1fr auto;
+      grid-template-areas: "left img" "curve curve";
+      padding: 28px 20px 40px;
+      min-height: 0;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .hero-left {
+      grid-area: left;
+      text-align: left;
+      transform: translateX(10px);
+    }
+
+    /* Sembunyikan elemen versi desktop di mobile */
+    .hero-right {
+      display: none;
+    }
+    .sub {
+      display: none;
+    }
+    .picker-row {
+      display: none;
+    }
+
+    /* Ganti lengkungan jadi kotak biasa (hilangkan SVG curve) */
+    .hero-curve {
+      display: none;
+    }
+
+    h1 {
+      font-size: 26px;
+      margin: 0 0 18px;
+    }
+    .badge {
+      font-size: 10px;
+      padding: 5px 10px;
+      margin-bottom: 14px;
+    }
+
+    .cta-row {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .btn-primary,
+    .btn-outline {
+      padding: 10px 18px;
+      font-size: 13px;
+    }
+
+    /* Gambar vertical mobile, ikut kategori aktif */
+    .hero-mobile-img {
+      grid-area: img;
+      display: block;
+      position: relative;
+      flex: 0 0 auto;
+      width: 100px;
+      height: 150px;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+      transform: translateX(-16px);
+    }
+    .hero-mobile-img img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+    .hero-mobile-img img.active {
+      opacity: 1;
+    }
+  }
+
+  /* ===== HP KECIL (<= 420px) ===== */
+  @media (max-width: 420px) {
+    .hero {
+      padding: 24px 16px 32px;
+      gap: 10px;
     }
     h1 {
-      font-size: 42px;
+      font-size: 22px;
     }
-    .hero-right {
-      height: 340px;
+    .badge {
+      font-size: 9.5px;
+      padding: 4px 9px;
     }
-    .blob {
-      width: 280px;
-      height: 280px;
+    .btn-primary,
+    .btn-outline {
+      padding: 9px 16px;
+      font-size: 12.5px;
+    }
+    .hero-mobile-img {
+      width: 84px;
+      height: 128px;
+      border-radius: 12px;
     }
   }
 </style>
