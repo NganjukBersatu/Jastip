@@ -1,6 +1,6 @@
 import { redirect, fail } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
-import { keranjangItem, pesanan, users } from '$lib/server/db/schema';
+import { keranjangItem, produk } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
 import { randomUUID } from 'node:crypto';
 import type { Actions, PageServerLoad } from './$types';
@@ -10,8 +10,15 @@ export const load: PageServerLoad = async ({ locals }) => {
 	if (locals.user.role !== 'pelanggan') throw redirect(303, '/publik/katalog');
 
 	const items = await db
-		.select()
+		.select({
+			id: keranjangItem.id,
+			produkId: keranjangItem.produkId,
+			jumlah: keranjangItem.jumlah,
+			namaProduk: produk.nama,
+			hargaSatuan: produk.harga
+		})
 		.from(keranjangItem)
+		.innerJoin(produk, eq(keranjangItem.produkId, produk.id))
 		.where(eq(keranjangItem.pelangganId, locals.user.id));
 
 	if (items.length === 0) throw redirect(303, '/keranjang');

@@ -60,7 +60,21 @@
         {/if}
       </div>
 
-      <div class="flex items-center gap-1.5 sm:gap-3">
+      <div class="flex items-center gap-3">
+        {#if user?.role === 'pelanggan'}
+          <a
+            href="/keranjang"
+            aria-label="Keranjang"
+            class="w-9 h-9 rounded-full flex items-center justify-center hover:bg-ink/5 transition"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5">
+              <circle cx="9" cy="21" r="1" />
+              <circle cx="20" cy="21" r="1" />
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+            </svg>
+          </a>
+        {/if}
+
         {#if user}
           {#if user.role === 'pelanggan'}
             <a
