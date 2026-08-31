@@ -38,16 +38,16 @@
       </p>
     </div>
 
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-5">
-      {#each fitur as f}
-        <div class="rounded-[26px] p-7 min-h-[220px] flex flex-col justify-between {f.style}">
-          <span class="font-display font-semibold text-sm opacity-55">{f.nomor}</span>
-          <div>
-            <h3 class="text-[19px] mt-8">{f.judul}</h3>
-            <p class="text-sm mt-2 opacity-85">{f.deskripsi}</p>
-          </div>
-        </div>
-      {/each}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+{#each fitur as f}
+  <div class="rounded-[22px] sm:rounded-[26px] p-6 sm:p-7 min-h-[180px] sm:min-h-[220px] flex flex-col justify-between {f.style}">
+    <span class="font-display font-semibold text-sm opacity-55">{f.nomor}</span>
+    <div>
+      <h3 class="text-[17px] sm:text-[19px] mt-6 sm:mt-8">{f.judul}</h3>
+      <p class="text-sm mt-2 opacity-85">{f.deskripsi}</p>
     </div>
+  </div>
+{/each}
+  </div>
   </div>
 </section>

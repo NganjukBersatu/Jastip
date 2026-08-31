@@ -65,9 +65,8 @@ export const ongkirWilayah = pgTable('ongkir_wilayah', {
 
 export const pengajuanHarga = pgTable('pengajuan_harga', {
 	id: text('id').primaryKey(),
-	produkId: text('produk_id')
-		.notNull()
-		.references(() => produk.id, { onDelete: 'cascade' }),
+	produkId: text('produk_id').references(() => produk.id, { onDelete: 'cascade' }), // nullable, produk masih dummy
+	namaProduk: text('nama_produk').notNull(), // disalin langsung, karena produk masih dummy
 	pelangganId: text('pelanggan_id')
 		.notNull()
 		.references(() => users.id, { onDelete: 'cascade' }),
@@ -98,7 +97,6 @@ export const pesanChat = pgTable('pesan_chat', {
 export const pesanan = pgTable('pesanan', {
 	id: text('id').primaryKey(),
 	produkId: text('produk_id')
-		.notNull()
 		.references(() => produk.id),
 	pelangganId: text('pelanggan_id')
 		.notNull()

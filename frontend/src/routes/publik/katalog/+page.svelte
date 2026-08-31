@@ -2,10 +2,7 @@
   import { goto } from '$app/navigation';
   import { enhance } from '$app/forms';
 
-  /** @type {{ data: import('./$types').PageData }} */
-  let { data } = $props();
-
-  /** @typedef {import('./$types').PageData['daftarProduk'][number]} Produk */
+    let { form } = $props();
 
   const kategoriList = ['Semua', 'Makanan', 'Skincare', 'Tiket & Event', 'Fashion', 'Elektronik', 'Barang Langka'];
   const areaList = ['Semua Area', 'Surabaya', 'Malang', 'Kediri', 'Jember', 'Banyuwangi', 'Madiun'];
@@ -49,6 +46,12 @@
 </svelte:head>
 
 <svelte:window onkeydown={(e) => produkDipilih && e.key === 'Escape' && tutupDetail()} />
+
+{#if form?.error}
+  <div class="fixed top-4 left-1/2 -translate-x-1/2 z-[200] bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-5 py-3 shadow-lg">
+    {form.error}
+  </div>
+{/if}
 
 <!-- ===== HEADER KATALOG + PENCARIAN ===== -->
 <section class="bg-gradient-to-br from-primary to-primary-dark text-white py-14">
@@ -139,21 +142,22 @@
                   {/if}
                 </div>
 
-                {#if p.hargaTipe === 'nego'}
-                  <form method="POST" action="?/chatJastiper">
-                    <input type="hidden" name="produkId" value={p.id} />
-                    <button
-                      type="submit"
-                      onclick={(e) => e.stopPropagation()}
-                      class="rounded-full bg-ink text-bg font-bold text-[13px] px-4 py-2 whitespace-nowrap
-                             hover:bg-primary-dark transition-colors"
-                    >
-                      💬 Chat jastiper
-                    </button>
-                  </form>
-                {:else}
-                  <div class="w-[38px] h-[38px] rounded-full bg-ink text-white flex items-center justify-center text-base font-bold shrink-0">
-                    →
+{#if p.hargaTipe === 'nego'}
+  <form method="POST" action="?/chatJastiper" use:enhance>
+    <input type="hidden" name="namaProduk" value={p.title} />
+    <input type="hidden" name="hargaAngka" value={p.hargaAngka} />
+    <button
+      type="submit"
+      onclick={(e) => e.stopPropagation()}
+      class="rounded-full bg-ink text-bg font-bold text-[13px] px-4 py-2 whitespace-nowrap
+             hover:bg-primary-dark transition-colors"
+    >
+      💬 Chat jastiper
+    </button>
+  </form>
+{:else}
+  <div class="w-[38px] h-[38px] rounded-full bg-ink text-white flex items-center justify-center text-base font-bold shrink-0">
+                        →
                   </div>
                 {/if}
               </div>
