@@ -32,6 +32,7 @@
 
   <form
     method="POST"
+    enctype="multipart/form-data"
     class="mt-7 flex flex-col gap-5"
     use:enhance={() => {
       mengirim = true;
@@ -108,15 +109,27 @@
       ></textarea>
     </label>
 
-    <label class="flex flex-col gap-2">
-      <span class="text-[13.5px] font-bold text-ink">URL gambar <span class="font-normal text-ink-soft">(opsional)</span></span>
+    <div class="flex flex-col gap-2">
+      <span class="text-[13.5px] font-bold text-ink">Gambar produk <span class="text-red-500">*wajib</span></span>
+
       <input
         type="url"
         name="gambarUrl"
-        placeholder="https://..."
+        placeholder="https://... (opsional kalau upload file)"
         class="bg-white border border-ink/15 rounded-2xl px-4 py-3 text-sm outline-none focus:border-primary transition"
       />
-    </label>
+
+      <span class="text-xs text-ink-soft text-center">atau</span>
+
+      <input
+        type="file"
+        name="gambarFile"
+        accept="image/*"
+        class="bg-white border border-ink/15 rounded-2xl px-4 py-2.5 text-sm file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:bg-bg-alt file:text-xs file:font-bold"
+      />
+
+      <span class="text-[11.5px] text-ink-soft">Isi salah satu saja — kalau dua-duanya diisi, file upload yang dipakai.</span>
+    </div>
 
     <button
       type="submit"
