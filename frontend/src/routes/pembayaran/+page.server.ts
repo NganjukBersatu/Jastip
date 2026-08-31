@@ -1,6 +1,6 @@
 import { redirect, fail } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
-import { keranjangItem } from '$lib/server/db/schema';
+import { keranjangItem, produk } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
 import type { Actions, PageServerLoad } from './$types';
 
@@ -9,8 +9,15 @@ export const load: PageServerLoad = async ({ locals }) => {
 	if (locals.user.role !== 'pelanggan') throw redirect(303, '/publik/katalog');
 
 	const items = await db
-		.select()
+		.select({
+			id: keranjangItem.id,
+			produkId: keranjangItem.produkId,
+			jumlah: keranjangItem.jumlah,
+			namaProduk: produk.nama,
+			hargaSatuan: produk.harga
+		})
 		.from(keranjangItem)
+		.innerJoin(produk, eq(keranjangItem.produkId, produk.id))
 		.where(eq(keranjangItem.pelangganId, locals.user.id));
 
 	if (items.length === 0) throw redirect(303, '/keranjang');
@@ -33,9 +40,7 @@ export const actions: Actions = {
 			return fail(400, { error: 'Pilih metode pembayaran dulu.' });
 		}
 
-		// NOTE: ini belum bikin baris resmi di tabel 'pesanan' (produk masih dummy,
-		// belum ada produkId/jastiperId asli). Untuk sekarang cuma kosongkan keranjang
-		// sebagai simulasi "checkout berhasil".
+		// NOTE: masih sama seperti sebelumnya — belum bikin baris resmi di tabel 'pesanan'
 		await db.delete(keranjangItem).where(eq(keranjangItem.pelangganId, locals.user.id));
 
 		throw redirect(303, '/pembayaran/selesai');
