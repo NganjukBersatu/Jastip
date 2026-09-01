@@ -40,8 +40,29 @@
     <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-8">
       {#each data.daftarProduk as p (p.id)}
         <div class="bg-white rounded-[22px] border border-ink/10 overflow-hidden">
-          <div class="h-32 bg-gradient-to-br from-primary/70 to-primary-dark flex items-center justify-center">
-            <span class="text-white/80 text-xs font-bold uppercase tracking-wide">{p.kategori ?? 'Produk'}</span>
+          <div class="relative h-32 bg-ink/5">
+            <img
+              src={p.gambarUrl}
+              alt={p.nama}
+              class="w-full h-32 object-cover"
+            />
+
+            {#if p.kategori}
+              <span class="absolute bottom-2 left-2 text-white text-[10px] font-bold uppercase tracking-wide bg-black/45 px-2.5 py-1 rounded-pill">
+                {p.kategori}
+              </span>
+            {/if}
+
+            <a
+              href="/jastiper/produk/{p.id}/edit"
+              aria-label="Edit produk"
+              class="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-white/90 hover:bg-white flex items-center justify-center transition"
+            >
+              <svg class="w-4 h-4 text-ink" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 20h9" />
+                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5Z" />
+              </svg>
+            </a>
           </div>
           <div class="p-4">
             <div class="flex items-center gap-2">
@@ -52,7 +73,15 @@
                 {p.hargaTipe === 'nego' ? 'Bisa nego' : 'Harga tetap'}
               </span>
             </div>
-            <div class="font-bold text-sm mt-2.5">{p.nama}</div>
+            <div class="flex items-center justify-between gap-2 mt-2.5">
+              <div class="font-bold text-sm">{p.nama}</div>
+              <a
+                href="/jastiper/produk/{p.id}/edit"
+                class="shrink-0 text-[12px] font-bold text-primary-dark hover:underline"
+              >
+                Edit
+              </a>
+            </div>
             <div class="font-display font-semibold text-lg mt-1">
               {formatRupiah(p.harga)}
               {#if p.hargaTipe === 'nego'}<span class="text-[11px] font-sans font-semibold text-ink-soft">mulai dari</span>{/if}

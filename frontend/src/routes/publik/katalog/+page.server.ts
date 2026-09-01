@@ -93,9 +93,17 @@ export const actions: Actions = {
 			.where(and(eq(keranjangItem.pelangganId, locals.user.id), eq(keranjangItem.produkId, produkId)));
 
 		if (itemLama) {
-			await db.update(keranjangItem).set({ jumlah: itemLama.jumlah + 1 }).where(eq(keranjangItem.id, itemLama.id));
+			await db
+				.update(keranjangItem)
+				.set({ jumlah: itemLama.jumlah + 1 })
+				.where(eq(keranjangItem.id, itemLama.id));
 		} else {
-			await db.insert(keranjangItem).values({ id: randomUUID(), pelangganId: locals.user.id, produkId, jumlah: 1 });
+			await db.insert(keranjangItem).values({
+				id: randomUUID(),
+				pelangganId: locals.user.id,
+				produkId,
+				jumlah: 1
+			});
 		}
 
 		throw redirect(303, '/keranjang');

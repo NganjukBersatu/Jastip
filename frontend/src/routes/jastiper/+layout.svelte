@@ -44,9 +44,16 @@
   <!-- Sidebar -->
   <aside class="w-64 bg-white border-r border-ink/10 flex flex-col shrink-0">
     <div class="p-6 border-b border-ink/10">
-      <div class="text-[11px] font-bold text-ink-soft uppercase tracking-wide">
+      <a
+        href="/"
+        class="flex items-center gap-5 text-[13px] font-bold text-ink-soft hover:text-primary-dark transition mb-3"
+      >
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 18l-6-6 6-6" />
+        </svg>
         Panel Jastiper
-      </div>
+      </a>
+
     </div>
 
     <nav class="flex-1 p-4 flex flex-col gap-1">
@@ -67,8 +74,7 @@
     </nav>
 
     <div class="p-4 border-t border-ink/10">
-      <a href="/profile
-      " class="flex items-center gap-3 px-3 py-2.5 rounded-2xl hover:bg-bg-alt transition">
+      <a href="/profile" class="flex items-center gap-3 px-3 py-2.5 rounded-2xl hover:bg-bg-alt transition">
         <span class="w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold shrink-0">
           {inisial}
         </span>

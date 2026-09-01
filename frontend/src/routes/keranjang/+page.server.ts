@@ -1,7 +1,7 @@
 import { redirect, fail } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
-import { keranjangItem, produk, users, jastiperProfiles } from '$lib/server/db/schema';
-import { eq, and } from 'drizzle-orm';
+import { keranjangItem, produk, users, jastiperProfiles, ongkirWilayah } from '$lib/server/db/schema';
+import { eq, and, inArray } from 'drizzle-orm';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals }) => {
@@ -15,6 +15,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			namaProduk: produk.nama,
 			hargaSatuan: produk.harga,
 			gambarUrl: produk.gambarUrl,
+			jastiperId: produk.jastiperId,
 			jastiperNama: users.nama,
 			area: jastiperProfiles.area
 		})
@@ -24,7 +25,32 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.leftJoin(jastiperProfiles, eq(produk.jastiperId, jastiperProfiles.userId))
 		.where(eq(keranjangItem.pelangganId, locals.user.id));
 
-	return { items };
+	// Ambil daftar wilayah+ongkir milik tiap jastiper yang ada di keranjang ini
+	const jastiperIdUnik = [...new Set(items.map((item) => item.jastiperId))];
+
+	const semuaOngkir =
+		jastiperIdUnik.length > 0
+			? await db
+					.select()
+					.from(ongkirWilayah)
+					.where(inArray(ongkirWilayah.jastiperId, jastiperIdUnik))
+			: [];
+
+	// Kelompokkan item + ongkir per jastiper, supaya di halaman tinggal di-loop
+	const kelompokJastiper = jastiperIdUnik.map((jastiperId) => {
+		const itemJastiperIni = items.filter((item) => item.jastiperId === jastiperId);
+		const ongkirJastiperIni = semuaOngkir.filter((o) => o.jastiperId === jastiperId);
+
+		return {
+			jastiperId,
+			jastiperNama: itemJastiperIni[0].jastiperNama,
+			area: itemJastiperIni[0].area,
+			items: itemJastiperIni,
+			ongkirOptions: ongkirJastiperIni
+		};
+	});
+
+	return { kelompokJastiper };
 };
 
 export const actions: Actions = {

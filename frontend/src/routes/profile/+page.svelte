@@ -10,7 +10,7 @@
 </script>
 
 <svelte:head>
-  <title>Profil Saya — Nitip</title>
+  <title>Profil Saya — Titipa</title>
 </svelte:head>
 
 
@@ -64,7 +64,7 @@
       </a>
     {:else}
       <a
-        href="/publik/katalog"
+        href="/pesanan"
         class="mt-5 flex items-center justify-between bg-white rounded-[18px] border border-ink/10 p-5 hover:border-primary transition"
       >
         <div>

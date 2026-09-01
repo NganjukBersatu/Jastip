@@ -23,15 +23,26 @@ export async function cariAtauBuatPengajuan(produkId: string, pelangganId: strin
 
 	if (sudahAda) return sudahAda.id;
 
-	const [item] = await db.select({ harga: produk.harga }).from(produk).where(eq(produk.id, produkId));
+	const [item] = await db
+		.select({
+			harga: produk.harga,
+			nama: produk.nama,
+			jastiperId: produk.jastiperId
+		})
+		.from(produk)
+		.where(eq(produk.id, produkId));
+
 	if (!item) throw new Error('Produk tidak ditemukan.');
 
 	const id = crypto.randomUUID();
+
 	await db.insert(pengajuanHarga).values({
 		id,
 		produkId,
+		namaProduk: item.nama,          // ← wajib (NOT NULL)
 		pelangganId,
-		hargaDiajukan: item.harga, // titik awal nego -- nanti diubah lewat chat/form nego, bukan lewat kode ini
+		jastiperId: item.jastiperId,    // ← wajib (NOT NULL)
+		hargaDiajukan: item.harga,
 		jumlah: 1,
 		status: 'menunggu'
 	});
