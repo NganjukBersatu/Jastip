@@ -3,10 +3,6 @@
 
   let { data, form } = $props();
 
-  let totalHarga = $derived(
-    data.items.reduce((sum, item) => sum + item.hargaSatuan * item.jumlah, 0)
-  );
-
   const metodePembayaranList = [
     { value: 'transfer_bank', label: 'Transfer Bank' },
     { value: 'e_wallet', label: 'E-Wallet (OVO/DANA/GoPay)' },
@@ -39,25 +35,36 @@
   {/if}
 
   <form method="POST" action="?/bayar" use:enhance class="space-y-8">
-    <!-- Ringkasan pesanan -->
+    <input type="hidden" name="ongkirRaw" value={data.ongkirRaw} />
+
+    <!-- Ringkasan pesanan, dikelompokkan per jastiper (ongkir beda-beda tiap jastiper) -->
     <div>
       <h2 class="font-bold text-sm uppercase tracking-wide text-ink-soft mb-3">Ringkasan pesanan</h2>
-      <div class="bg-white border border-ink/10 rounded-2xl divide-y divide-ink/10">
-        {#each data.items as item (item.id)}
-          <div class="flex justify-between items-center px-4 py-3">
-            <div>
-              <div class="font-semibold text-sm">{item.namaProduk}</div>
-              <div class="text-xs text-ink-soft">{item.jumlah} x {formatRupiah(item.hargaSatuan)}</div>
-            </div>
-            <div class="font-display font-semibold text-sm">
-              {formatRupiah(item.hargaSatuan * item.jumlah)}
+      <div class="space-y-4">
+        {#each data.kelompokJastiper as kelompok (kelompok.jastiperId)}
+          <div class="bg-white border border-ink/10 rounded-2xl divide-y divide-ink/10">
+            {#each kelompok.items as item (item.produkId)}
+              <div class="flex justify-between items-center px-4 py-3">
+                <div>
+                  <div class="font-semibold text-sm">{item.namaProduk}</div>
+                  <div class="text-xs text-ink-soft">{item.jumlah} x {formatRupiah(item.hargaSatuan)}</div>
+                </div>
+                <div class="font-display font-semibold text-sm">
+                  {formatRupiah(item.hargaSatuan * item.jumlah)}
+                </div>
+              </div>
+            {/each}
+            <div class="flex justify-between items-center px-4 py-3 text-sm bg-bg-alt rounded-b-2xl">
+              <span class="text-ink-soft">Ongkir {kelompok.wilayah ? `(${kelompok.wilayah})` : ''}</span>
+              <span class="font-semibold">{formatRupiah(kelompok.ongkir)}</span>
             </div>
           </div>
         {/each}
-        <div class="flex justify-between items-center px-4 py-3.5 bg-bg-alt rounded-b-2xl">
-          <span class="font-bold text-sm">Total</span>
-          <span class="font-display font-bold text-lg">{formatRupiah(totalHarga)}</span>
-        </div>
+      </div>
+
+      <div class="flex justify-between items-center px-4 py-3.5 bg-ink text-bg rounded-2xl mt-3">
+        <span class="font-bold text-sm">Total bayar</span>
+        <span class="font-display font-bold text-lg">{formatRupiah(data.totalBayar)}</span>
       </div>
     </div>
 
@@ -104,7 +111,7 @@
       type="submit"
       class="w-full py-3.5 rounded-full font-bold text-[15px] bg-ink text-bg transition-transform hover:-translate-y-0.5"
     >
-      Bayar sekarang · {formatRupiah(totalHarga)}
+      Bayar sekarang · {formatRupiah(data.totalBayar)}
     </button>
   </form>
 </section>

@@ -7,8 +7,9 @@ import { buatTokenSesi, buatSesi } from '$lib/server/auth';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals }) => {
-	// kalau sudah login, langsung lempar ke katalog
-	if (locals.user) throw redirect(303, '/publik/katalog');
+	if (locals.user) {
+		throw redirect(303, locals.user.role === 'jastiper' ? '/jastiper/dashboard' : '/publik/katalog');
+	}
 };
 
 export const actions: Actions = {
@@ -43,6 +44,6 @@ export const actions: Actions = {
 			secure: process.env.NODE_ENV === 'production'
 		});
 
-		throw redirect(303, '/publik/katalog');
+		throw redirect(303, user.role === 'jastiper' ? '/jastiper/dashboard' : '/publik/katalog');
 	}
 };

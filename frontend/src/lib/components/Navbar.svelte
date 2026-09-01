@@ -44,7 +44,14 @@
         >
           Katalog
         </a>
-        
+        {#if user?.role !== 'jastiper'}
+          <a
+            href="/jastiper"
+            class="opacity-75 hover:opacity-100 transition {active === 'jastiper' ? 'opacity-100 text-primary-dark' : ''}"
+          >
+            Jadi jastiper
+          </a>
+        {/if}
         <a
           href="/publik/cara-kerja"
           class="opacity-75 hover:opacity-100 transition {active === 'cara-kerja' ? 'opacity-100 text-primary-dark' : ''}"
@@ -59,6 +66,23 @@
             class="opacity-75 hover:opacity-100 transition {active === 'chat' ? 'opacity-100 text-primary-dark' : ''}"
           >
             Chat jastiper
+          </a>
+
+          <a
+            href="/pesanan"
+            class="opacity-75 hover:opacity-100 transition {active === 'chat' ? 'opacity-100 text-primary-dark' : ''}"
+          >
+           Lihat pesanan
+          </a>
+        {/if}
+
+        <!-- Menu khusus role jastiper -->
+        {#if user?.role === 'jastiper'}
+          <a
+            href="/jastiper/dashboard"
+            class="opacity-75 hover:opacity-100 transition {active === 'dashboard' ? 'opacity-100 text-primary-dark' : ''}"
+          >
+            Dashboard
           </a>
         {/if}
       </div>
@@ -79,7 +103,6 @@
         {/if}
 
         {#if user}
-
           <a
             href="/profile"
             class="hidden sm:flex items-center gap-2.5 font-bold text-sm opacity-90 hover:opacity-100 transition"
@@ -144,7 +167,15 @@
           >
             Katalog
           </a>
-          
+          {#if user?.role !== 'jastiper'}
+            <a
+              href="/jastiper"
+              onclick={tutupMenu}
+              class="px-5 py-3 font-semibold text-sm {active === 'jastiper' ? 'text-primary-dark bg-primary/5' : 'opacity-80'}"
+            >
+              Jadi jastiper
+            </a>
+          {/if}
           <a
             href="/publik/cara-kerja"
             onclick={tutupMenu}
@@ -161,6 +192,23 @@
               class="px-5 py-3 font-semibold text-sm {active === 'chat' ? 'text-primary-dark bg-primary/5' : 'opacity-80'}"
             >
               Chat jastiper
+            </a>
+            <a
+              href="/pesanan"
+              onclick={tutupMenu}
+              class="px-5 py-3 font-semibold text-sm {active === 'chat' ? 'text-primary-dark bg-primary/5' : 'opacity-80'}"
+            >
+              Lihat pesanan
+            </a>
+          {/if}
+
+          {#if user?.role === 'jastiper'}
+            <a
+              href="/jastiper/dashboard"
+              onclick={tutupMenu}
+              class="px-5 py-3 font-semibold text-sm {active === 'dashboard' ? 'text-primary-dark bg-primary/5' : 'opacity-80'}"
+            >
+              Dashboard
             </a>
           {/if}
         </div>
