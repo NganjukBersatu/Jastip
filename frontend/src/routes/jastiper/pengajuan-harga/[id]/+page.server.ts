@@ -1,7 +1,8 @@
 import { error, fail, redirect } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
-import { pengajuanHarga, produk, users, pesanChat } from '$lib/server/db/schema';
+import { pengajuanHarga, users, pesanChat, tawaranHarga, pesanan } from '$lib/server/db/schema';
 import { eq, and, asc } from 'drizzle-orm';
+import { randomUUID } from 'node:crypto';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
@@ -13,17 +14,20 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			catatan: pengajuanHarga.catatan,
 			status: pengajuanHarga.status,
 			createdAt: pengajuanHarga.createdAt,
-			produkNama: produk.nama,
+			produkNama: pengajuanHarga.namaProduk,
+			produkId: pengajuanHarga.produkId,
 			pelangganId: pengajuanHarga.pelangganId,
 			pelangganNama: users.nama
 		})
 		.from(pengajuanHarga)
-		.innerJoin(produk, eq(pengajuanHarga.produkId, produk.id))
 		.innerJoin(users, eq(pengajuanHarga.pelangganId, users.id))
-		.where(and(eq(pengajuanHarga.id, params.id), eq(produk.jastiperId, locals.user!.id)));
+		.where(
+			and(
+				eq(pengajuanHarga.id, params.id),
+				eq(pengajuanHarga.jastiperId, locals.user!.id)
+			)
+		);
 
-	// kalau pengajuan nggak ada, atau bukan milik produk punya jastiper yang login -> 404
-	// ini penting: tanpa cek ini, jastiper A bisa buka chat nego punya jastiper B cuma dengan ganti id di URL
 	if (!item) throw error(404, 'Pengajuan tidak ditemukan.');
 
 	const daftarPesan = await db
@@ -32,20 +36,26 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.where(eq(pesanChat.pengajuanHargaId, params.id))
 		.orderBy(asc(pesanChat.createdAt));
 
-	return { item, daftarPesan, userId: locals.user!.id };
+	const daftarTawaran = await db
+		.select({
+			id: tawaranHarga.id,
+			harga: tawaranHarga.harga,
+			jumlah: tawaranHarga.jumlah,
+			status: tawaranHarga.status,
+			createdAt: tawaranHarga.createdAt,
+			pengirimId: tawaranHarga.pengirimId
+		})
+		.from(tawaranHarga)
+		.where(eq(tawaranHarga.pengajuanHargaId, params.id))
+		.orderBy(asc(tawaranHarga.createdAt));
+
+	return {
+		item,
+		daftarPesan,
+		daftarTawaran,
+		userId: locals.user!.id
+	};
 };
-
-async function ubahStatus(id: string, jastiperId: string, statusBaru: 'diterima' | 'ditolak') {
-	const [row] = await db
-		.select({ id: pengajuanHarga.id })
-		.from(pengajuanHarga)
-		.innerJoin(produk, eq(pengajuanHarga.produkId, produk.id))
-		.where(and(eq(pengajuanHarga.id, id), eq(produk.jastiperId, jastiperId)));
-
-	if (!row) return fail(404, { error: 'Pengajuan tidak ditemukan.' });
-
-	await db.update(pengajuanHarga).set({ status: statusBaru }).where(eq(pengajuanHarga.id, id));
-}
 
 export const actions: Actions = {
 	kirimPesan: async ({ request, params, locals }) => {
@@ -53,12 +63,15 @@ export const actions: Actions = {
 		const isi = data.get('isi')?.toString().trim();
 		if (!isi) return fail(400, { error: 'Pesan tidak boleh kosong.' });
 
-		// pastikan jastiper ini memang pemilik produk dari pengajuan ini
 		const [row] = await db
 			.select({ id: pengajuanHarga.id })
 			.from(pengajuanHarga)
-			.innerJoin(produk, eq(pengajuanHarga.produkId, produk.id))
-			.where(and(eq(pengajuanHarga.id, params.id), eq(produk.jastiperId, locals.user!.id)));
+			.where(
+				and(
+					eq(pengajuanHarga.id, params.id),
+					eq(pengajuanHarga.jastiperId, locals.user!.id)
+				)
+			);
 
 		if (!row) return fail(404, { error: 'Pengajuan tidak ditemukan.' });
 
@@ -71,14 +84,69 @@ export const actions: Actions = {
 
 		return { success: true };
 	},
+
 	terima: async ({ params, locals }) => {
-		const result = await ubahStatus(params.id, locals.user!.id, 'diterima');
-		if (result) return result;
+		const jastiperId = locals.user!.id;
+
+		const [row] = await db
+			.select({
+				id: pengajuanHarga.id,
+				produkId: pengajuanHarga.produkId,
+				pelangganId: pengajuanHarga.pelangganId,
+				hargaDiajukan: pengajuanHarga.hargaDiajukan,
+				jumlah: pengajuanHarga.jumlah
+			})
+			.from(pengajuanHarga)
+			.where(
+				and(
+					eq(pengajuanHarga.id, params.id),
+					eq(pengajuanHarga.jastiperId, jastiperId)
+				)
+			);
+
+		if (!row) return fail(404, { error: 'Pengajuan tidak ditemukan.' });
+
+		// Update status pengajuan
+		await db
+			.update(pengajuanHarga)
+			.set({ status: 'diterima' })
+			.where(eq(pengajuanHarga.id, params.id));
+
+		// Buat pesanan
+		await db.insert(pesanan).values({
+			id: randomUUID(),
+			produkId: row.produkId,
+			pelangganId: row.pelangganId,
+			jastiperId,
+			pengajuanHargaId: row.id,
+			jumlah: row.jumlah,
+			hargaSatuan: row.hargaDiajukan,
+			ongkir: 0,
+			totalHarga: row.hargaDiajukan * row.jumlah,
+			status: 'menunggu_konfirmasi'
+		});
+
 		throw redirect(303, '/jastiper/pengajuan-harga');
 	},
+
 	tolak: async ({ params, locals }) => {
-		const result = await ubahStatus(params.id, locals.user!.id, 'ditolak');
-		if (result) return result;
+		const [row] = await db
+			.select({ id: pengajuanHarga.id })
+			.from(pengajuanHarga)
+			.where(
+				and(
+					eq(pengajuanHarga.id, params.id),
+					eq(pengajuanHarga.jastiperId, locals.user!.id)
+				)
+			);
+
+		if (!row) return fail(404, { error: 'Pengajuan tidak ditemukan.' });
+
+		await db
+			.update(pengajuanHarga)
+			.set({ status: 'ditolak' })
+			.where(eq(pengajuanHarga.id, params.id));
+
 		throw redirect(303, '/jastiper/pengajuan-harga');
 	}
 };

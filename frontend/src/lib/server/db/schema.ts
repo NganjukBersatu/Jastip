@@ -128,3 +128,13 @@ export const keranjangItem = pgTable('keranjang_item', {
 	jumlah: integer('jumlah').notNull().default(1),
 	createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
 });
+
+export const tawaranHarga = pgTable('tawaran_harga', {
+	id: text('id').primaryKey(),
+	pengajuanHargaId: text('pengajuan_harga_id').notNull().references(() => pengajuanHarga.id),
+	pengirimId: text('pengirim_id').notNull().references(() => users.id),
+	harga: integer('harga').notNull(),
+	jumlah: integer('jumlah').notNull(),
+	status: text('status').notNull().default('menunggu'), // menunggu | diterima | ditolak
+	createdAt: timestamp('created_at').notNull().defaultNow()
+});

@@ -4,19 +4,26 @@
 
 	let { data } = $props();
 
-	// Perbaikan warning state_referenced_locally
-/** @type {{ id: string; isi: string; pengirimId: string; createdAt: string | Date }[]} */
-let daftarPesan = $state([]);
-let isiPesan = $state('');
+	/** @type {{ id: string; isi: string; pengirimId: string; createdAt: string | Date }[]} */
+	let daftarPesan = $state([]);
+	let isiPesan = $state('');
+	/** @type {{ id: string; harga: number; jumlah: number; status: string; createdAt: string | Date }[]} */
+	let daftarTawaran = $state([]);
+	let hargaBaru = $state('');
+	let jumlahBaru = $state(1);
+	let mengirimTawaran = $state(false);
 	/** @type {HTMLDivElement | null} */
 	let elemChat = $state(null);
 	/** @type {ReturnType<typeof setInterval>} */
 	let interval;
+	let sedangPolling = false;
 
-	// Inisialisasi sekali saat data tersedia
 	$effect(() => {
 		daftarPesan = data.daftarPesan;
+		daftarTawaran = data.daftarTawaran;
 	});
+
+	let tawaranTerakhir = $derived(daftarTawaran.at(-1));
 
 	/** @param {number} angka */
 	function formatRupiah(angka) {
@@ -44,17 +51,27 @@ let isiPesan = $state('');
 	}
 
 	async function ambilPesanBaru() {
-		const terakhir = daftarPesan.at(-1);
-		const sejak = terakhir
-			? `?sejak=${encodeURIComponent(new Date(terakhir.createdAt).toISOString())}`
-			: '';
-		const res = await fetch(`${data.item.id}/pesan${sejak}`);
-		if (!res.ok) return;
+		if (sedangPolling) return;
+		sedangPolling = true;
 
-		const { pesan } = await res.json();
-		if (pesan.length > 0) {
-			daftarPesan = [...daftarPesan, ...pesan];
-			setTimeout(scrollKeBawah, 0);
+		try {
+			const terakhir = daftarPesan.at(-1);
+			const sejak = terakhir
+				? `?sejak=${encodeURIComponent(new Date(terakhir.createdAt).toISOString())}`
+				: '';
+			const res = await fetch(`${data.item.id}/pesan${sejak}`);
+			if (!res.ok) return;
+
+			const { pesan } = await res.json();
+			const idSudahAda = new Set(daftarPesan.map((p) => p.id));
+			const pesanBaru = pesan.filter((/** @type {{id: string}} */ p) => !idSudahAda.has(p.id));
+
+			if (pesanBaru.length > 0) {
+				daftarPesan = [...daftarPesan, ...pesanBaru];
+				setTimeout(scrollKeBawah, 0);
+			}
+		} finally {
+			sedangPolling = false;
 		}
 	}
 
@@ -75,6 +92,17 @@ let isiPesan = $state('');
 				await ambilPesanBaru();
 			}
 			await update({ reset: false });
+		};
+	}
+
+	/** @type {import('@sveltejs/kit').SubmitFunction} */
+	function handleAjukanTawaran() {
+		mengirimTawaran = true;
+		return async ({ update }) => {
+			mengirimTawaran = false;
+			hargaBaru = '';
+			jumlahBaru = 1;
+			await update();
 		};
 	}
 
@@ -101,7 +129,60 @@ let isiPesan = $state('');
 		</div>
 	</div>
 
-	<div bind:this={elemChat} class="flex-1 overflow-y-auto mt-6 flex flex-col gap-3 pr-1">
+	<div class="mt-4 bg-white rounded-2xl border border-ink/10 p-4 shrink-0">
+		<div class="flex justify-between items-center">
+			<span class="text-[13px] font-bold">Penawaran harga</span>
+			{#if tawaranTerakhir}
+				{@const st = labelStatus(tawaranTerakhir.status)}
+				<span class="text-[11px] font-bold px-2 py-0.5 rounded-full {st.kelas}">{st.teks}</span>
+			{/if}
+		</div>
+
+		{#if tawaranTerakhir}
+			<div class="flex justify-between items-baseline mt-2.5">
+				<span class="text-[13px] text-ink-soft">Tawaranmu · {tawaranTerakhir.jumlah} pcs</span>
+				<span class="font-display font-semibold text-[16px]">{formatRupiah(tawaranTerakhir.harga)}</span>
+			</div>
+			<p class="text-[11px] text-ink-soft/70 mt-0.5">Dikirim {formatJam(tawaranTerakhir.createdAt)}</p>
+		{:else}
+			<p class="text-[13px] text-ink-soft mt-2">Belum ada tawaran. Ajukan harga di bawah.</p>
+		{/if}
+
+		<form
+			method="POST"
+			action="?/ajukanTawaran"
+			use:enhance={handleAjukanTawaran}
+			class="flex gap-2 mt-3"
+		>
+			<input
+				type="number"
+				name="harga"
+				bind:value={hargaBaru}
+				placeholder="Harga tawaran baru"
+				required
+				min="1"
+				class="flex-1 rounded-xl border border-ink/15 px-3 py-2 text-[13.5px] focus:outline-none focus:border-ink/40"
+			/>
+			<input
+				type="number"
+				name="jumlah"
+				bind:value={jumlahBaru}
+				placeholder="Jumlah"
+				required
+				min="1"
+				class="w-[80px] rounded-xl border border-ink/15 px-3 py-2 text-[13.5px] focus:outline-none focus:border-ink/40"
+			/>
+			<button
+				type="submit"
+				disabled={mengirimTawaran}
+				class="rounded-pill bg-primary text-bg font-bold text-[13px] px-4 disabled:opacity-50"
+			>
+				Kirim
+			</button>
+		</form>
+	</div>
+
+	<div bind:this={elemChat} class="flex-1 overflow-y-auto mt-4 flex flex-col gap-3 pr-1">
 		{#each daftarPesan as pesan (pesan.id)}
 			{@const punyaSaya = pesan.pengirimId === data.userId}
 			<div class="flex {punyaSaya ? 'justify-end' : 'justify-start'}">
