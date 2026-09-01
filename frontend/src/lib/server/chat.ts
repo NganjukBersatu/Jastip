@@ -8,8 +8,7 @@ import { eq, and } from 'drizzle-orm';
  * Return: id pengajuan harga yang siap dipakai sebagai "ruang chat".
  */
 export async function cariAtauBuatPengajuan(produkId: string, pelangganId: string): Promise<string> {
-	// penting: cek dulu yang sudah ada, biar klik "Chat jastiper" berkali-kali
-	// nggak bikin banyak ruang obrolan duplikat buat produk yang sama
+	// Cek dulu yang sudah ada, biar tidak bikin duplikat
 	const [sudahAda] = await db
 		.select({ id: pengajuanHarga.id })
 		.from(pengajuanHarga)
@@ -23,15 +22,27 @@ export async function cariAtauBuatPengajuan(produkId: string, pelangganId: strin
 
 	if (sudahAda) return sudahAda.id;
 
-	const [item] = await db.select({ harga: produk.harga }).from(produk).where(eq(produk.id, produkId));
+	// Ambil data produk + jastiperId
+	const [item] = await db
+		.select({
+			harga: produk.harga,
+			nama: produk.nama,
+			jastiperId: produk.jastiperId
+		})
+		.from(produk)
+		.where(eq(produk.id, produkId));
+
 	if (!item) throw new Error('Produk tidak ditemukan.');
 
 	const id = crypto.randomUUID();
+
 	await db.insert(pengajuanHarga).values({
 		id,
 		produkId,
+		namaProduk: item.nama,           // wajib
 		pelangganId,
-		hargaDiajukan: item.harga, // titik awal nego -- nanti diubah lewat chat/form nego, bukan lewat kode ini
+		jastiperId: item.jastiperId,     // wajib
+		hargaDiajukan: item.harga,
 		jumlah: 1,
 		status: 'menunggu'
 	});

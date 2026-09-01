@@ -10,8 +10,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 	const [row] = await db
 		.select({ id: pengajuanHarga.id })
 		.from(pengajuanHarga)
-		.innerJoin(produk, eq(pengajuanHarga.produkId, produk.id))
-		.where(and(eq(pengajuanHarga.id, params.id), eq(produk.jastiperId, locals.user!.id)));
+		.where(and(eq(pengajuanHarga.id, params.id), eq(pengajuanHarga.pelangganId, locals.user!.id)));
 
 	if (!row) throw error(404, 'Pengajuan tidak ditemukan.');
 

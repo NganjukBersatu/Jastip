@@ -1,13 +1,16 @@
-<script>
+<script lang="ts">
   import ProductCard from './ProductCard.svelte';
 
-  /** @typedef {'tetap' | 'nego'} TipeHarga */
+  type Produk = {
+    id: string;
+    nama: string;
+    harga: number;
+    hargaTipe: 'tetap' | 'nego';
+    gambarUrl: string;
+    area: string | null;
+  };
 
-  const produkPilihan = /** @type {{ slug: string, nama: string, lokasi: string, emoji: string, tipeHarga: TipeHarga, harga: number, gradient: string }[]} */ ([
-    { slug: 'lumpia-basah-ny-lin', nama: 'Lumpia Basah Ny. Lin', lokasi: 'Surabaya', emoji: '🥟', tipeHarga: 'tetap', harga: 32000, gradient: 'from-[#FFD08A] to-primary' },
-    { slug: 'skincare-lokal-batch-baru', nama: 'Skincare lokal batch baru', lokasi: 'Malang', emoji: '🧴', tipeHarga: 'nego', harga: 85000, gradient: 'from-[#FFE9C7] to-accent' },
-    { slug: 'tiket-festival-kuliner', nama: 'Tiket festival kuliner', lokasi: 'Kediri', emoji: '🎟️', tipeHarga: 'tetap', harga: 25000, gradient: 'from-[#FFB199] to-primary-dark' }
-  ]);
+  let { produkPilihan = [] }: { produkPilihan: Produk[] } = $props();
 </script>
 
 <section class="bg-bg-alt py-24" id="katalog-preview">
@@ -22,7 +25,7 @@
     </div>
 
     <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      {#each produkPilihan as produk (produk.slug)}
+      {#each produkPilihan as produk (produk.id)}
         <ProductCard {produk} />
       {/each}
     </div>

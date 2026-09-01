@@ -23,25 +23,28 @@
 </script>
 
 {#if !isJastiperPage}
-  <nav class="sticky top-0 z-50 bg-bg border-b border-ink/10">
-    <div class="max-w-[1180px] mx-auto px-5 sm:px-8 h-[68px] sm:h-[76px] flex items-center justify-between">
-      <a href="/" class="font-display font-black text-xl sm:text-2xl text-primary-dark" onclick={tutupMenu}>
-        Nitip<span class="text-ink">.</span>
-      </a>
+  <nav class          ="sticky top-0 z-50 bg-bg border-b border-ink/10">
+<div class="max-w-[1180px] mx-auto px-5 sm:px-8 h-[68px] sm:h-[76px] flex items-center justify-between overflow-hidden">      <div class="flex-1 flex items-center">
+<a href="/" class="flex items-center -ml-9 sm:-ml-10" onclick={tutupMenu}>
+          <img src="/images/logo.png" alt="Nitip" class="h-2 sm:h-28 w-auto" />
+        </a>
+      </div>
 
-      <div class="hidden md:flex gap-9 font-semibold text-sm">
-        <a
-          href="/"
+      <div class="hidden md:flex gap-9 font-semibold text-sm flex-shrink-0">
+        
+<a href="/"
           class="opacity-75 hover:opacity-100 transition {active === 'home' ? 'opacity-100 text-primary-dark' : ''}"
         >
           Home
         </a>
+        
         <a
           href="/publik/katalog"
           class="opacity-75 hover:opacity-100 transition {active === 'katalog' ? 'opacity-100 text-primary-dark' : ''}"
         >
           Katalog
         </a>
+        
         <a
           href="/publik/cara-kerja"
           class="opacity-75 hover:opacity-100 transition {active === 'cara-kerja' ? 'opacity-100 text-primary-dark' : ''}"
@@ -60,9 +63,9 @@
         {/if}
       </div>
 
-      <div class="flex items-center gap-3">
+      <div class="flex-1 flex items-center justify-end gap-3">
         {#if user?.role === 'pelanggan'}
-          <a
+<a
             href="/keranjang"
             aria-label="Keranjang"
             class="w-9 h-9 rounded-full flex items-center justify-center hover:bg-ink/5 transition"
@@ -133,6 +136,7 @@
           >
             Home
           </a>
+          
           <a
             href="/publik/katalog"
             onclick={tutupMenu}
@@ -140,6 +144,7 @@
           >
             Katalog
           </a>
+          
           <a
             href="/publik/cara-kerja"
             onclick={tutupMenu}
@@ -149,7 +154,8 @@
           </a>
 
           {#if user?.role === 'pelanggan'}
-            <a
+            
+          <a
               href="/pelanggan/chat"
               onclick={tutupMenu}
               class="px-5 py-3 font-semibold text-sm {active === 'chat' ? 'text-primary-dark bg-primary/5' : 'opacity-80'}"
@@ -162,7 +168,8 @@
         <!-- Aksi akun, cuma tampil di panel mobile (sm:hidden di navbar sudah disembunyikan di atas) -->
         <div class="sm:hidden px-5 pb-4 pt-1 border-t border-ink/10">
           {#if user}
-            <a
+            
+          <a
               href="/profile"
               onclick={tutupMenu}
               class="flex items-center gap-2.5 font-bold text-sm py-2"
@@ -174,14 +181,14 @@
             </a>
           {:else}
             <div class="flex flex-col gap-2 mt-2">
-              <a
+           <a   
                 href="/publik/masuk"
                 onclick={tutupMenu}
                 class="w-full text-center font-bold text-sm border border-ink/25 rounded-pill py-2.5"
               >
                 Masuk
               </a>
-              <a
+          <a    
                 href="/publik/daftar"
                 onclick={tutupMenu}
                 class="w-full text-center inline-flex items-center justify-center rounded-pill bg-ink text-bg font-bold text-sm py-2.5"
