@@ -28,9 +28,6 @@ const langkah = [
 <main class="bg-bg">
   <!-- Hero -->
 <section class="max-w-[1180px] mx-auto px-8 pt-8 pb-8 text-center">
-        <p class="font-semibold text-sm uppercase tracking-wide text-primary-dark mb-3">
-      Cara kerja
-    </p>
    <h1 class="font-display font-black text-4xl md:text-5xl text-ink leading-tight mb-4">
   Satu pesan, empat langkah,<br />sampai.
 </h1>

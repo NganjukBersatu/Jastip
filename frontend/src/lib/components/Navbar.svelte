@@ -46,7 +46,7 @@
         </a>
         {#if user?.role !== 'jastiper'}
           <a
-            href="/jastiper"
+            href="/publik/jadi-jastiper"
             class="opacity-75 hover:opacity-100 transition {active === 'jastiper' ? 'opacity-100 text-primary-dark' : ''}"
           >
             Jadi jastiper
