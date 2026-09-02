@@ -40,44 +40,69 @@
   let inisial = $derived(data.user?.nama?.charAt(0)?.toUpperCase() ?? '?');
 </script>
 
-<div class="min-h-screen bg-bg flex">
-  <!-- Sidebar -->
-  <aside class="w-64 bg-white border-r border-ink/10 flex flex-col shrink-0">
-    <div class="p-6 border-b border-ink/10">
+<div class="min-h-screen bg-bg flex flex-col lg:flex-row">
+  <!-- SIDEBAR DESKTOP -->
+  <aside
+    class="hidden lg:flex lg:w-64 lg:h-screen lg:sticky lg:top-0 bg-white border-r border-ink/10 flex-col shrink-0"
+  >
+    <div class="px-5 py-6 border-b border-ink/10">
       <a
         href="/"
-        class="flex items-center gap-5 text-[13px] font-bold text-ink-soft hover:text-primary-dark transition mb-3"
+        class="inline-flex items-center gap-2.5 text-[13px] font-bold text-ink-soft hover:text-primary-dark transition"
       >
-        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg
+          class="w-4 h-4"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
           <path d="M15 18l-6-6 6-6" />
         </svg>
+
         Panel Jastiper
       </a>
-
     </div>
 
-    <nav class="flex-1 p-4 flex flex-col gap-1">
+    <nav class="flex-1 p-4 flex flex-col gap-1.5 overflow-y-auto">
       {#each menu as item}
         <a
           href={item.href}
           class="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition
             {$page.url.pathname === item.href
-              ? 'bg-primary text-white'
+              ? 'bg-primary text-white shadow-sm'
               : 'text-ink-soft hover:bg-bg-alt hover:text-ink'}"
         >
-          <svg class="w-[18px] h-[18px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <svg
+            class="w-[18px] h-[18px] shrink-0"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
             {@html item.icon}
           </svg>
-          {item.label}
+
+          <span>{item.label}</span>
         </a>
       {/each}
     </nav>
 
     <div class="p-4 border-t border-ink/10">
-      <a href="/profile" class="flex items-center gap-3 px-3 py-2.5 rounded-2xl hover:bg-bg-alt transition">
-        <span class="w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold shrink-0">
+      <a
+        href="/profile"
+        class="flex items-center gap-3 px-3 py-2.5 rounded-2xl hover:bg-bg-alt transition"
+      >
+        <span
+          class="w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold shrink-0"
+        >
           {inisial}
         </span>
+
         <div class="min-w-0">
           <div class="text-sm font-bold truncate">{data.user.nama}</div>
           <div class="text-[12px] text-ink-soft">Lihat profil</div>
@@ -86,8 +111,69 @@
     </div>
   </aside>
 
-  <!-- Konten halaman -->
-  <div class="flex-1 min-w-0">
+  <!-- MOBILE HEADER -->
+  <header
+    class="lg:hidden sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-ink/10"
+  >
+    <div class="px-4 py-3 flex items-center justify-between gap-3">
+      <a href="/" class="flex items-center gap-2.5 min-w-0">
+        <span
+          class="w-9 h-9 rounded-xl bg-primary text-white flex items-center justify-center text-sm font-extrabold shrink-0"
+        >
+          {inisial}
+        </span>
+
+        <div class="min-w-0">
+          <div class="text-sm font-extrabold text-ink truncate">
+            Panel Jastiper
+          </div>
+
+          <div class="text-[11px] text-ink-soft truncate">
+            {data.user.nama}
+          </div>
+        </div>
+      </a>
+
+      <a
+        href="/profile"
+        class="shrink-0 text-[12px] font-bold text-primary-dark"
+      >
+        Profil
+      </a>
+    </div>
+
+    <!-- Mobile menu -->
+    <nav class="px-3 pb-3 overflow-x-auto">
+      <div class="flex gap-1.5 min-w-max">
+        {#each menu as item}
+          <a
+            href={item.href}
+            class="flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-[12px] font-bold whitespace-nowrap transition
+              {$page.url.pathname === item.href
+                ? 'bg-primary text-white'
+                : 'bg-bg text-ink-soft hover:bg-bg-alt hover:text-ink'}"
+          >
+            <svg
+              class="w-4 h-4 shrink-0"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.75"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              {@html item.icon}
+            </svg>
+
+            {item.label}
+          </a>
+        {/each}
+      </div>
+    </nav>
+  </header>
+
+  <!-- CONTENT -->
+  <main class="flex-1 min-w-0 w-full">
     {@render children()}
-  </div>
+  </main>
 </div>
