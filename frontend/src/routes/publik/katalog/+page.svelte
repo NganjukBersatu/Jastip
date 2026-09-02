@@ -267,11 +267,11 @@
     <div class="flex justify-between items-start pb-12 border-b border-ink/10 flex-wrap gap-8">
       <div>
         <div class="font-display font-black text-2xl text-primary-dark">
-          Nitip<span class="text-ink">.</span>
+<img src="/images/logo.png" alt="Nitip" class="h-30 w-auto mt-4 ml-[-40px]" />
         </div>
-        <p class="mt-3.5 max-w-[260px] text-sm text-ink-soft">
-          Platform jasa titip untuk area Jawa Timur.
-        </p>
+<p class="mt-[30] max-w-[260px] text-sm text-ink-soft">
+  Platform jasa titip untuk area Jawa Timur.
+</p>
       </div>
 
       <div class="flex gap-16 flex-wrap">

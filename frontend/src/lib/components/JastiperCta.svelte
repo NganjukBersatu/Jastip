@@ -26,14 +26,20 @@
         </div>
 
         <a
-          href="/publik/daftar"
+          href="/publik/jadi-jastiper"
           class="inline-flex items-center justify-center rounded-pill bg-accent text-primary-deep font-bold text-[14px] sm:text-[15px] px-5.5 sm:px-6.5 py-3 sm:py-3.5 mt-8 transition hover:-translate-y-0.5"
         >
           Daftar jadi jastiper
         </a>
       </div>
 
-      <div class="bg-gradient-to-br from-primary to-primary-dark rounded-[26px] h-70 hidden md:block"></div>
+      <div class="rounded-[26px] h-70 hidden md:flex items-center justify-center overflow-hidden bg-gradient-to-br from-primary to-primary-dark">
+        <img
+          src="/hero-images/hero-jastiper.jpg"
+          alt="Ilustrasi jastiper mengelola pesanan lewat dashboard Nitip"
+          class="w-full h-full object-cover"
+        />
+      </div>
     </div>
   </div>
 </section>
