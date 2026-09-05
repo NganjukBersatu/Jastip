@@ -1,6 +1,6 @@
 import { redirect, fail } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
-import { pesanan, produk, users } from '$lib/server/db/schema';
+import { pesanan, produk, jasa, users } from '$lib/server/db/schema';
 import { eq, and, desc } from 'drizzle-orm';
 import type { Actions, PageServerLoad } from './$types';
 
@@ -8,7 +8,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	if (!locals.user) throw redirect(303, '/publik/masuk');
 	if (locals.user.role !== 'pelanggan') throw redirect(303, '/jastiper/dashboard');
 
-	const daftarPesanan = await db
+	const mentah = await db
 		.select({
 			id: pesanan.id,
 			jumlah: pesanan.jumlah,
@@ -17,16 +17,23 @@ export const load: PageServerLoad = async ({ locals }) => {
 			totalHarga: pesanan.totalHarga,
 			status: pesanan.status,
 			alamatKirim: pesanan.alamatKirim,
+			titikJemput: pesanan.titikJemput,
+			jarakKm: pesanan.jarakKm,
 			metodePembayaran: pesanan.metodePembayaran,
+			pengajuanHargaId: pesanan.pengajuanHargaId,
 			createdAt: pesanan.createdAt,
 			produkNama: produk.nama,
+			jasaNama: jasa.nama,
 			jastiperNama: users.nama
 		})
 		.from(pesanan)
-		.innerJoin(produk, eq(pesanan.produkId, produk.id))
 		.innerJoin(users, eq(pesanan.jastiperId, users.id))
+		.leftJoin(produk, eq(pesanan.produkId, produk.id))
+		.leftJoin(jasa, eq(pesanan.jasaId, jasa.id))
 		.where(eq(pesanan.pelangganId, locals.user.id))
 		.orderBy(desc(pesanan.createdAt));
+
+	const daftarPesanan = mentah.map((p) => ({ ...p, namaItem: p.produkNama ?? p.jasaNama ?? 'Item' }));
 
 	return { daftarPesanan };
 };

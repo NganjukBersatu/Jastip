@@ -110,13 +110,13 @@
 </script>
 
 <svelte:head>
-	<title>Chat — {data.item.produkNama} — Nitip</title>
+	<title>Chat — {data.item.namaItem} — Nitip</title>
 </svelte:head>
 
 <div class="p-8 max-w-[720px] flex flex-col h-[calc(100vh-4rem)]">
 	<div class="flex justify-between items-start gap-4">
 		<div>
-			<h1 class="text-[24px]">{data.item.produkNama}</h1>
+			<h1 class="text-[24px]">{data.item.namaItem}</h1>
 			<p class="text-ink-soft text-[14px]">
 				Nego dengan <span class="font-semibold text-ink">{data.item.jastiperNama}</span>
 			</p>

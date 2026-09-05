@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, boolean, integer, pgEnum } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, boolean, integer, doublePrecision, pgEnum } from 'drizzle-orm/pg-core';
 
 export const roleEnum = pgEnum('role', ['pelanggan', 'jastiper']);
 export const hargaTipeEnum = pgEnum('harga_tipe', ['tetap', 'nego']);
@@ -49,7 +49,24 @@ export const produk = pgTable('produk', {
 	kategori: text('kategori'),
 	hargaTipe: hargaTipeEnum('harga_tipe').notNull().default('tetap'),
 	harga: integer('harga').notNull(),
-	gambarUrl: text('gambar_url').notNull(), // wajib sekarang — url eksternal atau path hasil upload
+	gambarUrl: text('gambar_url').notNull(), // wajib — url eksternal atau path hasil upload
+	aktif: boolean('aktif').notNull().default(true),
+	createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
+});
+
+// BARU: tabel jasa, struktur sengaja mirip produk supaya query/join-nya konsisten
+export const jasa = pgTable('jasa', {
+	id: text('id').primaryKey(),
+	jastiperId: text('jastiper_id')
+		.notNull()
+		.references(() => users.id, { onDelete: 'cascade' }),
+	nama: text('nama').notNull(),
+	deskripsi: text('deskripsi'),
+	kategori: text('kategori'), // Jemputan, Antar Barang, Titip Antre, dll
+	hargaTipe: hargaTipeEnum('harga_tipe').notNull().default('tetap'),
+	harga: integer('harga').notNull(),
+	satuan: text('satuan'), // opsional: "per trip", "per jam", "per km" — beda dari produk
+	gambarUrl: text('gambar_url').notNull(),
 	aktif: boolean('aktif').notNull().default(true),
 	createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
 });
@@ -63,10 +80,13 @@ export const ongkirWilayah = pgTable('ongkir_wilayah', {
 	biaya: integer('biaya').notNull()
 });
 
+// DIUBAH: produkId & jasaId sama-sama nullable, tapi hanya salah satu yang boleh terisi
+// per baris (produk ATAU jasa, tidak dua-duanya, tidak kosong dua-duanya).
+// namaProduk dihapus — nama sekarang selalu bisa di-join dari produk/jasa asli.
 export const pengajuanHarga = pgTable('pengajuan_harga', {
 	id: text('id').primaryKey(),
-	produkId: text('produk_id').references(() => produk.id, { onDelete: 'cascade' }), // nullable, produk masih dummy
-	namaProduk: text('nama_produk').notNull(), // disalin langsung, karena produk masih dummy
+	produkId: text('produk_id').references(() => produk.id, { onDelete: 'cascade' }),
+	jasaId: text('jasa_id').references(() => jasa.id, { onDelete: 'cascade' }),
 	pelangganId: text('pelanggan_id')
 		.notNull()
 		.references(() => users.id, { onDelete: 'cascade' }),
@@ -94,29 +114,27 @@ export const pesanChat = pgTable('pesan_chat', {
 	createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
 });
 
+// DIUBAH: tambah jasaId, sama-sama nullable dengan produkId (satu pesanan = satu produk ATAU satu jasa)
 export const pesanan = pgTable('pesanan', {
 	id: text('id').primaryKey(),
-	produkId: text('produk_id')
-		.references(() => produk.id),
-	pelangganId: text('pelanggan_id')
-		.notNull()
-		.references(() => users.id),
-	jastiperId: text('jastiper_id')
-		.notNull()
-		.references(() => users.id),
+	produkId: text('produk_id').references(() => produk.id),
+	jasaId: text('jasa_id').references(() => jasa.id),
+	pelangganId: text('pelanggan_id').notNull().references(() => users.id),
+	jastiperId: text('jastiper_id').notNull().references(() => users.id),
 	pengajuanHargaId: text('pengajuan_harga_id').references(() => pengajuanHarga.id),
 	jumlah: integer('jumlah').notNull().default(1),
 	hargaSatuan: integer('harga_satuan').notNull(),
 	ongkir: integer('ongkir').notNull().default(0),
 	totalHarga: integer('total_harga').notNull(),
 	alamatKirim: text('alamat_kirim'),
+	titikJemput: text('titik_jemput'), // BARU — khusus pesanan jasa
+	jarakKm: doublePrecision('jarak_km'), // BARU — khusus pesanan jasa
 	metodePembayaran: text('metode_pembayaran'),
 	status: statusPesananEnum('status').notNull().default('menunggu_konfirmasi'),
 	createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 	updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow()
 });
 
-// Diubah: sekarang reference ke produk asli, bukan copy manual
 export const keranjangItem = pgTable('keranjang_item', {
 	id: text('id').primaryKey(),
 	pelangganId: text('pelanggan_id')

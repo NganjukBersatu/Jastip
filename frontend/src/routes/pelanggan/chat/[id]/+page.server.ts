@@ -1,6 +1,6 @@
 import { error, fail } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
-import { pengajuanHarga, produk, users, pesanChat, tawaranHarga } from '$lib/server/db/schema';
+import { pengajuanHarga, produk, jasa, users, pesanChat, tawaranHarga } from '$lib/server/db/schema';
 import { eq, and, asc } from 'drizzle-orm';
 import type { Actions, PageServerLoad } from './$types';
 
@@ -13,11 +13,14 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			catatan: pengajuanHarga.catatan,
 			status: pengajuanHarga.status,
 			createdAt: pengajuanHarga.createdAt,
-			produkNama: pengajuanHarga.namaProduk,
+			produkNama: produk.nama,
+			jasaNama: jasa.nama,
 			jastiperNama: users.nama
 		})
 		.from(pengajuanHarga)
 		.innerJoin(users, eq(pengajuanHarga.jastiperId, users.id))
+		.leftJoin(produk, eq(pengajuanHarga.produkId, produk.id))
+		.leftJoin(jasa, eq(pengajuanHarga.jasaId, jasa.id))
 		.where(
 			and(
 				eq(pengajuanHarga.id, params.id),
@@ -26,6 +29,8 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		);
 
 	if (!item) throw error(404, 'Percakapan tidak ditemukan.');
+
+	const namaItem = item.produkNama ?? item.jasaNama ?? 'Item';
 
 	const daftarPesan = await db
 		.select()
@@ -46,12 +51,13 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.orderBy(asc(tawaranHarga.createdAt));
 
 	return {
-		item,
+		item: { ...item, namaItem },
 		daftarPesan,
 		daftarTawaran,
 		userId: locals.user!.id
 	};
 };
+
 
 export const actions: Actions = {
 	kirimPesan: async ({ request, params, locals }) => {
@@ -86,12 +92,8 @@ export const actions: Actions = {
 		const harga = Number(data.get('harga'));
 		const jumlah = Number(data.get('jumlah'));
 
-		if (!harga || harga < 1) {
-			return fail(400, { error: 'Harga tidak valid.' });
-		}
-		if (!jumlah || jumlah < 1) {
-			return fail(400, { error: 'Jumlah tidak valid.' });
-		}
+		if (!harga || harga < 1) return fail(400, { error: 'Harga tidak valid.' });
+		if (!jumlah || jumlah < 1) return fail(400, { error: 'Jumlah tidak valid.' });
 
 		const [row] = await db
 			.select({ id: pengajuanHarga.id })
@@ -103,11 +105,8 @@ export const actions: Actions = {
 				)
 			);
 
-		if (!row) {
-			return fail(404, { error: 'Percakapan tidak ditemukan.' });
-		}
+		if (!row) return fail(404, { error: 'Percakapan tidak ditemukan.' });
 
-		// 1. Catat ke history tawaran
 		await db.insert(tawaranHarga).values({
 			id: crypto.randomUUID(),
 			pengajuanHargaId: params.id,
@@ -117,13 +116,12 @@ export const actions: Actions = {
 			status: 'menunggu'
 		});
 
-		// 2. Update harga utama di pengajuan (ini yang dilihat jastiper)
 		await db
 			.update(pengajuanHarga)
 			.set({
 				hargaDiajukan: harga,
 				jumlah: jumlah,
-				status: 'menunggu' // pastikan status tetap menunggu
+				status: 'menunggu'
 			})
 			.where(eq(pengajuanHarga.id, params.id));
 

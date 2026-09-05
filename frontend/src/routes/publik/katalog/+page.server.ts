@@ -1,6 +1,6 @@
 import { fail, redirect } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
-import { produk, users, jastiperProfiles, pengajuanHarga, keranjangItem } from '$lib/server/db/schema';
+import { produk, jasa, users, jastiperProfiles, pengajuanHarga, keranjangItem } from '$lib/server/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { randomUUID } from 'node:crypto';
 import type { Actions, PageServerLoad } from './$types';
@@ -23,7 +23,25 @@ export const load: PageServerLoad = async () => {
 		.leftJoin(jastiperProfiles, eq(produk.jastiperId, jastiperProfiles.userId))
 		.where(eq(produk.aktif, true));
 
-	return { daftarProduk };
+	const daftarJasa = await db
+		.select({
+			id: jasa.id,
+			nama: jasa.nama,
+			deskripsi: jasa.deskripsi,
+			kategori: jasa.kategori,
+			hargaTipe: jasa.hargaTipe,
+			harga: jasa.harga,
+			satuan: jasa.satuan,
+			gambarUrl: jasa.gambarUrl,
+			jastiperNama: users.nama,
+			area: jastiperProfiles.area
+		})
+		.from(jasa)
+		.innerJoin(users, eq(jasa.jastiperId, users.id))
+		.leftJoin(jastiperProfiles, eq(jasa.jastiperId, jastiperProfiles.userId))
+		.where(eq(jasa.aktif, true));
+
+	return { daftarProduk, daftarJasa };
 };
 
 export const actions: Actions = {
@@ -35,11 +53,22 @@ export const actions: Actions = {
 
 		const data = await request.formData();
 		const produkId = data.get('produkId')?.toString();
-		if (!produkId) return fail(400, { error: 'Produk tidak ditemukan.' });
+		const jasaId = data.get('jasaId')?.toString();
+		if (!produkId && !jasaId) return fail(400, { error: 'Item tidak ditemukan.' });
 
-		const [produkAsli] = await db.select().from(produk).where(eq(produk.id, produkId));
-		if (!produkAsli || !produkAsli.aktif) {
-			return fail(400, { error: 'Produk tidak tersedia.' });
+		let jastiperId: string;
+		let harga: number;
+
+		if (produkId) {
+			const [produkAsli] = await db.select().from(produk).where(eq(produk.id, produkId));
+			if (!produkAsli || !produkAsli.aktif) return fail(400, { error: 'Produk tidak tersedia.' });
+			jastiperId = produkAsli.jastiperId;
+			harga = produkAsli.harga;
+		} else {
+			const [jasaAsli] = await db.select().from(jasa).where(eq(jasa.id, jasaId!));
+			if (!jasaAsli || !jasaAsli.aktif) return fail(400, { error: 'Jasa tidak tersedia.' });
+			jastiperId = jasaAsli.jastiperId;
+			harga = jasaAsli.harga;
 		}
 
 		const [pengajuanLama] = await db
@@ -47,7 +76,7 @@ export const actions: Actions = {
 			.from(pengajuanHarga)
 			.where(
 				and(
-					eq(pengajuanHarga.produkId, produkId),
+					produkId ? eq(pengajuanHarga.produkId, produkId) : eq(pengajuanHarga.jasaId, jasaId!),
 					eq(pengajuanHarga.pelangganId, locals.user.id),
 					eq(pengajuanHarga.status, 'menunggu')
 				)
@@ -59,11 +88,11 @@ export const actions: Actions = {
 			pengajuanId = randomUUID();
 			await db.insert(pengajuanHarga).values({
 				id: pengajuanId,
-				produkId,
-				namaProduk: produkAsli.nama,
+				produkId: produkId ?? null,
+				jasaId: jasaId ?? null,
 				pelangganId: locals.user.id,
-				jastiperId: produkAsli.jastiperId,
-				hargaDiajukan: produkAsli.harga,
+				jastiperId,
+				hargaDiajukan: harga,
 				jumlah: 1,
 				status: 'menunggu'
 			});
@@ -93,17 +122,9 @@ export const actions: Actions = {
 			.where(and(eq(keranjangItem.pelangganId, locals.user.id), eq(keranjangItem.produkId, produkId)));
 
 		if (itemLama) {
-			await db
-				.update(keranjangItem)
-				.set({ jumlah: itemLama.jumlah + 1 })
-				.where(eq(keranjangItem.id, itemLama.id));
+			await db.update(keranjangItem).set({ jumlah: itemLama.jumlah + 1 }).where(eq(keranjangItem.id, itemLama.id));
 		} else {
-			await db.insert(keranjangItem).values({
-				id: randomUUID(),
-				pelangganId: locals.user.id,
-				produkId,
-				jumlah: 1
-			});
+			await db.insert(keranjangItem).values({ id: randomUUID(), pelangganId: locals.user.id, produkId, jumlah: 1 });
 		}
 
 		throw redirect(303, '/keranjang');

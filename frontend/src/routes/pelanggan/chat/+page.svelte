@@ -48,7 +48,7 @@
 				>
 					<div class="min-w-0">
 						<div class="flex items-center gap-2">
-							<span class="font-bold text-sm">{p.produkNama}</span>
+							<span class="font-bold text-sm">{p.namaItem}</span>
 							<span class="text-[11px] font-bold px-2 py-0.5 rounded-full {st.kelas} shrink-0">{st.teks}</span>
 						</div>
 						<div class="text-[13px] text-ink-soft mt-0.5">dengan {p.jastiperNama}</div>
