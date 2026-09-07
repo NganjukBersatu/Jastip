@@ -1,7 +1,7 @@
 <script lang="ts">
-  let showPassword = false;
-  let email = '';
-  let password = '';
+  let showPassword = $state(false);
+  let email = $state('');
+  let password = $state('');
 </script>
 
 <svelte:head>
@@ -114,7 +114,7 @@
         </p>
       </div>
 
-      <form method="POST" class="login-form">
+<form method="POST" action="?/login" class="login-form">
 
         <div class="form-group">
           <label for="email">Email</label>

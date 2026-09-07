@@ -1,6 +1,6 @@
 import { error, fail, redirect } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
-import { pengajuanHarga, users, pesanChat, tawaranHarga, pesanan } from '$lib/server/db/schema';
+import { pengajuanHarga, users, pesanChat, tawaranHarga, pesanan, produk, ongkirWilayah } from '$lib/server/db/schema';
 import { eq, and, asc } from 'drizzle-orm';
 import { randomUUID } from 'node:crypto';
 import type { Actions, PageServerLoad } from './$types';
@@ -14,13 +14,18 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			catatan: pengajuanHarga.catatan,
 			status: pengajuanHarga.status,
 			createdAt: pengajuanHarga.createdAt,
-			produkNama: pengajuanHarga.namaProduk,
+			produkNama: produk.nama,
 			produkId: pengajuanHarga.produkId,
 			pelangganId: pengajuanHarga.pelangganId,
-			pelangganNama: users.nama
+			pelangganNama: users.nama,
+			wilayahId: pengajuanHarga.wilayahId,
+			ongkirBiaya: ongkirWilayah.biaya,
+			ongkirNama: ongkirWilayah.wilayah
 		})
 		.from(pengajuanHarga)
 		.innerJoin(users, eq(pengajuanHarga.pelangganId, users.id))
+		.innerJoin(produk, eq(pengajuanHarga.produkId, produk.id))
+		.leftJoin(ongkirWilayah, eq(pengajuanHarga.wilayahId, ongkirWilayah.id))
 		.where(
 			and(
 				eq(pengajuanHarga.id, params.id),
@@ -94,7 +99,8 @@ export const actions: Actions = {
 				produkId: pengajuanHarga.produkId,
 				pelangganId: pengajuanHarga.pelangganId,
 				hargaDiajukan: pengajuanHarga.hargaDiajukan,
-				jumlah: pengajuanHarga.jumlah
+				jumlah: pengajuanHarga.jumlah,
+				wilayahId: pengajuanHarga.wilayahId
 			})
 			.from(pengajuanHarga)
 			.where(
@@ -106,13 +112,25 @@ export const actions: Actions = {
 
 		if (!row) return fail(404, { error: 'Pengajuan tidak ditemukan.' });
 
-		// Update status pengajuan
+		// wajib ada wilayah dulu, supaya ongkir tidak diam-diam jadi 0
+		if (!row.wilayahId) {
+			return fail(400, {
+				error: 'Pelanggan belum pilih wilayah pengiriman. Minta dia pilih dulu di kolom "Ongkos kirim" sebelum kamu terima.'
+			});
+		}
+
+		const [wilayah] = await db
+			.select({ biaya: ongkirWilayah.biaya })
+			.from(ongkirWilayah)
+			.where(eq(ongkirWilayah.id, row.wilayahId));
+
+		const ongkirBiaya = wilayah?.biaya ?? 0;
+
 		await db
 			.update(pengajuanHarga)
 			.set({ status: 'diterima' })
 			.where(eq(pengajuanHarga.id, params.id));
 
-		// Buat pesanan
 		await db.insert(pesanan).values({
 			id: randomUUID(),
 			produkId: row.produkId,
@@ -121,8 +139,8 @@ export const actions: Actions = {
 			pengajuanHargaId: row.id,
 			jumlah: row.jumlah,
 			hargaSatuan: row.hargaDiajukan,
-			ongkir: 0,
-			totalHarga: row.hargaDiajukan * row.jumlah,
+			ongkir: ongkirBiaya,
+			totalHarga: row.hargaDiajukan * row.jumlah + ongkirBiaya,
 			status: 'menunggu_konfirmasi'
 		});
 

@@ -26,7 +26,6 @@ export async function cariAtauBuatPengajuan(produkId: string, pelangganId: strin
 	const [item] = await db
 		.select({
 			harga: produk.harga,
-			nama: produk.nama,
 			jastiperId: produk.jastiperId
 		})
 		.from(produk)
@@ -39,9 +38,9 @@ export async function cariAtauBuatPengajuan(produkId: string, pelangganId: strin
 	await db.insert(pengajuanHarga).values({
 		id,
 		produkId,
-		namaProduk: item.nama,           // wajib
+		// namaProduk dihapus — namanya sekarang selalu di-join dari tabel produk
 		pelangganId,
-		jastiperId: item.jastiperId,     // wajib
+		jastiperId: item.jastiperId,
 		hargaDiajukan: item.harga,
 		jumlah: 1,
 		status: 'menunggu'

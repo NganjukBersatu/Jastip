@@ -12,6 +12,8 @@
 	let hargaBaru = $state('');
 	let jumlahBaru = $state(1);
 	let mengirimTawaran = $state(false);
+	let wilayahDipilih = $state(data.item.wilayahId ?? '');
+	let mengirimWilayah = $state(false);
 	/** @type {HTMLDivElement | null} */
 	let elemChat = $state(null);
 	/** @type {ReturnType<typeof setInterval>} */
@@ -24,6 +26,14 @@
 	});
 
 	let tawaranTerakhir = $derived(daftarTawaran.at(-1));
+
+	// total perkiraan: harga barang/jasa yang lagi disepakati + ongkir wilayah terpilih
+	let ongkirTerpilih = $derived(
+		data.daftarWilayah.find((/** @type {{id: string}} */ w) => w.id === wilayahDipilih)
+	);
+	let totalPerkiraan = $derived(
+		data.item.hargaDiajukan * data.item.jumlah + (ongkirTerpilih?.biaya ?? 0)
+	);
 
 	/** @param {number} angka */
 	function formatRupiah(angka) {
@@ -106,6 +116,15 @@
 		};
 	}
 
+	/** @type {import('@sveltejs/kit').SubmitFunction} */
+	function handlePilihWilayah() {
+		mengirimWilayah = true;
+		return async ({ update }) => {
+			mengirimWilayah = false;
+			await update();
+		};
+	}
+
 	let statusInfo = $derived(labelStatus(data.item.status));
 </script>
 
@@ -180,6 +199,54 @@
 				Kirim
 			</button>
 		</form>
+	</div>
+
+	<!-- BARU: kartu pilih wilayah / ongkos kirim -->
+	<div class="mt-3 bg-white rounded-2xl border border-ink/10 p-4 shrink-0">
+		<span class="text-[13px] font-bold">Ongkos kirim</span>
+
+		{#if data.daftarWilayah.length === 0}
+			<p class="text-[13px] text-ink-soft mt-2">
+				Jastiper ini belum atur wilayah pengiriman. Tanyakan lewat chat kalau perlu kirim ke lokasimu.
+			</p>
+		{:else}
+			<form
+				method="POST"
+				action="?/pilihWilayah"
+				use:enhance={handlePilihWilayah}
+				class="flex gap-2 mt-2.5"
+			>
+				<select
+					name="wilayahId"
+					bind:value={wilayahDipilih}
+					required
+					class="flex-1 rounded-xl border border-ink/15 px-3 py-2 text-[13.5px] focus:outline-none focus:border-ink/40 bg-white"
+				>
+					<option value="" disabled>Pilih wilayah tujuan...</option>
+					{#each data.daftarWilayah as w (w.id)}
+						<option value={w.id}>{w.wilayah} — {formatRupiah(w.biaya)}</option>
+					{/each}
+				</select>
+				<button
+					type="submit"
+					disabled={mengirimWilayah || !wilayahDipilih}
+					class="rounded-pill bg-ink text-bg font-bold text-[13px] px-4 disabled:opacity-50"
+				>
+					Simpan
+				</button>
+			</form>
+
+			{#if data.item.wilayahId}
+				<div class="flex justify-between items-baseline mt-3 pt-3 border-t border-ink/10">
+					<span class="text-[13px] text-ink-soft">Total perkiraan (barang + ongkir)</span>
+					<span class="font-display font-semibold text-[16px]">{formatRupiah(totalPerkiraan)}</span>
+				</div>
+			{:else}
+				<p class="text-[12px] text-ink-soft mt-2">
+					Pilih wilayah dulu supaya jastiper tahu total ongkirnya sebelum menerima tawaranmu.
+				</p>
+			{/if}
+		{/if}
 	</div>
 
 	<div bind:this={elemChat} class="flex-1 overflow-y-auto mt-4 flex flex-col gap-3 pr-1">

@@ -9,6 +9,12 @@
   let mengirim = $state(false);
 
   const kategoriList = ['Jajanan & oleh-oleh', 'Skincare', 'Tiket event', 'Fashion', 'Barang langka', 'Lainnya'];
+
+  $effect(() => {
+    hargaTipe = data.produk.hargaTipe;
+    kategori = data.produk.kategori ?? 'Lainnya';
+    aktif = data.produk.aktif;
+  });
 </script>
 
 <svelte:head>

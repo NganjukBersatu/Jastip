@@ -87,6 +87,7 @@ export const pengajuanHarga = pgTable('pengajuan_harga', {
 	id: text('id').primaryKey(),
 	produkId: text('produk_id').references(() => produk.id, { onDelete: 'cascade' }),
 	jasaId: text('jasa_id').references(() => jasa.id, { onDelete: 'cascade' }),
+	wilayahId: text('wilayah_id').references(() => ongkirWilayah.id),
 	pelangganId: text('pelanggan_id')
 		.notNull()
 		.references(() => users.id, { onDelete: 'cascade' }),
