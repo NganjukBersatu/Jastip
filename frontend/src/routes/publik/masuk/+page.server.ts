@@ -1,49 +1,88 @@
 import { fail, redirect } from '@sveltejs/kit';
-import { db } from '$lib/server/db';
-import { users } from '$lib/server/db/schema';
-import { eq } from 'drizzle-orm';
-import bcrypt from 'bcryptjs';
-import { buatTokenSesi, buatSesi } from '$lib/server/auth';
-import type { Actions, PageServerLoad } from './$types';
-
-export const load: PageServerLoad = async ({ locals }) => {
-	if (locals.user) {
-		throw redirect(303, locals.user.role === 'jastiper' ? '/jastiper/dashboard' : '/publik/katalog');
-	}
-};
+import type { Actions } from './$types';
 
 export const actions: Actions = {
-	default: async ({ request, cookies }) => {
-		const data = await request.formData();
-		const email = data.get('email')?.toString().trim();
-		const password = data.get('password')?.toString();
+  login: async ({ request, cookies }) => {
+    const data = await request.formData();
 
-		if (!email || !password) {
-			return fail(400, { error: 'Email dan kata sandi wajib diisi.' });
-		}
+    const email = data.get('email')?.toString().trim();
+    const password = data.get('password')?.toString();
 
-		const [user] = await db.select().from(users).where(eq(users.email, email));
+    // Validasi input
+    if (!email || !password) {
+      return fail(400, {
+        error: 'Email dan kata sandi wajib diisi.'
+      });
+    }
 
-		if (!user) {
-			return fail(400, { error: 'Email atau kata sandi salah.' });
-		}
+    // Validasi format email sederhana
+    if (!email.includes('@')) {
+      return fail(400, {
+        error: 'Format email tidak valid.'
+      });
+    }
 
-		const cocok = await bcrypt.compare(password, user.passwordHash);
-		if (!cocok) {
-			return fail(400, { error: 'Email atau kata sandi salah.' });
-		}
+    /*
+      ==================================================
+      TEMPAT LOGIN DATABASE
+      ==================================================
 
-		const token = buatTokenSesi();
-		const session = await buatSesi(token, user.id);
+      Nantinya bagian ini diganti dengan pengecekan
+      user ke database PostgreSQL/MySQL kamu.
 
-		cookies.set('session', token, {
-			path: '/',
-			expires: session.expiresAt,
-			httpOnly: true,
-			sameSite: 'lax',
-			secure: process.env.NODE_ENV === 'production'
-		});
+      Contoh konsep:
 
-		throw redirect(303, user.role === 'jastiper' ? '/jastiper/dashboard' : '/publik/katalog');
-	}
+      const user = await db.user.findUnique({
+        where: { email }
+      });
+
+      if (!user) {
+        return fail(400, {
+          error: 'Email atau kata sandi salah.'
+        });
+      }
+
+      const passwordValid = await bcrypt.compare(
+        password,
+        user.password
+      );
+
+      if (!passwordValid) {
+        return fail(400, {
+          error: 'Email atau kata sandi salah.'
+        });
+      }
+    */
+
+
+    // Contoh sementara
+    console.log('LOGIN:', {
+      email,
+      password
+    });
+
+
+    /*
+      ==================================================
+      SESSION
+      ==================================================
+
+      Setelah database sudah terhubung,
+      buat session/token di sini.
+
+      Contoh sederhana:
+
+      cookies.set('session', 'SESSION_ID', {
+        path: '/',
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: true,
+        maxAge: 60 * 60 * 24 * 7
+      });
+    */
+
+
+    // Untuk sementara diarahkan ke dashboard
+    throw redirect(303, '/dashboard');
+  }
 };

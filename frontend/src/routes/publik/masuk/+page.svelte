@@ -1,145 +1,978 @@
-<script>
-  import { enhance } from '$app/forms';
-
-  let { form } = $props(); // berisi { error } kalau login gagal, dikirim dari +page.server.ts
-
-  let email = $state('');
-  let password = $state('');
-  let showPassword = $state(false);
-  let mengirim = $state(false);
+<script lang="ts">
+  let showPassword = false;
+  let email = '';
+  let password = '';
 </script>
 
 <svelte:head>
   <title>Masuk — Nitip</title>
+  <meta
+    name="description"
+    content="Masuk ke akun Nitip untuk melanjutkan perjalanan jastipmu."
+  />
 </svelte:head>
 
+<div class="login-page">
 
-<div class="grid md:grid-cols-2 min-h-[calc(100vh-76px)]">
-  <!-- Panel kiri: ilustrasi, disembunyikan di mobile -->
-  <div class="hidden md:flex relative flex-col justify-between bg-gradient-to-br from-primary to-primary-dark text-white p-14 overflow-hidden">
-    <div class="relative z-10">
-      <div class="font-display font-black text-2xl">
-        Nitip<span class="text-accent">.</span>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="logo-text">
+        <span>N</span>
+        <strong>Nitip.</strong>
       </div>
 
-      <h1 class="mt-16 text-[38px] leading-[1.1] max-w-[380px]">
-        Chat, nego, pantau pesanan — semua di satu tempat.
-      </h1>
-      <p class="mt-4 text-white/80 max-w-[340px] text-[15px]">
-        Masuk buat lanjutin titipan kamu, atau cek pesanan yang lagi jalan.
+      <h1>Jastip, Jadi Lebih Praktis</h1>
+
+      <p>
+        Nitip siap membantu kamu mendapatkan barang impian dari mana
+        saja, dengan mudah, aman, dan terpercaya.
       </p>
     </div>
 
-    <div class="relative z-10 bg-white/10 border border-white/20 rounded-[22px] p-5 max-w-[320px] backdrop-blur-sm">
-      <span class="inline-block bg-white/20 text-white text-xs font-bold px-3 py-1.5 rounded-pill mb-3">
-        Bisa nego
-      </span>
-      <div class="font-bold text-sm">Rujak Cingur Genteng</div>
-      <div class="text-[13px] text-white/70 mt-1">Surabaya · mulai Rp18rb</div>
-    </div>
+    <div class="illustration">
 
-    <!-- blob dekoratif -->
-    <div class="absolute w-72 h-72 -bottom-16 -right-16 bg-accent/25 rounded-[44%_56%_62%_38%/48%_40%_60%_52%]"></div>
-  </div>
-
-  <!-- Panel kanan: form login -->
-  <div class="flex items-center justify-center bg-bg px-8 py-16">
-    <div class="w-full max-w-[380px]">
-      <div class="md:hidden font-display font-black text-2xl text-primary-dark mb-8">
-        Nitip<span class="text-ink">.</span>
+      <div class="plant">
+        <div class="leaf leaf-1"></div>
+        <div class="leaf leaf-2"></div>
+        <div class="leaf leaf-3"></div>
+        <div class="pot"></div>
       </div>
 
-      <h2 class="text-[30px]">Masuk ke akun kamu</h2>
-      <p class="mt-2 text-ink-soft text-[15px]">
-        Belum punya akun?
-        <a href="/publik/daftar" class="font-bold text-primary-dark hover:underline">Daftar dulu</a>
-      </p>
+      <div class="plant-text">
+        <b>nitip</b>
+        <span>♥</span>
+      </div>
 
-      {#if form?.error}
-        <div class="mt-6 bg-red-50 border border-red-200 text-red-700 text-[13.5px] font-semibold px-4 py-3 rounded-2xl">
-          {form.error}
+      <div class="packages">
+        <div class="package-top">
+          <div class="package-line"></div>
         </div>
-      {/if}
 
-      <form
-        method="POST"
-        class="mt-9 flex flex-col gap-4"
-        use:enhance={() => {
-          mengirim = true;
-          return async ({ update }) => {
-            await update();
-            mengirim = false;
-          };
-        }}
-      >
-        <label class="flex flex-col gap-2">
-          <span class="text-[13.5px] font-bold text-ink">Email</span>
-          <input
-            type="email"
-            name="email"
-            bind:value={email}
-            placeholder="nama@email.com"
-            required
-            class="bg-white border border-ink/15 rounded-pill px-5 py-3.5 text-sm outline-none focus:border-primary transition placeholder:text-ink-soft/70"
-          />
-        </label>
+        <div class="package-bottom">
+          <span>nitip</span>
+        </div>
+      </div>
 
-        <label class="flex flex-col gap-2">
-          <span class="text-[13.5px] font-bold text-ink">Kata sandi</span>
-          <div class="relative">
+      <div class="suitcase">
+        <div class="handle"></div>
+
+        <div class="suitcase-body">
+          <div class="suitcase-line left"></div>
+          <div class="suitcase-line right"></div>
+
+          <div class="suitcase-label">
+            nitip
+          </div>
+        </div>
+
+        <div class="wheel wheel-1"></div>
+        <div class="wheel wheel-2"></div>
+      </div>
+
+    </div>
+
+    <div class="features">
+      <div class="feature">
+        <div class="feature-icon">♢</div>
+        <div>
+          <strong>Terpercaya</strong>
+          <small>Jastip aman</small>
+        </div>
+      </div>
+
+      <div class="feature">
+        <div class="feature-icon">◇</div>
+        <div>
+          <strong>Mudah</strong>
+          <small>Proses simpel</small>
+        </div>
+      </div>
+
+      <div class="feature">
+        <div class="feature-icon">♡</div>
+        <div>
+          <strong>Praktis</strong>
+          <small>Hemat waktu</small>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- LOGIN -->
+  <section class="login-area">
+    <div class="login-card">
+
+      <div class="login-header">
+        <span>Selamat datang kembali!</span>
+
+        <h2>Masuk ke Nitip</h2>
+
+        <p>
+          Yuk masuk untuk melanjutkan perjalanan jastipmu ✨
+        </p>
+      </div>
+
+      <form method="POST" class="login-form">
+
+        <div class="form-group">
+          <label for="email">Email</label>
+
+          <div class="input-box">
+            <svg viewBox="0 0 24 24" fill="none">
+              <rect
+                x="3"
+                y="5"
+                width="18"
+                height="14"
+                rx="2"
+                stroke="currentColor"
+                stroke-width="1.7"
+              />
+              <path
+                d="M4 7L12 13L20 7"
+                stroke="currentColor"
+                stroke-width="1.7"
+              />
+            </svg>
+
             <input
-              type={showPassword ? 'text' : 'password'}
-              name="password"
-              bind:value={password}
-              placeholder="Minimal 8 karakter"
+              id="email"
+              name="email"
+              type="email"
+              bind:value={email}
+              placeholder="Masukkan email kamu"
               required
-              class="w-full bg-white border border-ink/15 rounded-pill px-5 py-3.5 text-sm outline-none focus:border-primary transition placeholder:text-ink-soft/70 pr-14"
             />
+          </div>
+        </div>
+
+
+        <div class="form-group">
+          <label for="password">Kata Sandi</label>
+
+          <div class="input-box">
+            <svg viewBox="0 0 24 24" fill="none">
+              <rect
+                x="5"
+                y="10"
+                width="14"
+                height="10"
+                rx="2"
+                stroke="currentColor"
+                stroke-width="1.7"
+              />
+              <path
+                d="M8 10V7.5C8 5.57 9.57 4 11.5 4H12.5C14.43 4 16 5.57 16 7.5V10"
+                stroke="currentColor"
+                stroke-width="1.7"
+              />
+            </svg>
+
+            <input
+              id="password"
+              name="password"
+              type={showPassword ? 'text' : 'password'}
+              bind:value={password}
+              placeholder="Masukkan kata sandi kamu"
+              required
+            />
+
             <button
               type="button"
-              onclick={() => (showPassword = !showPassword)}
-              class="absolute right-5 top-1/2 -translate-y-1/2 text-xs font-bold text-ink-soft hover:text-primary-dark transition"
+              class="password-toggle"
+              onclick={() => showPassword = !showPassword}
+              aria-label="Tampilkan kata sandi"
             >
-              {showPassword ? 'Sembunyikan' : 'Lihat'}
+              {showPassword ? '◉' : '◌'}
             </button>
           </div>
-        </label>
+        </div>
 
-        <div class="flex justify-end -mt-1">
-          <a href="/lupa-password" class="text-[13.5px] font-bold text-primary-dark hover:underline">
+
+        <div class="forgot">
+          <a href="/publik/lupa-kata-sandi">
             Lupa kata sandi?
           </a>
         </div>
 
-        <button
-          type="submit"
-          disabled={mengirim}
-          class="mt-2 inline-flex items-center justify-center rounded-pill bg-ink text-bg font-bold text-[15px] py-3.5 transition hover:-translate-y-0.5 disabled:opacity-60"
-        >
-          {mengirim ? 'Memproses...' : 'Masuk'}
+        <button type="submit" class="login-button">
+          Masuk
         </button>
+
       </form>
 
-      <div class="flex items-center gap-3 my-7">
-        <div class="h-px bg-ink/10 flex-1"></div>
-        <span class="text-xs text-ink-soft font-semibold">atau lanjutkan dengan</span>
-        <div class="h-px bg-ink/10 flex-1"></div>
+
+      <div class="divider">
+        <span></span>
+        <p>atau</p>
+        <span></span>
       </div>
 
-      <button
-        type="button"
-        class="w-full inline-flex items-center justify-center gap-2.5 rounded-pill border border-ink/15 bg-white text-ink font-bold text-sm py-3.5 hover:-translate-y-0.5 transition"
-      >
-        <span>🔍</span> Masuk dengan Google
-      </button>
 
-      <p class="mt-8 text-center text-[13px] text-ink-soft">
-        Dengan masuk, kamu setuju sama
-        <a href="/syarat" class="font-bold text-ink hover:underline">Syarat Layanan</a>
-        dan
-        <a href="/privasi" class="font-bold text-ink hover:underline">Kebijakan Privasi</a>
-        Nitip.
+      <a href="/auth/google" class="google-button">
+        <span class="google-icon">
+          <svg viewBox="0 0 24 24">
+            <path
+              fill="#4285F4"
+              d="M21.35 12.27c0-.72-.06-1.42-.18-2.09H12v3.95h5.24a4.48 4.48 0 0 1-1.94 2.94v2.45h3.14c1.84-1.69 2.91-4.18 2.91-7.25Z"
+            />
+            <path
+              fill="#34A853"
+              d="M12 21.75c2.63 0 4.84-.87 6.45-2.36l-3.14-2.45c-.87.58-1.98.92-3.31.92-2.54 0-4.69-1.72-5.46-4.03H3.3v2.53A9.74 9.74 0 0 0 12 21.75Z"
+            />
+            <path
+              fill="#FBBC05"
+              d="M6.54 13.83a5.86 5.86 0 0 1 0-3.66V7.64H3.3a9.75 9.75 0 0 0 0 8.72l3.24-2.53Z"
+            />
+            <path
+              fill="#EA4335"
+              d="M12 6.14c1.43 0 2.71.49 3.72 1.46l2.79-2.79C16.84 3.24 14.63 2.25 12 2.25a9.74 9.74 0 0 0-8.7 5.39l3.24 2.53C7.31 7.86 9.46 6.14 12 6.14Z"
+            />
+          </svg>
+        </span>
+
+        Masuk dengan Google
+      </a>
+
+
+      <p class="register">
+        Belum punya akun?
+        <a href="/publik/daftar">Daftar di sini</a>
       </p>
+
     </div>
-  </div>
+  </section>
+
 </div>
+
+
+<style>
+  :global(*) {
+    box-sizing: border-box;
+  }
+
+  :global(body) {
+    margin: 0;
+  }
+
+  .login-page {
+    width: 100%;
+    height: calc(100vh - 68px);
+    display: grid;
+    grid-template-columns: 56% 44%;
+    overflow: hidden;
+    background: #fff8ec;
+  }
+
+  /* HERO */
+
+  .hero {
+    height: 100%;
+    padding: 25px 50px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+    background: linear-gradient(
+      145deg,
+      #fff8ec 0%,
+      #fff0d8 55%,
+      #ffdda9 100%
+    );
+  }
+
+  .hero-content {
+    text-align: center;
+  }
+
+  .logo-text {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    color: #ff641d;
+    font-family: var(--font-display);
+  }
+
+  .logo-text span {
+    font-size: 30px;
+    font-weight: 900;
+  }
+
+  .logo-text strong {
+    font-size: 43px;
+    font-weight: 900;
+  }
+
+  .hero h1 {
+    margin: 8px 0;
+    font-family: var(--font-display);
+    font-size: 25px;
+    font-style: italic;
+    color: #2a1a0e;
+  }
+
+  .hero p {
+    max-width: 450px;
+    margin: auto;
+    color: #7a5e44;
+    font-size: 12px;
+    line-height: 1.7;
+  }
+
+  /* ILUSTRASI */
+
+  .illustration {
+    position: relative;
+    width: 100%;
+    max-width: 560px;
+    height: 225px;
+    margin-top: 5px;
+  }
+
+  .plant {
+    position: absolute;
+    left: 10px;
+    bottom: 18px;
+    width: 75px;
+    height: 90px;
+  }
+
+  .pot {
+    position: absolute;
+    bottom: 0;
+    left: 19px;
+    width: 42px;
+    height: 40px;
+    border-radius: 5px 5px 14px 14px;
+    background: #f1dfc1;
+  }
+
+  .leaf {
+    position: absolute;
+    bottom: 30px;
+    left: 35px;
+    width: 22px;
+    height: 57px;
+    border-radius: 100% 0;
+    background: #8cae5b;
+  }
+
+  .leaf-1 { transform: rotate(-40deg); }
+  .leaf-2 { transform: rotate(8deg); }
+  .leaf-3 { transform: rotate(42deg); }
+
+  .plant-text {
+    position: absolute;
+    left: 70px;
+    bottom: 45px;
+    color: #ff641d;
+    font-family: var(--font-display);
+    font-size: 23px;
+    font-weight: 900;
+  }
+
+  .plant-text span {
+    display: block;
+    text-align: center;
+    font-family: var(--font-sans);
+    font-size: 13px;
+  }
+
+  .packages {
+    position: absolute;
+    left: 30%;
+    bottom: 20px;
+    width: 150px;
+    height: 130px;
+  }
+
+  .package-top {
+    position: absolute;
+    left: 35px;
+    top: 0;
+    width: 100px;
+    height: 60px;
+    border-radius: 5px;
+    background: #ed641e;
+  }
+
+  .package-line {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: 12px;
+    height: 100%;
+    transform: translateX(-50%);
+    background: #ffc93c;
+  }
+
+  .package-bottom {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 150px;
+    height: 75px;
+    border-radius: 5px;
+    background: #efc18a;
+  }
+
+  .package-bottom span {
+    position: absolute;
+    right: 15px;
+    bottom: 12px;
+    color: #ed641e;
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 800;
+  }
+
+  .suitcase {
+    position: absolute;
+    right: 7%;
+    bottom: 13px;
+    width: 125px;
+    height: 205px;
+  }
+
+  .handle {
+    position: absolute;
+    top: 0;
+    left: 40px;
+    width: 45px;
+    height: 35px;
+    border: 6px solid #2a1a0e;
+    border-bottom: 0;
+    border-radius: 8px 8px 0 0;
+  }
+
+  .suitcase-body {
+    position: absolute;
+    top: 29px;
+    left: 4px;
+    width: 117px;
+    height: 155px;
+    border-radius: 20px;
+    background: linear-gradient(90deg, #ff984c, #ff7027);
+  }
+
+  .suitcase-line {
+    position: absolute;
+    top: 16px;
+    width: 3px;
+    height: 125px;
+    background: rgba(120, 48, 10, .14);
+  }
+
+  .suitcase-line.left { left: 29px; }
+  .suitcase-line.right { right: 29px; }
+
+  .suitcase-label {
+    position: absolute;
+    top: 63px;
+    left: 34px;
+    width: 52px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #fff3da;
+    color: #ff641d;
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 900;
+  }
+
+  .wheel {
+    position: absolute;
+    bottom: 4px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #2a1a0e;
+  }
+
+  .wheel-1 { left: 18px; }
+  .wheel-2 { right: 18px; }
+
+  /* FEATURES */
+
+  .features {
+    width: min(540px, 100%);
+    min-height: 62px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    padding: 6px 10px;
+    border-radius: 50px;
+    background: rgba(255,255,255,.88);
+    box-shadow: 0 10px 25px rgba(80,40,10,.08);
+  }
+
+  .feature {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 12px;
+  }
+
+  .feature + .feature {
+    border-left: 1px solid #edd5b5;
+  }
+
+  .feature-icon {
+    width: 28px;
+    color: #ff641d;
+    font-size: 27px;
+  }
+
+  .feature strong,
+  .feature small {
+    display: block;
+  }
+
+  .feature strong {
+    font-size: 10px;
+  }
+
+  .feature small {
+    margin-top: 2px;
+    color: #987c62;
+    font-size: 8px;
+  }
+
+  /* LOGIN */
+
+  .login-area {
+    height: 100%;
+    padding: 20px 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fffaf4;
+  }
+
+  .login-card {
+    width: 100%;
+    max-width: 475px;
+    padding: 30px 38px;
+    border-radius: 22px;
+    background: white;
+    box-shadow: 0 12px 35px rgba(70,40,15,.06);
+  }
+
+  .login-header span {
+    color: #ff641d;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .login-header h2 {
+    margin: 5px 0 6px;
+    color: #2a1a0e;
+    font-family: var(--font-display);
+    font-size: 31px;
+    line-height: 1.1;
+  }
+
+  .login-header p {
+    margin: 0;
+    color: #8b7766;
+    font-size: 11px;
+  }
+
+  .login-form {
+    margin-top: 22px;
+  }
+
+  .form-group {
+    margin-bottom: 15px;
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .input-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .input-box > svg {
+    position: absolute;
+    left: 14px;
+    width: 17px;
+    height: 17px;
+    color: #929292;
+    pointer-events: none;
+  }
+
+  .input-box input {
+    width: 100%;
+    height: 50px;
+    padding: 0 42px;
+    border: 1px solid #dedede;
+    border-radius: 11px;
+    outline: none;
+    font-family: var(--font-sans);
+    font-size: 11px;
+    color: #2a1a0e;
+  }
+
+  .input-box input:focus {
+    border-color: #ff641d;
+    box-shadow: 0 0 0 3px rgba(255,100,29,.08);
+  }
+
+  .input-box input::placeholder {
+    color: #aaa;
+  }
+
+  .password-toggle {
+    position: absolute;
+    right: 8px;
+    width: 32px;
+    height: 32px;
+    border: 0;
+    background: transparent;
+    color: #888;
+    cursor: pointer;
+  }
+
+  .forgot {
+    margin: -2px 0 17px;
+    text-align: right;
+  }
+
+  .forgot a,
+  .register a {
+    color: #ff641d;
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .forgot a {
+    font-size: 10px;
+  }
+
+  .login-button {
+    width: 100%;
+    height: 51px;
+    border: 0;
+    border-radius: 11px;
+    background: linear-gradient(135deg,#ff641d,#f45112);
+    color: white;
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 17px 0;
+  }
+
+  .divider span {
+    flex: 1;
+    height: 1px;
+    background: #e5e5e5;
+  }
+
+  .divider p {
+    margin: 0;
+    color: #999;
+    font-size: 10px;
+  }
+
+  .google-button {
+    width: 100%;
+    height: 49px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    border: 1px solid #dedede;
+    border-radius: 11px;
+    background: white;
+    color: #222;
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .google-icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .google-icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .register {
+    margin: 18px 0 0;
+    text-align: center;
+    color: #8b8b8b;
+    font-size: 10px;
+  }
+
+  .register a {
+    font-weight: 700;
+  }
+
+
+  /* =================================
+     TABLET
+  ================================= */
+
+  @media (max-width: 1100px) {
+    .login-page {
+      grid-template-columns: 52% 48%;
+    }
+
+    .hero {
+      padding-left: 25px;
+      padding-right: 25px;
+    }
+
+    .login-area {
+      padding: 20px;
+    }
+
+    .login-card {
+      padding: 28px 30px;
+    }
+
+    .illustration {
+      transform: scale(.9);
+    }
+  }
+
+
+  /* =================================
+     MOBILE
+  ================================= */
+
+  @media (max-width: 768px) {
+    .login-page {
+      height: auto;
+      min-height: calc(100vh - 68px);
+      display: flex;
+      flex-direction: column;
+      overflow: visible;
+    }
+
+    .hero {
+      min-height: 330px;
+      height: auto;
+      padding: 25px 20px 20px;
+    }
+
+    .logo-text strong {
+      font-size: 38px;
+    }
+
+    .logo-text span {
+      font-size: 27px;
+    }
+
+    .hero h1 {
+      font-size: 22px;
+    }
+
+    .hero p {
+      max-width: 430px;
+      font-size: 11px;
+    }
+
+    .illustration {
+      height: 145px;
+      max-width: 390px;
+      transform: scale(.72);
+      transform-origin: center bottom;
+      margin-top: -2px;
+    }
+
+    .features {
+      width: 100%;
+      max-width: 390px;
+      min-height: 55px;
+    }
+
+    .feature {
+      padding: 0 7px;
+      gap: 5px;
+    }
+
+    .feature-icon {
+      width: 20px;
+      font-size: 20px;
+    }
+
+    .feature strong {
+      font-size: 8px;
+    }
+
+    .feature small {
+      font-size: 7px;
+    }
+
+    .login-area {
+      min-height: auto;
+      height: auto;
+      padding: 25px 16px 35px;
+    }
+
+    .login-card {
+      max-width: 500px;
+      padding: 28px 24px;
+      border-radius: 20px;
+    }
+  }
+
+
+  /* =================================
+     HP KECIL
+  ================================= */
+
+  @media (max-width: 480px) {
+    .hero {
+      min-height: 300px;
+      padding: 20px 15px 15px;
+    }
+
+    .logo-text strong {
+      font-size: 34px;
+    }
+
+    .logo-text span {
+      font-size: 24px;
+    }
+
+    .hero h1 {
+      margin-top: 5px;
+      font-size: 19px;
+    }
+
+    .hero p {
+      font-size: 10px;
+      line-height: 1.5;
+    }
+
+    .illustration {
+      height: 125px;
+      transform: scale(.58);
+      margin-top: -5px;
+    }
+
+    .features {
+      min-height: 48px;
+      padding: 4px;
+    }
+
+    .feature {
+      padding: 0 4px;
+    }
+
+    .feature-icon {
+      display: none;
+    }
+
+    .feature strong {
+      font-size: 8px;
+    }
+
+    .feature small {
+      font-size: 6px;
+    }
+
+    .login-area {
+      padding: 20px 12px 30px;
+    }
+
+    .login-card {
+      padding: 24px 18px;
+      border-radius: 18px;
+    }
+
+    .login-header h2 {
+      font-size: 27px;
+    }
+
+    .login-header p {
+      font-size: 10px;
+    }
+
+    .input-box input {
+      height: 48px;
+      font-size: 10px;
+    }
+
+    .login-button {
+      height: 49px;
+    }
+
+    .google-button {
+      height: 47px;
+    }
+  }
+
+
+  /* =================================
+     LAYAR PENDEK DESKTOP
+  ================================= */
+
+  @media (min-width: 769px) and (max-height: 700px) {
+    .hero {
+      padding-top: 15px;
+    }
+
+    .logo-text strong {
+      font-size: 35px;
+    }
+
+    .logo-text span {
+      font-size: 25px;
+    }
+
+    .hero h1 {
+      font-size: 22px;
+    }
+
+    .illustration {
+      height: 185px;
+    }
+
+    .suitcase {
+      transform: scale(.88);
+      transform-origin: bottom right;
+    }
+
+    .packages,
+    .plant {
+      transform: scale(.9);
+    }
+
+    .features {
+      min-height: 55px;
+    }
+
+    .login-card {
+      padding: 25px 34px;
+    }
+
+    .login-form {
+      margin-top: 18px;
+    }
+  }
+</style>
