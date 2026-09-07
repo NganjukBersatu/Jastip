@@ -1,16 +1,25 @@
 import { json, error } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
-import { pengajuanHarga, produk, pesanChat } from '$lib/server/db/schema';
-import { eq, and, gt, asc } from 'drizzle-orm';
+import { pengajuanHarga, pesanChat } from '$lib/server/db/schema';
+import { eq, and, or, gt, asc } from 'drizzle-orm';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async ({ params, url, locals }) => {
 	// cek kepemilikan lagi di sini — endpoint ini dipanggil terpisah dari load(),
-	// jadi harus punya pengecekan akses sendiri
+	// jadi harus punya pengecekan akses sendiri.
+	// Diizinkan: pelanggan yang mengajukan ATAU jastiper yang menerima pengajuan ini.
 	const [row] = await db
 		.select({ id: pengajuanHarga.id })
 		.from(pengajuanHarga)
-		.where(and(eq(pengajuanHarga.id, params.id), eq(pengajuanHarga.pelangganId, locals.user!.id)));
+		.where(
+			and(
+				eq(pengajuanHarga.id, params.id),
+				or(
+					eq(pengajuanHarga.pelangganId, locals.user!.id),
+					eq(pengajuanHarga.jastiperId, locals.user!.id)
+				)
+			)
+		);
 
 	if (!row) throw error(404, 'Pengajuan tidak ditemukan.');
 

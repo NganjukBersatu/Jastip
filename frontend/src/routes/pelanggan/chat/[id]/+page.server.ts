@@ -1,6 +1,6 @@
 import { error, fail } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
-import { pengajuanHarga, produk, jasa, users, pesanChat, tawaranHarga } from '$lib/server/db/schema';
+import { pengajuanHarga, produk, jasa, users, pesanChat, tawaranHarga, ongkirWilayah } from '$lib/server/db/schema';
 import { eq, and, asc } from 'drizzle-orm';
 import type { Actions, PageServerLoad } from './$types';
 
@@ -13,14 +13,19 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			catatan: pengajuanHarga.catatan,
 			status: pengajuanHarga.status,
 			createdAt: pengajuanHarga.createdAt,
+			jastiperId: pengajuanHarga.jastiperId,
+			wilayahId: pengajuanHarga.wilayahId,
 			produkNama: produk.nama,
 			jasaNama: jasa.nama,
-			jastiperNama: users.nama
+			jastiperNama: users.nama,
+			ongkirBiaya: ongkirWilayah.biaya,
+			ongkirNama: ongkirWilayah.wilayah
 		})
 		.from(pengajuanHarga)
 		.innerJoin(users, eq(pengajuanHarga.jastiperId, users.id))
 		.leftJoin(produk, eq(pengajuanHarga.produkId, produk.id))
 		.leftJoin(jasa, eq(pengajuanHarga.jasaId, jasa.id))
+		.leftJoin(ongkirWilayah, eq(pengajuanHarga.wilayahId, ongkirWilayah.id))
 		.where(
 			and(
 				eq(pengajuanHarga.id, params.id),
@@ -31,6 +36,16 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	if (!item) throw error(404, 'Percakapan tidak ditemukan.');
 
 	const namaItem = item.produkNama ?? item.jasaNama ?? 'Item';
+
+	// daftar wilayah yang bisa dipilih pelanggan, khusus milik jastiper ini
+	const daftarWilayah = await db
+		.select({
+			id: ongkirWilayah.id,
+			wilayah: ongkirWilayah.wilayah,
+			biaya: ongkirWilayah.biaya
+		})
+		.from(ongkirWilayah)
+		.where(eq(ongkirWilayah.jastiperId, item.jastiperId));
 
 	const daftarPesan = await db
 		.select()
@@ -52,12 +67,12 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 	return {
 		item: { ...item, namaItem },
+		daftarWilayah,
 		daftarPesan,
 		daftarTawaran,
 		userId: locals.user!.id
 	};
 };
-
 
 export const actions: Actions = {
 	kirimPesan: async ({ request, params, locals }) => {
@@ -123,6 +138,40 @@ export const actions: Actions = {
 				jumlah: jumlah,
 				status: 'menunggu'
 			})
+			.where(eq(pengajuanHarga.id, params.id));
+
+		return { success: true };
+	},
+
+	// BARU: pelanggan pilih wilayah tujuan buat hitung ongkir
+	pilihWilayah: async ({ request, params, locals }) => {
+		const data = await request.formData();
+		const wilayahId = data.get('wilayahId')?.toString();
+		if (!wilayahId) return fail(400, { error: 'Pilih wilayah dulu.' });
+
+		const [row] = await db
+			.select({ id: pengajuanHarga.id, jastiperId: pengajuanHarga.jastiperId })
+			.from(pengajuanHarga)
+			.where(
+				and(
+					eq(pengajuanHarga.id, params.id),
+					eq(pengajuanHarga.pelangganId, locals.user!.id)
+				)
+			);
+
+		if (!row) return fail(404, { error: 'Percakapan tidak ditemukan.' });
+
+		// pastikan wilayah yang dipilih memang milik jastiper ini, bukan jastiper lain
+		const [wilayah] = await db
+			.select({ id: ongkirWilayah.id })
+			.from(ongkirWilayah)
+			.where(and(eq(ongkirWilayah.id, wilayahId), eq(ongkirWilayah.jastiperId, row.jastiperId)));
+
+		if (!wilayah) return fail(400, { error: 'Wilayah tidak valid.' });
+
+		await db
+			.update(pengajuanHarga)
+			.set({ wilayahId })
 			.where(eq(pengajuanHarga.id, params.id));
 
 		return { success: true };

@@ -1,7 +1,7 @@
 <script lang="ts">
-  let showPassword = false;
-  let email = '';
-  let password = '';
+  let showPassword = $state(false);
+  let email = $state('');
+  let password = $state('');
 </script>
 
 <svelte:head>
