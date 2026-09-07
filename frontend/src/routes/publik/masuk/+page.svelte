@@ -13,7 +13,6 @@
 </svelte:head>
 
 <div class="login-page">
-
   <!-- HERO -->
   <section class="hero">
     <div class="hero-content">
@@ -21,9 +20,7 @@
         <span>N</span>
         <strong>Nitip.</strong>
       </div>
-
       <h1>Jastip, Jadi Lebih Praktis</h1>
-
       <p>
         Nitip siap membantu kamu mendapatkan barang impian dari mana
         saja, dengan mudah, aman, dan terpercaya.
@@ -31,7 +28,6 @@
     </div>
 
     <div class="illustration">
-
       <div class="plant">
         <div class="leaf leaf-1"></div>
         <div class="leaf leaf-2"></div>
@@ -48,7 +44,6 @@
         <div class="package-top">
           <div class="package-line"></div>
         </div>
-
         <div class="package-bottom">
           <span>nitip</span>
         </div>
@@ -56,20 +51,16 @@
 
       <div class="suitcase">
         <div class="handle"></div>
-
         <div class="suitcase-body">
           <div class="suitcase-line left"></div>
           <div class="suitcase-line right"></div>
-
           <div class="suitcase-label">
             nitip
           </div>
         </div>
-
         <div class="wheel wheel-1"></div>
         <div class="wheel wheel-2"></div>
       </div>
-
     </div>
 
     <div class="features">
@@ -80,7 +71,6 @@
           <small>Jastip aman</small>
         </div>
       </div>
-
       <div class="feature">
         <div class="feature-icon">◇</div>
         <div>
@@ -88,7 +78,6 @@
           <small>Proses simpel</small>
         </div>
       </div>
-
       <div class="feature">
         <div class="feature-icon">♡</div>
         <div>
@@ -99,26 +88,20 @@
     </div>
   </section>
 
-
   <!-- LOGIN -->
   <section class="login-area">
     <div class="login-card">
-
       <div class="login-header">
         <span>Selamat datang kembali!</span>
-
         <h2>Masuk ke Nitip</h2>
-
         <p>
-          Yuk masuk untuk melanjutkan perjalanan jastipmu ✨
+          Yuk masuk untuk melanjutkan perjalanan jastipmu 
         </p>
       </div>
 
       <form method="POST" class="login-form">
-
         <div class="form-group">
           <label for="email">Email</label>
-
           <div class="input-box">
             <svg viewBox="0 0 24 24" fill="none">
               <rect
@@ -136,7 +119,6 @@
                 stroke-width="1.7"
               />
             </svg>
-
             <input
               id="email"
               name="email"
@@ -148,10 +130,8 @@
           </div>
         </div>
 
-
         <div class="form-group">
           <label for="password">Kata Sandi</label>
-
           <div class="input-box">
             <svg viewBox="0 0 24 24" fill="none">
               <rect
@@ -169,7 +149,6 @@
                 stroke-width="1.7"
               />
             </svg>
-
             <input
               id="password"
               name="password"
@@ -178,7 +157,6 @@
               placeholder="Masukkan kata sandi kamu"
               required
             />
-
             <button
               type="button"
               class="password-toggle"
@@ -190,7 +168,6 @@
           </div>
         </div>
 
-
         <div class="forgot">
           <a href="/publik/lupa-kata-sandi">
             Lupa kata sandi?
@@ -200,16 +177,13 @@
         <button type="submit" class="login-button">
           Masuk
         </button>
-
       </form>
-
 
       <div class="divider">
         <span></span>
         <p>atau</p>
         <span></span>
       </div>
-
 
       <a href="/auth/google" class="google-button">
         <span class="google-icon">
@@ -232,21 +206,16 @@
             />
           </svg>
         </span>
-
         Masuk dengan Google
       </a>
-
 
       <p class="register">
         Belum punya akun?
         <a href="/publik/daftar">Daftar di sini</a>
       </p>
-
     </div>
   </section>
-
 </div>
-
 
 <style>
   :global(*) {
@@ -267,7 +236,6 @@
   }
 
   /* HERO */
-
   .hero {
     height: 100%;
     padding: 25px 50px 20px;
@@ -297,19 +265,19 @@
   }
 
   .logo-text span {
-    font-size: 30px;
+    font-size: 32px;
     font-weight: 900;
   }
 
   .logo-text strong {
-    font-size: 43px;
+    font-size: 44px;
     font-weight: 900;
   }
 
   .hero h1 {
-    margin: 8px 0;
+    margin: 10px 0;
     font-family: var(--font-display);
-    font-size: 25px;
+    font-size: 28px;          /* sebelumnya 25px */
     font-style: italic;
     color: #2a1a0e;
   }
@@ -318,12 +286,11 @@
     max-width: 450px;
     margin: auto;
     color: #7a5e44;
-    font-size: 12px;
+    font-size: 15px;          /* sebelumnya 12px */
     line-height: 1.7;
   }
 
   /* ILUSTRASI */
-
   .illustration {
     position: relative;
     width: 100%;
@@ -499,13 +466,12 @@
   .wheel-2 { right: 18px; }
 
   /* FEATURES */
-
   .features {
     width: min(540px, 100%);
-    min-height: 62px;
+    min-height: 64px;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    padding: 6px 10px;
+    padding: 8px 12px;
     border-radius: 50px;
     background: rgba(255,255,255,.88);
     box-shadow: 0 10px 25px rgba(80,40,10,.08);
@@ -534,17 +500,16 @@
   }
 
   .feature strong {
-    font-size: 10px;
+    font-size: 13px;          /* sebelumnya 10px */
   }
 
   .feature small {
     margin-top: 2px;
     color: #987c62;
-    font-size: 8px;
+    font-size: 12px;          /* sebelumnya 8px */
   }
 
   /* LOGIN */
-
   .login-area {
     height: 100%;
     padding: 20px 35px;
@@ -557,7 +522,7 @@
   .login-card {
     width: 100%;
     max-width: 475px;
-    padding: 30px 38px;
+    padding: 32px 38px;
     border-radius: 22px;
     background: white;
     box-shadow: 0 12px 35px rgba(70,40,15,.06);
@@ -565,36 +530,36 @@
 
   .login-header span {
     color: #ff641d;
-    font-size: 11px;
+    font-size: 13px;          /* sebelumnya 11px */
     font-weight: 700;
   }
 
   .login-header h2 {
-    margin: 5px 0 6px;
+    margin: 6px 0 8px;
     color: #2a1a0e;
     font-family: var(--font-display);
-    font-size: 31px;
+    font-size: 32px;
     line-height: 1.1;
   }
 
   .login-header p {
     margin: 0;
     color: #8b7766;
-    font-size: 11px;
+    font-size: 14px;          /* sebelumnya 11px */
   }
 
   .login-form {
-    margin-top: 22px;
+    margin-top: 24px;
   }
 
   .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 16px;
   }
 
   .form-group label {
     display: block;
-    margin-bottom: 6px;
-    font-size: 11px;
+    margin-bottom: 7px;
+    font-size: 13px;          /* sebelumnya 11px */
     font-weight: 700;
   }
 
@@ -607,8 +572,8 @@
   .input-box > svg {
     position: absolute;
     left: 14px;
-    width: 17px;
-    height: 17px;
+    width: 18px;
+    height: 18px;
     color: #929292;
     pointer-events: none;
   }
@@ -616,12 +581,12 @@
   .input-box input {
     width: 100%;
     height: 50px;
-    padding: 0 42px;
+    padding: 0 44px;
     border: 1px solid #dedede;
     border-radius: 11px;
     outline: none;
     font-family: var(--font-sans);
-    font-size: 11px;
+    font-size: 14px;          /* sebelumnya 11px */
     color: #2a1a0e;
   }
 
@@ -632,6 +597,7 @@
 
   .input-box input::placeholder {
     color: #aaa;
+    font-size: 14px;
   }
 
   .password-toggle {
@@ -643,10 +609,11 @@
     background: transparent;
     color: #888;
     cursor: pointer;
+    font-size: 16px;
   }
 
   .forgot {
-    margin: -2px 0 17px;
+    margin: -2px 0 18px;
     text-align: right;
   }
 
@@ -658,18 +625,18 @@
   }
 
   .forgot a {
-    font-size: 10px;
+    font-size: 13px;          /* sebelumnya 10px */
   }
 
   .login-button {
     width: 100%;
-    height: 51px;
+    height: 52px;
     border: 0;
     border-radius: 11px;
     background: linear-gradient(135deg,#ff641d,#f45112);
     color: white;
     font-family: var(--font-sans);
-    font-size: 12px;
+    font-size: 15px;          /* sebelumnya 12px */
     font-weight: 700;
     cursor: pointer;
   }
@@ -678,7 +645,7 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    margin: 17px 0;
+    margin: 18px 0;
   }
 
   .divider span {
@@ -690,12 +657,12 @@
   .divider p {
     margin: 0;
     color: #999;
-    font-size: 10px;
+    font-size: 13px;          /* sebelumnya 10px */
   }
 
   .google-button {
     width: 100%;
-    height: 49px;
+    height: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -705,7 +672,7 @@
     background: white;
     color: #222;
     text-decoration: none;
-    font-size: 11px;
+    font-size: 14px;          /* sebelumnya 11px */
     font-weight: 700;
   }
 
@@ -720,21 +687,19 @@
   }
 
   .register {
-    margin: 18px 0 0;
+    margin: 20px 0 0;
     text-align: center;
     color: #8b8b8b;
-    font-size: 10px;
+    font-size: 13px;          /* sebelumnya 10px */
   }
 
   .register a {
     font-weight: 700;
   }
 
-
   /* =================================
      TABLET
   ================================= */
-
   @media (max-width: 1100px) {
     .login-page {
       grid-template-columns: 52% 48%;
@@ -758,11 +723,9 @@
     }
   }
 
-
   /* =================================
      MOBILE
   ================================= */
-
   @media (max-width: 768px) {
     .login-page {
       height: auto;
@@ -787,12 +750,12 @@
     }
 
     .hero h1 {
-      font-size: 22px;
+      font-size: 24px;
     }
 
     .hero p {
       max-width: 430px;
-      font-size: 11px;
+      font-size: 14px;
     }
 
     .illustration {
@@ -806,7 +769,7 @@
     .features {
       width: 100%;
       max-width: 390px;
-      min-height: 55px;
+      min-height: 58px;
     }
 
     .feature {
@@ -820,11 +783,11 @@
     }
 
     .feature strong {
-      font-size: 8px;
+      font-size: 12px;
     }
 
     .feature small {
-      font-size: 7px;
+      font-size: 11px;
     }
 
     .login-area {
@@ -840,11 +803,9 @@
     }
   }
 
-
   /* =================================
      HP KECIL
   ================================= */
-
   @media (max-width: 480px) {
     .hero {
       min-height: 300px;
@@ -861,11 +822,11 @@
 
     .hero h1 {
       margin-top: 5px;
-      font-size: 19px;
+      font-size: 20px;
     }
 
     .hero p {
-      font-size: 10px;
+      font-size: 13px;
       line-height: 1.5;
     }
 
@@ -876,7 +837,7 @@
     }
 
     .features {
-      min-height: 48px;
+      min-height: 50px;
       padding: 4px;
     }
 
@@ -889,11 +850,11 @@
     }
 
     .feature strong {
-      font-size: 8px;
+      font-size: 11px;
     }
 
     .feature small {
-      font-size: 6px;
+      font-size: 10px;
     }
 
     .login-area {
@@ -906,47 +867,47 @@
     }
 
     .login-header h2 {
-      font-size: 27px;
+      font-size: 28px;
     }
 
     .login-header p {
-      font-size: 10px;
+      font-size: 13px;
     }
 
     .input-box input {
       height: 48px;
-      font-size: 10px;
+      font-size: 14px;
     }
 
     .login-button {
-      height: 49px;
+      height: 50px;
+      font-size: 15px;
     }
 
     .google-button {
-      height: 47px;
+      height: 48px;
+      font-size: 14px;
     }
   }
-
 
   /* =================================
      LAYAR PENDEK DESKTOP
   ================================= */
-
   @media (min-width: 769px) and (max-height: 700px) {
     .hero {
       padding-top: 15px;
     }
 
     .logo-text strong {
-      font-size: 35px;
+      font-size: 36px;
     }
 
     .logo-text span {
-      font-size: 25px;
+      font-size: 26px;
     }
 
     .hero h1 {
-      font-size: 22px;
+      font-size: 24px;
     }
 
     .illustration {
@@ -964,7 +925,7 @@
     }
 
     .features {
-      min-height: 55px;
+      min-height: 58px;
     }
 
     .login-card {
