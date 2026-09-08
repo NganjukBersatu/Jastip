@@ -1,8 +1,11 @@
 <script>
   import { page } from '$app/stores';
-  import { enhance } from '$app/forms';
+  import { notifikasiState } from '$lib/stores/notifikasi.svelte';
 
   let { data, children } = $props();
+
+  // State notifikasi
+  const notifikasi = notifikasiState();
 
   const menu = [
     {
@@ -42,18 +45,28 @@
     }
   ];
 
-  let inisial = $derived(data.user?.nama?.charAt(0)?.toUpperCase() ?? '?');
+  let inisial = $derived(
+    data.user?.nama?.charAt(0)?.toUpperCase() ?? '?'
+  );
 </script>
 
 <div class="min-h-screen bg-bg flex flex-col lg:flex-row">
+
+  <!-- ========================= -->
   <!-- SIDEBAR DESKTOP -->
+  <!-- ========================= -->
+
   <aside
-    class="hidden lg:flex lg:w-64 lg:h-screen lg:sticky lg:top-0 bg-white border-r border-ink/10 flex-col shrink-0"
+    class="hidden lg:flex lg:w-64 lg:h-screen lg:sticky lg:top-0
+           bg-white border-r border-ink/10 flex-col shrink-0"
   >
+
+    <!-- Header sidebar -->
     <div class="px-5 py-6 border-b border-ink/10">
       <a
         href="/"
-        class="inline-flex items-center gap-2.5 text-[13px] font-bold text-ink-soft hover:text-primary-dark transition"
+        class="inline-flex items-center gap-2.5 text-[13px] font-bold
+               text-ink-soft hover:text-primary-dark transition"
       >
         <svg
           class="w-4 h-4"
@@ -71,15 +84,21 @@
       </a>
     </div>
 
+    <!-- Menu -->
     <nav class="flex-1 p-4 flex flex-col gap-1.5 overflow-y-auto">
+
       {#each menu as item}
+
         <a
           href={item.href}
-          class="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition
-            {$page.url.pathname === item.href
-              ? 'bg-primary text-white shadow-sm'
-              : 'text-ink-soft hover:bg-bg-alt hover:text-ink'}"
+          class="relative flex items-center gap-3 px-4 py-3 rounded-2xl
+                 text-sm font-semibold transition
+                 {$page.url.pathname === item.href
+            ? 'bg-primary text-white shadow-sm'
+            : 'text-ink-soft hover:bg-bg-alt hover:text-ink'}"
         >
+
+          <!-- Icon -->
           <svg
             class="w-[18px] h-[18px] shrink-0"
             viewBox="0 0 24 24"
@@ -93,42 +112,84 @@
           </svg>
 
           <span>{item.label}</span>
+
+          <!-- Badge notifikasi -->
+          <!-- Badge sekarang berada di Pengajuan harga -->
+          {#if item.href === '/jastiper/pengajuan-harga' && notifikasi.jumlah > 0}
+            <span
+              class="ml-auto bg-primary text-bg text-[10px] font-bold
+                     rounded-full min-w-5 h-5 px-1.5
+                     flex items-center justify-center"
+            >
+              {notifikasi.jumlah > 9 ? '9+' : notifikasi.jumlah}
+            </span>
+          {/if}
+
         </a>
+
       {/each}
+
     </nav>
 
+    <!-- Profile -->
     <div class="p-4 border-t border-ink/10">
+
       <a
         href="/profile"
-        class="flex items-center gap-3 px-3 py-2.5 rounded-2xl hover:bg-bg-alt transition"
+        class="flex items-center gap-3 px-3 py-2.5 rounded-2xl
+               hover:bg-bg-alt transition"
       >
+
         <span
-          class="w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold shrink-0"
+          class="w-9 h-9 rounded-full bg-primary text-white
+                 flex items-center justify-center text-xs font-bold shrink-0"
         >
           {inisial}
         </span>
 
         <div class="min-w-0">
-          <div class="text-sm font-bold truncate">{data.user.nama}</div>
-          <div class="text-[12px] text-ink-soft">Lihat profil</div>
+
+          <div class="text-sm font-bold truncate">
+            {data.user.nama}
+          </div>
+
+          <div class="text-[12px] text-ink-soft">
+            Lihat profil
+          </div>
+
         </div>
+
       </a>
+
     </div>
+
   </aside>
 
+
+  <!-- ========================= -->
   <!-- MOBILE HEADER -->
+  <!-- ========================= -->
+
   <header
-    class="lg:hidden sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-ink/10"
+    class="lg:hidden sticky top-0 z-40 bg-white/95
+           backdrop-blur border-b border-ink/10"
   >
+
+    <!-- Header atas -->
     <div class="px-4 py-3 flex items-center justify-between gap-3">
+
       <a href="/" class="flex items-center gap-2.5 min-w-0">
+
         <span
-          class="w-9 h-9 rounded-xl bg-primary text-white flex items-center justify-center text-sm font-extrabold shrink-0"
+          class="w-9 h-9 rounded-xl bg-primary text-white
+                 flex items-center justify-center text-sm
+                 font-extrabold shrink-0"
         >
           {inisial}
         </span>
 
         <div class="min-w-0">
+
           <div class="text-sm font-extrabold text-ink truncate">
             Panel Jastiper
           </div>
@@ -136,7 +197,9 @@
           <div class="text-[11px] text-ink-soft truncate">
             {data.user.nama}
           </div>
+
         </div>
+
       </a>
 
       <a
@@ -145,19 +208,31 @@
       >
         Profil
       </a>
+
     </div>
 
-    <!-- Mobile menu -->
+
+    <!-- ========================= -->
+    <!-- MOBILE MENU -->
+    <!-- ========================= -->
+
     <nav class="px-3 pb-3 overflow-x-auto">
+
       <div class="flex gap-1.5 min-w-max">
+
         {#each menu as item}
+
           <a
             href={item.href}
-            class="flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-[12px] font-bold whitespace-nowrap transition
-              {$page.url.pathname === item.href
-                ? 'bg-primary text-white'
-                : 'bg-bg text-ink-soft hover:bg-bg-alt hover:text-ink'}"
+            class="relative flex items-center gap-2 px-3.5 py-2.5
+                   rounded-xl text-[12px] font-bold whitespace-nowrap
+                   transition
+                   {$page.url.pathname === item.href
+              ? 'bg-primary text-white'
+              : 'bg-bg text-ink-soft hover:bg-bg-alt hover:text-ink'}"
           >
+
+            <!-- Icon -->
             <svg
               class="w-4 h-4 shrink-0"
               viewBox="0 0 24 24"
@@ -171,14 +246,38 @@
             </svg>
 
             {item.label}
+
+            <!-- Badge notifikasi mobile -->
+            <!-- Badge sekarang berada di Pengajuan harga -->
+            {#if item.href === '/jastiper/pengajuan-harga' && notifikasi.jumlah > 0}
+              <span
+                class="ml-1 bg-primary text-bg text-[9px] font-bold
+                       rounded-full min-w-4 h-4 px-1
+                       flex items-center justify-center"
+              >
+                {notifikasi.jumlah > 9 ? '9+' : notifikasi.jumlah}
+              </span>
+            {/if}
+
           </a>
+
         {/each}
+
       </div>
+
     </nav>
+
   </header>
 
+
+  <!-- ========================= -->
   <!-- CONTENT -->
+  <!-- ========================= -->
+
   <main class="flex-1 min-w-0 w-full">
+
     {@render children()}
+
   </main>
+
 </div>

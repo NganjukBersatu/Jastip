@@ -8,6 +8,13 @@
       "when": 1787986939890,
       "tag": "0000_aberrant_gladiator",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1788848662555,
+      "tag": "0001_strange_speedball",
+      "breakpoints": true
     }
   ]
 }
