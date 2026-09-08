@@ -91,7 +91,7 @@
   <!-- ===== SIDEBAR DAFTAR PERCAKAPAN ===== -->
   <!-- Mobile: tampil penuh saat tampilanMobile === 'sidebar'. Desktop (md:): selalu tampil di kiri. -->
   <div
-    class="w-full md:w-[280px] shrink-0 bg-white border-r border-ink/10 flex-col
+    class="w-full md:w-70 shrink-0 bg-white border-r border-ink/10 flex-col
            {tampilanMobile === 'sidebar' ? 'flex' : 'hidden'} md:flex"
   >
     <div class="px-4 py-4 border-b border-ink/10">
