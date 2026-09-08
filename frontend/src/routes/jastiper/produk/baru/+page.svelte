@@ -6,7 +6,7 @@
   let hargaTipe = $state('tetap');
   let mengirim = $state(false);
 
-  const kategoriList = ['Jajanan & oleh-oleh', 'Skincare', 'Tiket event', 'Fashion', 'Barang langka', 'Lainnya'];
+  const kategoriList = ['makanan','Jajanan & oleh-oleh', 'Skincare', 'Tiket event', 'Fashion', 'Barang langka', 'Lainnya'];
 </script>
 
 <svelte:head>

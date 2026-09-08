@@ -4,6 +4,7 @@ import { pengajuanHarga, users, pesanChat, tawaranHarga, pesanan, produk, ongkir
 import { eq, and, asc } from 'drizzle-orm';
 import { randomUUID } from 'node:crypto';
 import type { Actions, PageServerLoad } from './$types';
+import { tandaiSudahDibaca } from '$lib/server/notifikasi';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const [item] = await db
@@ -89,6 +90,11 @@ export const actions: Actions = {
 
 		return { success: true };
 	},
+
+tandaiDibaca: async ({ params, locals }) => {
+	await tandaiSudahDibaca(params.id, locals.user!.id);
+	return { success: true };
+},
 
 	terima: async ({ params, locals }) => {
 		const jastiperId = locals.user!.id;

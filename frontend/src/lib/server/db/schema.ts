@@ -112,6 +112,7 @@ export const pesanChat = pgTable('pesan_chat', {
 	isi: text('isi').notNull(),
 	jenis: jenisPesanEnum('jenis').notNull().default('teks'),
 	nominal: integer('nominal'),
+	dibaca: boolean('dibaca').notNull().default(false), // BARU: buat badge/toast notifikasi
 	createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
 });
 

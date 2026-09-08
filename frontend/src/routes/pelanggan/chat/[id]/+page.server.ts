@@ -3,6 +3,8 @@ import { db } from '$lib/server/db';
 import { pengajuanHarga, produk, jasa, users, pesanChat, tawaranHarga, ongkirWilayah } from '$lib/server/db/schema';
 import { eq, and, asc } from 'drizzle-orm';
 import type { Actions, PageServerLoad } from './$types';
+import { tandaiSudahDibaca } from '$lib/server/notifikasi';
+
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const [item] = await db
@@ -101,6 +103,11 @@ export const actions: Actions = {
 
 		return { success: true };
 	},
+
+tandaiDibaca: async ({ params, locals }) => {
+	await tandaiSudahDibaca(params.id, locals.user!.id);
+	return { success: true };
+},
 
 	ajukanTawaran: async ({ request, params, locals }) => {
 		const data = await request.formData();
