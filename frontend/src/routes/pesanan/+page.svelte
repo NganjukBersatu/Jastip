@@ -42,7 +42,7 @@
   <title>Pesanan saya — Nitip</title>
 </svelte:head>
 
-<section class="max-w-[720px] mx-auto px-5 md:px-8 py-14">
+<section class="max-w-[960px] mx-auto px-5 md:px-8 py-14">
   <h1 class="text-2xl md:text-3xl font-bold">Pesanan saya</h1>
   <p class="text-ink-soft text-sm mt-1">Pantau titipan yang lagi jalan dan riwayat sebelumnya.</p>
 
@@ -119,8 +119,8 @@
 
               <div class="flex gap-2 mt-3">
                 {#if p.pengajuanHargaId}
-                  <a
-                    href={`/pelanggan/chat/${p.pengajuanHargaId}`}
+                  
+                   <a href={`/pelanggan/chat/${p.pengajuanHargaId}`}
                     class="flex-1 text-center rounded-pill border-2 border-ink/15 text-ink font-bold text-[13px] py-2.5 hover:border-ink/40 transition"
                   >
                     💬 Chat jastiper
