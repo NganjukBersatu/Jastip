@@ -6,28 +6,35 @@
   let user = $derived(data.user);
   let inisial = $derived(user?.nama?.charAt(0)?.toUpperCase() ?? '?');
 
-  const labelRole = { pelanggan: 'Pelanggan', jastiper: 'Jastiper' };
+  const labelRole = {
+    pelanggan: 'Pelanggan',
+    jastiper: 'Jastiper'
+  };
 </script>
 
 <svelte:head>
   <title>Profil Saya — Titipa</title>
 </svelte:head>
 
-
 <div class="bg-bg min-h-[calc(100vh-76px)] py-16">
-  <div class="max-w-[720px] mx-auto px-8">
+  <div class="max-w-[1140px] mx-auto px-8">
     <!-- Kartu identitas -->
     <div class="bg-gradient-to-br from-primary to-primary-dark rounded-[28px] p-8 md:p-10 text-white relative overflow-hidden">
       <div class="absolute w-52 h-52 -top-14 -right-14 bg-accent/20 rounded-[44%_56%_62%_38%/48%_40%_60%_52%]"></div>
 
       <div class="relative z-10 flex items-center gap-5">
-        <div class="w-20 h-20 rounded-full bg-white/20 border-2 border-white/40 flex items-center justify-center text-3xl font-display font-semibold">
+        <div
+          class="w-20 h-20 rounded-full bg-white/20 border-2 border-white/40 flex items-center justify-center text-3xl font-display font-semibold"
+        >
           {inisial}
         </div>
+
         <div>
           <h1 class="text-2xl">{user.nama}</h1>
           <p class="text-white/80 text-sm mt-1">{user.email}</p>
-          <span class="inline-block mt-2.5 bg-white/20 text-xs font-bold px-3 py-1 rounded-pill uppercase tracking-wide">
+          <span
+            class="inline-block mt-2.5 bg-white/20 text-xs font-bold px-3 py-1 rounded-pill uppercase tracking-wide"
+          >
             {labelRole[user.role]}
           </span>
         </div>
@@ -40,10 +47,12 @@
         <span class="text-sm text-ink-soft">Nama lengkap</span>
         <span class="font-bold text-sm">{user.nama}</span>
       </div>
+
       <div class="p-5 flex justify-between items-center">
         <span class="text-sm text-ink-soft">Email</span>
         <span class="font-bold text-sm">{user.email}</span>
       </div>
+
       <div class="p-5 flex justify-between items-center">
         <span class="text-sm text-ink-soft">Peran</span>
         <span class="font-bold text-sm">{labelRole[user.role]}</span>
@@ -58,7 +67,9 @@
       >
         <div>
           <div class="font-bold text-sm">Dashboard jastiper</div>
-          <div class="text-[13px] text-ink-soft mt-0.5">Kelola produk, pesanan, dan chat pelanggan</div>
+          <div class="text-[13px] text-ink-soft mt-0.5">
+            Kelola produk, pesanan, dan chat pelanggan
+          </div>
         </div>
         <span class="text-lg">→</span>
       </a>
@@ -69,7 +80,9 @@
       >
         <div>
           <div class="font-bold text-sm">Riwayat pesanan</div>
-          <div class="text-[13px] text-ink-soft mt-0.5">Lihat titipan yang sedang dan sudah berjalan</div>
+          <div class="text-[13px] text-ink-soft mt-0.5">
+            Lihat titipan yang sedang dan sudah berjalan
+          </div>
         </div>
         <span class="text-lg">→</span>
       </a>

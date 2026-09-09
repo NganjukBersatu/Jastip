@@ -20,29 +20,39 @@
   <title>Kelola Jasa — Nitip.</title>
 </svelte:head>
 
-<section class="max-w-[1180px] mx-auto px-5 md:px-8 py-12">
-  <div class="flex justify-between items-center mb-8 flex-wrap gap-3">
+<div class="w-full max-w-[1140px] mx-auto px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
+  <!-- HEADER -->
+  <div class="flex justify-between items-start gap-4 flex-wrap mb-8 sm:mb-10 pb-6 border-b border-ink/10">
     <div>
-      <h1 class="text-2xl font-bold font-display">Jasa saya</h1>
-      <p class="text-ink-soft text-sm mt-1">Kelola layanan jasa yang kamu tawarkan, seperti jemputan atau titip antre.</p>
+      <h1 class="text-2xl sm:text-[30px] font-extrabold tracking-tight text-ink">Jasa saya</h1>
+      <p class="text-ink-soft mt-2 text-sm sm:text-[15px] leading-relaxed">
+        Kelola layanan jasa yang kamu tawarkan, seperti jemputan atau titip antre.
+      </p>
     </div>
+
     <button
       onclick={() => (formVisible = !formVisible)}
-      class="rounded-full bg-ink text-bg font-bold text-sm px-5 py-2.5 hover:bg-primary-dark transition-colors"
+      class="shrink-0 rounded-full bg-ink text-bg font-bold text-sm px-5 py-2.5 min-h-[44px] hover:-translate-y-0.5 hover:shadow-md transition"
     >
       {formVisible ? 'Tutup form' : '+ Tambah jasa'}
     </button>
   </div>
 
   {#if form?.error}
-    <div class="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-5 py-3 mb-6">
-      {form.error}
+    <div class="mb-6 flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 px-4 py-3.5 text-[13.5px] font-semibold leading-relaxed text-red-700">
+      <span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-red-100 text-[11px] font-extrabold">
+        !
+      </span>
+      <span>{form.error}</span>
     </div>
   {/if}
 
   {#if form?.success}
-    <div class="bg-green-50 border border-green-200 text-green-700 text-sm rounded-xl px-5 py-3 mb-6">
-      Berhasil disimpan.
+    <div class="mb-6 flex items-start gap-3 rounded-2xl border border-green-200 bg-green-50 px-4 py-3.5 text-[13.5px] font-semibold leading-relaxed text-green-700">
+      <span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-green-100 text-[11px] font-extrabold">
+        ✓
+      </span>
+      <span>Berhasil disimpan.</span>
     </div>
   {/if}
 
@@ -57,142 +67,159 @@
           await update();
         };
       }}
-      class="bg-white rounded-[22px] shadow-[0_10px_30px_rgba(42,26,14,0.06)] p-6 mb-10 space-y-5 max-w-[600px]"
+      class="bg-white rounded-2xl border border-ink/10 shadow-[0_2px_12px_rgba(0,0,0,0.025)] p-5 sm:p-6 mb-10"
     >
-      <div>
-        <label for="nama" class="block text-sm font-bold mb-1.5">Nama jasa</label>
-        <input
-          id="nama"
-          name="nama"
-          type="text"
-          required
-          placeholder="Misal: Jemput di stasiun Madiun"
-          class="w-full rounded-xl px-4 py-2.5 border border-ink/10 text-sm outline-none focus:ring-2 focus:ring-accent"
-        />
+      <div class="mb-6">
+        <h2 class="text-sm font-extrabold text-ink">Tambah jasa baru</h2>
+        <p class="mt-0.5 text-xs text-ink-soft">Isi detail jasa yang kamu tawarkan ke pelanggan.</p>
       </div>
 
-      <div>
-        <label for="deskripsi" class="block text-sm font-bold mb-1.5">Deskripsi (opsional)</label>
-        <textarea
-          id="deskripsi"
-          name="deskripsi"
-          rows="3"
-          placeholder="Jelaskan detail jasa yang kamu tawarkan..."
-          class="w-full rounded-xl px-4 py-2.5 border border-ink/10 text-sm outline-none focus:ring-2 focus:ring-accent resize-none"
-        ></textarea>
-      </div>
+      <div class="flex flex-col gap-5">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div>
+            <label for="nama" class="block text-sm font-bold mb-1.5">Nama jasa</label>
+            <input
+              id="nama"
+              name="nama"
+              type="text"
+              required
+              placeholder="Misal: Jemput di stasiun Madiun"
+              class="w-full rounded-xl px-4 py-3 border border-ink/15 bg-bg text-sm outline-none transition placeholder:text-ink-soft/60 focus:border-primary focus:ring-2 focus:ring-primary/10"
+            />
+          </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-        <div>
-          <label for="kategori" class="block text-sm font-bold mb-1.5">Kategori</label>
-          <select
-            id="kategori"
-            name="kategori"
-            required
-            class="w-full rounded-xl px-4 py-2.5 border border-ink/10 text-sm outline-none focus:ring-2 focus:ring-accent"
-          >
-            {#each kategoriList as kategori}
-              <option value={kategori}>{kategori}</option>
-            {/each}
-          </select>
+          <div>
+            <label for="kategori" class="block text-sm font-bold mb-1.5">Kategori</label>
+            <select
+              id="kategori"
+              name="kategori"
+              required
+              class="w-full rounded-xl px-4 py-3 border border-ink/15 bg-bg text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/10"
+            >
+              {#each kategoriList as kategori}
+                <option value={kategori}>{kategori}</option>
+              {/each}
+            </select>
+          </div>
         </div>
 
         <div>
-          <label for="satuan" class="block text-sm font-bold mb-1.5">Satuan (opsional)</label>
-          <input
-            id="satuan"
-            name="satuan"
-            type="text"
-            placeholder="Misal: per trip, per jam"
-            class="w-full rounded-xl px-4 py-2.5 border border-ink/10 text-sm outline-none focus:ring-2 focus:ring-accent"
-          />
+          <label for="deskripsi" class="block text-sm font-bold mb-1.5">Deskripsi (opsional)</label>
+          <textarea
+            id="deskripsi"
+            name="deskripsi"
+            rows="3"
+            placeholder="Jelaskan detail jasa yang kamu tawarkan..."
+            class="w-full rounded-xl px-4 py-3 border border-ink/15 bg-bg text-sm outline-none transition placeholder:text-ink-soft/60 focus:border-primary focus:ring-2 focus:ring-primary/10 resize-none"
+          ></textarea>
         </div>
-      </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+          <div>
+            <label for="satuan" class="block text-sm font-bold mb-1.5">Satuan (opsional)</label>
+            <input
+              id="satuan"
+              name="satuan"
+              type="text"
+              placeholder="Misal: per trip, per jam"
+              class="w-full rounded-xl px-4 py-3 border border-ink/15 bg-bg text-sm outline-none transition placeholder:text-ink-soft/60 focus:border-primary focus:ring-2 focus:ring-primary/10"
+            />
+          </div>
+
+          <div>
+            <label for="hargaTipe" class="block text-sm font-bold mb-1.5">Tipe harga</label>
+            <select
+              id="hargaTipe"
+              name="hargaTipe"
+              bind:value={hargaTipe}
+              class="w-full rounded-xl px-4 py-3 border border-ink/15 bg-bg text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/10"
+            >
+              <option value="tetap">Harga tetap</option>
+              <option value="nego">Bisa nego</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="harga" class="block text-sm font-bold mb-1.5">
+              {hargaTipe === 'nego' ? 'Harga mulai dari (Rp)' : 'Harga (Rp)'}
+            </label>
+            <input
+              id="harga"
+              name="harga"
+              type="number"
+              min="1"
+              required
+              placeholder="15000"
+              class="w-full rounded-xl px-4 py-3 border border-ink/15 bg-bg text-sm outline-none transition placeholder:text-ink-soft/60 focus:border-primary focus:ring-2 focus:ring-primary/10"
+            />
+          </div>
+        </div>
+
         <div>
-          <label for="hargaTipe" class="block text-sm font-bold mb-1.5">Tipe harga</label>
-          <select
-            id="hargaTipe"
-            name="hargaTipe"
-            bind:value={hargaTipe}
-            class="w-full rounded-xl px-4 py-2.5 border border-ink/10 text-sm outline-none focus:ring-2 focus:ring-accent"
-          >
-            <option value="tetap">Harga tetap</option>
-            <option value="nego">Bisa nego</option>
-          </select>
-        </div>
+          <span class="block text-sm font-bold mb-1.5">Gambar jasa</span>
+          <div class="inline-flex bg-bg-alt rounded-full p-1 mb-3">
+            <button
+              type="button"
+              onclick={() => (modeGambar = 'url')}
+              class="px-4 py-1.5 rounded-full text-xs font-bold transition-colors
+                     {modeGambar === 'url' ? 'bg-white shadow-sm' : 'text-ink-soft'}"
+            >
+              Pakai URL
+            </button>
+            <button
+              type="button"
+              onclick={() => (modeGambar = 'upload')}
+              class="px-4 py-1.5 rounded-full text-xs font-bold transition-colors
+                     {modeGambar === 'upload' ? 'bg-white shadow-sm' : 'text-ink-soft'}"
+            >
+              Upload dari perangkat
+            </button>
+          </div>
 
-        <div>
-          <label for="harga" class="block text-sm font-bold mb-1.5">
-            {hargaTipe === 'nego' ? 'Harga mulai dari (Rp)' : 'Harga (Rp)'}
-          </label>
-          <input
-            id="harga"
-            name="harga"
-            type="number"
-            min="1"
-            required
-            placeholder="15000"
-            class="w-full rounded-xl px-4 py-2.5 border border-ink/10 text-sm outline-none focus:ring-2 focus:ring-accent"
-          />
+          {#if modeGambar === 'url'}
+            <input
+              name="gambarUrl"
+              type="url"
+              placeholder="https://..."
+              class="w-full rounded-xl px-4 py-3 border border-ink/15 bg-bg text-sm outline-none transition placeholder:text-ink-soft/60 focus:border-primary focus:ring-2 focus:ring-primary/10"
+            />
+          {:else}
+            <input
+              name="gambarFile"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              class="w-full rounded-xl px-4 py-3 border border-ink/15 bg-bg text-sm outline-none transition
+                     file:mr-3 file:rounded-full file:border-0 file:bg-ink file:text-bg file:px-4 file:py-1.5 file:text-xs file:font-bold"
+            />
+            <p class="text-xs text-ink-soft mt-1.5">Format JPG/PNG/WEBP, maksimal 5MB.</p>
+          {/if}
         </div>
-      </div>
-
-      <div>
-        <span class="block text-sm font-bold mb-1.5">Gambar jasa</span>
-        <div class="inline-flex bg-bg-alt rounded-full p-1 mb-3">
-          <button
-            type="button"
-            onclick={() => (modeGambar = 'url')}
-            class="px-4 py-1.5 rounded-full text-xs font-bold transition-colors
-                   {modeGambar === 'url' ? 'bg-white shadow-sm' : 'text-ink-soft'}"
-          >
-            Pakai URL
-          </button>
-          <button
-            type="button"
-            onclick={() => (modeGambar = 'upload')}
-            class="px-4 py-1.5 rounded-full text-xs font-bold transition-colors
-                   {modeGambar === 'upload' ? 'bg-white shadow-sm' : 'text-ink-soft'}"
-          >
-            Upload dari perangkat
-          </button>
-        </div>
-
-        {#if modeGambar === 'url'}
-          <input
-            name="gambarUrl"
-            type="url"
-            placeholder="https://..."
-            class="w-full rounded-xl px-4 py-2.5 border border-ink/10 text-sm outline-none focus:ring-2 focus:ring-accent"
-          />
-        {:else}
-          <input
-            name="gambarFile"
-            type="file"
-            accept="image/jpeg,image/png,image/webp"
-            class="w-full rounded-xl px-4 py-2.5 border border-ink/10 text-sm outline-none focus:ring-2 focus:ring-accent
-                   file:mr-3 file:rounded-full file:border-0 file:bg-ink file:text-bg file:px-4 file:py-1.5 file:text-xs file:font-bold"
-          />
-          <p class="text-xs text-ink-soft mt-1.5">Format JPG/PNG/WEBP, maksimal 5MB.</p>
-        {/if}
       </div>
 
       <button
         type="submit"
-        class="w-full py-3.5 rounded-full font-bold text-[15px] bg-accent text-ink transition-transform hover:-translate-y-0.5"
+        class="w-full sm:w-auto mt-7 min-h-[48px] px-8 py-3.5 rounded-full font-bold text-[15px] bg-accent text-ink transition hover:-translate-y-0.5 hover:shadow-md"
       >
         Simpan jasa
       </button>
     </form>
   {/if}
 
-  <!-- ===== GRID DAFTAR JASA (gaya sama dengan Produk saya) ===== -->
+  <!-- ===== DAFTAR JASA ===== -->
+  <div class="mb-3.5 flex items-center gap-2">
+    <h2 class="font-bold text-[15px] text-ink">Daftar jasa</h2>
+
+    {#if data.daftarJasa.length > 0}
+      <span class="text-[11px] font-bold bg-ink/8 text-ink-soft px-2 py-0.5 rounded-full">
+        {data.daftarJasa.length}
+      </span>
+    {/if}
+  </div>
+
   {#if data.daftarJasa.length > 0}
     <div class="grid gap-6 grid-cols-[repeat(auto-fill,minmax(240px,1fr))]">
       {#each data.daftarJasa as j}
-        <div class="bg-white rounded-[22px] overflow-hidden shadow-[0_10px_30px_rgba(42,26,14,0.06)] {!j.aktif ? 'opacity-60' : ''}">
+        <div class="bg-white rounded-2xl overflow-hidden border border-ink/10 shadow-[0_2px_12px_rgba(0,0,0,0.025)] transition hover:shadow-md hover:border-ink/15 {!j.aktif ? 'opacity-60' : ''}">
           <div class="aspect-[4/3] relative overflow-hidden">
             <img src={j.gambarUrl} alt={j.nama} class="w-full h-full object-cover" />
             <div class="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent"></div>
@@ -201,8 +228,7 @@
               {j.kategori}
             </span>
 
-            <a
-              href={`/jastiper/jasa/${j.id}/edit`}
+            <a href={`/jastiper/jasa/${j.id}/edit`}
               aria-label="Edit jasa"
               class="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/95 text-ink flex items-center justify-center shadow-sm hover:bg-white"
             >
@@ -230,7 +256,7 @@
               {#if j.satuan}<span class="text-xs text-ink-soft font-sans"> / {j.satuan}</span>{/if}
             </p>
 
-            <!-- Tombol aksi: tetap ada seperti sebelumnya -->
+            <!-- Tombol aksi -->
             <div class="flex gap-2 mt-4">
               <form method="POST" action="?/toggleAktif" use:enhance class="flex-1">
                 <input type="hidden" name="id" value={j.id} />
@@ -262,9 +288,15 @@
       {/each}
     </div>
   {:else}
-    <div class="text-center py-20 bg-bg-alt rounded-[26px]">
-      <p class="text-lg font-semibold">Belum ada jasa</p>
-      <p class="text-ink-soft text-sm mt-1">Tambahkan jasa pertamamu supaya muncul di katalog.</p>
+    <div class="bg-white rounded-2xl border border-dashed border-ink/15 px-5 py-14 sm:p-16 text-center">
+      <div class="w-14 h-14 mx-auto mb-4 rounded-full bg-orange-50 flex items-center justify-center">
+        <span class="text-2xl">🧳</span>
+      </div>
+
+      <div class="font-bold text-[15px] text-ink">Belum ada jasa</div>
+      <div class="text-[13.5px] text-ink-soft mt-1.5 max-w-[300px] mx-auto leading-relaxed">
+        Tambahkan jasa pertamamu supaya muncul di katalog pelanggan.
+      </div>
     </div>
   {/if}
-</section>
+</div>

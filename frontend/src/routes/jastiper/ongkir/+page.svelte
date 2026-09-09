@@ -18,14 +18,14 @@
   <title>Ongkir wilayah — Nitip</title>
 </svelte:head>
 
-<div class="w-full max-w-[820px] px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+<div class="w-full max-w-[1140px] mx-auto px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
   <!-- Header -->
-  <div class="mb-6 sm:mb-8">
-    <h1 class="text-2xl sm:text-[28px] font-extrabold tracking-[-0.02em] text-ink">
+  <div class="mb-8 sm:mb-10 pb-6 border-b border-ink/10">
+    <h1 class="text-2xl sm:text-[30px] font-extrabold tracking-[-0.02em] text-ink">
       Ongkir wilayah
     </h1>
 
-    <p class="text-ink-soft mt-1.5 text-sm sm:text-[15px] leading-relaxed max-w-[620px]">
+    <p class="text-ink-soft mt-2 text-sm sm:text-[15px] leading-relaxed max-w-[620px]">
       Atur biaya kirim berbeda untuk tiap wilayah yang kamu layani.
     </p>
   </div>
@@ -49,7 +49,7 @@
   <form
     method="POST"
     action="?/tambah"
-    class="rounded-2xl border border-ink/10 bg-white p-4 shadow-[0_2px_12px_rgba(0,0,0,0.025)] sm:p-5"
+    class="rounded-2xl border border-ink/10 bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.025)] sm:p-6"
     use:enhance={() => {
       mengirim = true;
 
@@ -59,14 +59,14 @@
       };
     }}
   >
-    <div class="mb-4">
+    <div class="mb-5">
       <h2 class="text-sm font-extrabold text-ink">Tambah wilayah</h2>
       <p class="mt-0.5 text-xs text-ink-soft">
         Tentukan wilayah dan biaya pengirimannya.
       </p>
     </div>
 
-    <div class="grid grid-cols-1 gap-4 sm:grid-cols-[minmax(0,1fr)_180px_auto] sm:items-end">
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-[minmax(0,1fr)_220px_auto] sm:items-end">
       <!-- Nama wilayah -->
       <label class="flex min-w-0 flex-col gap-2">
         <span class="text-[12.5px] font-bold text-ink-soft">
@@ -102,7 +102,7 @@
       <button
         type="submit"
         disabled={mengirim}
-        class="inline-flex h-[46px] w-full items-center justify-center rounded-xl bg-ink px-5 text-sm font-bold text-bg shadow-sm transition hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+        class="inline-flex h-[46px] w-full items-center justify-center rounded-xl bg-ink px-6 text-sm font-bold text-bg shadow-sm transition hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
       >
         {mengirim ? 'Menambahkan...' : 'Tambah'}
       </button>
@@ -110,17 +110,17 @@
   </form>
 
   <!-- Daftar wilayah -->
-  <div class="mt-6 sm:mt-7">
-    <div class="mb-3 flex items-center justify-between gap-3">
-      <div>
+  <div class="mt-8 sm:mt-9">
+    <div class="mb-3.5 flex items-center justify-between gap-3">
+      <div class="flex items-center gap-2">
         <h2 class="text-sm font-extrabold text-ink">
           Wilayah yang dilayani
         </h2>
 
         {#if data.daftarOngkir.length > 0}
-          <p class="mt-0.5 text-xs text-ink-soft">
-            {data.daftarOngkir.length} wilayah telah diatur
-          </p>
+          <span class="text-[11px] font-bold bg-ink/8 text-ink-soft px-2 py-0.5 rounded-full">
+            {data.daftarOngkir.length}
+          </span>
         {/if}
       </div>
     </div>
@@ -128,19 +128,19 @@
     {#if data.daftarOngkir.length === 0}
       <!-- Empty state -->
       <div
-        class="rounded-2xl border border-dashed border-ink/15 bg-white px-5 py-10 text-center shadow-[0_2px_12px_rgba(0,0,0,0.02)] sm:px-10"
+        class="rounded-2xl border border-dashed border-ink/15 bg-white px-5 py-14 text-center shadow-[0_2px_12px_rgba(0,0,0,0.02)] sm:px-10 sm:py-16"
       >
         <div
-          class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-bg text-xl"
+          class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-orange-50 text-2xl"
         >
-          📦
+          🚚
         </div>
 
-        <div class="font-bold text-sm text-ink">
+        <div class="font-bold text-[15px] text-ink">
           Belum ada wilayah diatur
         </div>
 
-        <div class="mx-auto mt-1 max-w-[340px] text-[13px] leading-relaxed text-ink-soft">
+        <div class="mx-auto mt-1.5 max-w-[320px] text-[13.5px] leading-relaxed text-ink-soft">
           Tambahkan wilayah pertama lewat form di atas untuk mulai mengatur
           biaya pengiriman.
         </div>
