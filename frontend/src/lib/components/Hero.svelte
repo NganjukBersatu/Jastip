@@ -1,73 +1,117 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
 
+  // =========================================================
+  // DATA HERO
+  // =========================================================
+  //
+  // Untuk menambah gambar hero:
+  //
+  // 1. Masukkan gambar ke:
+  //    static/hero-images/
+  //
+  // 2. Tambahkan object baru di bawah.
+  //
+  // =========================================================
+
   const categories = [
     {
-      bg: 'linear-gradient(135deg,#FF9B54 0%, #E8621F 55%, #C93712 100%)',
-      accent: '#FFC64B',
-      ctaColor: '#C93712',
+      id: 1,
       image: '/hero-images/jajanan.jpg',
-      imageAlt: 'Jajanan khas',
-      icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 3v18"/><path d="M7 3v6a2 2 0 0 0 4 0V3"/><path d="M17 3c-1 1-2 3-2 6s1 5 2 5 2-2 2-5-1-5-2-6z"/></svg>`,     
+      imageAlt: 'Jajanan khas daerah',
+      bg: 'linear-gradient(90deg, #FFE4C7 0%, #FFD9B0 28%, #FF8C4D 65%, #D84317 100%)',
+      accent: '#FFD36A',
+      solid: '#D84317',
       sub: 'Nggak perlu ke luar kota buat dapetin jajanan, oleh-oleh, atau barang langka. Chat jastiper terdekat, deal harga, tinggal tunggu sampai.',
-      cardTitle: 'Lumpia Basah Ny.Lin',
-      cardMeta: 'Surabaya · mulai Rp15rb',
+      cardTitle: 'Lumpia Basah Ny. Lin',
+      cardMeta: 'Prambon · mulai Rp15rb',
       jastiperName: 'Rina',
-      jastiperLoc: 'Surabaya',
-      jastiperMsg: '"Siap kak, otw ambil ya 🛵"'
+      jastiperLoc: 'Prambon',
+      jastiperMsg: '"Siap kak, otw ambil ya 🛵"',
+      icon: `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 3v18"/>
+          <path d="M7 3v6a2 2 0 0 0 4 0V3"/>
+          <path d="M17 3c-1 1-2 3-2 6s1 5 2 5 2-2 2-5-1-5-2-6z"/>
+        </svg>
+      `
     },
     {
-      bg: 'linear-gradient(135deg,#FF7A3D 0%, #E24B22 55%, #A6300F 100%)',
-      accent: '#FFD983',
-      ctaColor: '#A6300F',
+      id: 2,
       image: '/hero-images/paket.jpg',
       imageAlt: 'Serah terima paket',
-      icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.89 1.45l8 4A2 2 0 0 1 22 7.24v9.53a2 2 0 0 1-1.11 1.79l-8 4a2 2 0 0 1-1.79 0l-8-4a2 2 0 0 1-1.11-1.8V7.24a2 2 0 0 1 1.11-1.79l8-4a2 2 0 0 1 1.79 0z"/><polyline points="2.32 6.16 12 11 21.68 6.16"/><line x1="12" y1="22.76" x2="12" y2="11"/></svg>`,
+      bg: 'linear-gradient(90deg, #FFE2C0 0%, #FFD3A3 28%, #F05420 65%, #C63711 100%)',
+      accent: '#FFD983',
+      solid: '#C63711',
       sub: 'Barang dari luar kota, dokumen, atau apapun yang mesti sampai cepat. Serahin ke jastiper terpercaya, pantau sampai tujuan.',
       cardTitle: 'Antar Kilat',
       cardMeta: 'Malang · mulai Rp10rb',
       jastiperName: 'Dinda',
       jastiperLoc: 'Malang',
-      jastiperMsg: '"Oke kak, meluncur ya 🏍️"'
-
+      jastiperMsg: '"Oke kak, meluncur ya 🏍️"',
+      icon: `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12.89 1.45l8 4A2 2 0 0 1 22 7.24v9.53a2 2 0 0 1-1.11 1.79l-8 4a2 2 0 0 1-1.79 0l-8-4a2 2 0 0 1-1.11-1.8V7.24a2 2 0 0 1 1.11-1.79l8-4a2 2 0 0 1 1.79 0z"/>
+          <polyline points="2.32 6.16 12 11 21.68 6.16"/>
+          <line x1="12" y1="22.76" x2="12" y2="11"/>
+        </svg>
+      `
     },
     {
-      bg: 'linear-gradient(135deg,#FFB454 0%, #D6390F 55%, #8C2408 100%)',
-      accent: '#FFE29A',
-      ctaColor: '#8C2408',
+      id: 3,
       image: '/hero-images/hampres.jpg',
-      imageAlt: 'Oleh-oleh khas daerah',
-      icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>`,
+      imageAlt: 'Hampers dan oleh-oleh',
+      bg: 'linear-gradient(90deg, #FFE3C3 0%, #FFD6A8 28%, #F26329 65%, #C53A12 100%)',
+      accent: '#FFE29A',
+      solid: '#C53A12',
       sub: 'Pengen bawa pulang oleh-oleh khas daerah tanpa perlu ke sana? Jastiper lokal siap cariin yang paling otentik.',
       cardTitle: 'Hampers Custom',
-      cardMeta: 'Jogja-Jatim · mulai Rp25rb',
+      cardMeta: 'Kediri-Nganjuk · mulai Rp25rb',
       jastiperName: 'Bagas',
-      jastiperLoc: 'Jogja',
-      jastiperMsg: '"Udah dapet, kak. Otw kirim 📦"'
-
-
+      jastiperLoc: 'Nganjuk',
+      jastiperMsg: '"Udah dapet, kak. Otw kirim 📦"',
+      icon: `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 12 20 22 4 22 4 12"/>
+          <rect x="2" y="7" width="20" height="5"/>
+          <line x1="12" y1="22" x2="12" y2="7"/>
+          <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/>
+          <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>
+        </svg>
+      `
     },
     {
-      bg: 'linear-gradient(135deg,#FF8A5C 0%, #E85A2A 55%, #B23A1D 100%)',
-      accent: '#FFDDBF',
-      ctaColor: '#B23A1D',
+      id: 4,
       image: '/hero-images/custom.jpg',
       imageAlt: 'Barang custom dan belanja',
-      icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>`,
+     bg: 'linear-gradient(90deg, #FFDFBC 0%, #FFD0A0 28%, #EF5A25 65%, #C53A14 100%)',
+      accent: '#FFD9A0',
+      solid: '#C53A14',
       sub: 'Barang unik, edisi terbatas, atau susah dicari sendiri? Jastiper siap bantu buru sampai dapet, kamu tinggal terima.',
       cardTitle: 'Cari Semua Barang',
       cardMeta: 'Se-Jatim · nego harga',
       jastiperName: 'Sari',
       jastiperLoc: 'Kediri',
-      jastiperMsg: '"Nemu barangnya kak, fix ya 👍"'
+      jastiperMsg: '"Nemu barangnya kak, fix ya 👍"',
+      icon: `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <path d="M16 10a4 4 0 0 1-8 0"/>
+        </svg>
+      `
     }
   ];
+
+  // =========================================================
+  // SLIDER
+  // =========================================================
 
   let current = $state(0);
   let timer: ReturnType<typeof setInterval> | undefined;
 
-  function setActive(i: number, userTriggered: boolean) {
-    current = i;
+  function setActive(index: number, userTriggered = true) {
+    current = index;
     if (userTriggered) {
       clearInterval(timer);
       startAutoplay();
@@ -75,6 +119,7 @@
   }
 
   function startAutoplay() {
+    clearInterval(timer);
     timer = setInterval(() => {
       current = (current + 1) % categories.length;
     }, 4500);
@@ -91,466 +136,875 @@
   let active = $derived(categories[current]);
 </script>
 
-<section class="hero" style="background:{active.bg}">
-  <div class="hero-left">
-    <div class="badge"><span class="dot"></span>KHUSUS AREA JAWA TIMUR</div>
+<!-- =========================================================
+     HERO
+========================================================= -->
 
-    <h1>
-      Nitip apa aja,<br />
-      <span class="accent" style="color:{active.accent}">ke mana aja.</span>
-    </h1>
+<section class="hero" style={`background: ${active.bg};`}>
 
-    <p class="sub">{active.sub}</p>
+  <!-- Decorative glow -->
+  <div class="orange-glow glow-one"></div>
+  <div class="orange-glow glow-two"></div>
 
-    <div class="picker-row">
-      <span class="picker-label">TITIP:</span>
-      {#each categories as c, i}
-<button
-  class="pick"
-  class:active={i === current}
-  onclick={() => setActive(i, true)}
-  aria-label={c.imageAlt}
->
-  {@html c.icon}
-        </button>
-      {/each}
+  <div class="hero-container">
+
+    <!-- =====================================================
+         LEFT
+    ====================================================== -->
+
+    <div class="hero-left">
+
+      <!-- Badge -->
+      <div class="badge">
+        <span class="badge-dot"></span>
+        KHUSUS AREA NGANJUK DAN SEKITARNYA
+      </div>
+
+      <!-- Heading -->
+      <h1>
+        Nitip apa aja,
+        <br />
+        <span style={`color: ${active.solid};`}>ke mana aja.</span>
+      </h1>
+
+      <!-- Description -->
+      <p class="hero-description">
+        {active.sub}
+      </p>
+
+      <!-- Category picker -->
+      <div class="picker-row">
+        <span class="picker-label">TITIP:</span>
+
+        {#each categories as category, index}
+          <button
+            class:active={index === current}
+            class="pick"
+            style={`--cat-color: ${category.solid};`}
+            onclick={() => setActive(index)}
+            aria-label={category.imageAlt}
+          >
+            {@html category.icon}
+          </button>
+        {/each}
+      </div>
+
+      <!-- CTA -->
+      <div class="cta-row" style={`--btn-color: ${active.solid};`}>
+        <a href="#katalog-preview" class="btn-primary">
+          Lihat katalog
+          <span>→</span>
+        </a>
+
+        <a href="#jadi-jastiper" class="btn-outline">
+          Jadi jastiper
+          <span>→</span>
+        </a>
+      </div>
+
     </div>
 
-<div class="cta-row">
-  <a href="#katalog-preview" class="btn-primary" style="color:{active.ctaColor}">Lihat katalog</a>
-  <a href="#jadi-jastiper" class="btn-outline">Jadi jastiper →</a>
-</div>
-</div>
+    <!-- =====================================================
+         RIGHT
+    ====================================================== -->
 
-  <div class="hero-right">
-    <div class="blob">
-      {#each categories as c, i}
-        <div class="blob-img" class:active={i === current}>
-          <img src={c.image} alt={c.imageAlt} />
+    <div class="hero-right">
+
+      <!-- Decorative orange/yellow shapes -->
+      <div class="visual-bg visual-bg-one"></div>
+      <div class="visual-bg visual-bg-two"></div>
+      <div class="visual-line"></div>
+
+      <!-- Main image -->
+      <div class="hero-photo">
+        {#each categories as category, index}
+          <div class:active={index === current} class="photo-slide">
+            <img src={category.image} alt={category.imageAlt} />
+          </div>
+        {/each}
+      </div>
+
+      <!-- Top floating card -->
+      <div class="float-card card-a">
+        <div class="nego-pill">
+          <span class="nego-icon">✦</span>
+          Bisa nego
         </div>
-      {/each}
+        <div class="card-title">{active.cardTitle}</div>
+        <div class="card-meta">{active.cardMeta}</div>
+        <div class="card-arrow" style={`background: ${active.bg};`}>→</div>
+      </div>
+
+      <!-- Testimonial card -->
+      <div class="float-card card-b">
+        <div class="card-b-top">
+          <div class="avatar">{active.jastiperName.charAt(0)}</div>
+          <div>
+            <div class="name">Jastiper · {active.jastiperName}</div>
+            <div class="sub-role">{active.jastiperLoc}</div>
+          </div>
+        </div>
+        <div class="msg">{active.jastiperMsg}</div>
+      </div>
+
+      <!-- Decorative dots -->
+      <div class="dots">
+        {#each Array(12) as _}
+          <span></span>
+        {/each}
+      </div>
+
     </div>
 
-
-    <div class="float-card card-a">
-      <span class="pill-nego">Bisa nego</span>
-      <div class="title">{active.cardTitle}</div>
-      <div class="meta">{active.cardMeta}</div>
-    </div>
-
-<div class="float-card card-b">
-  <div class="card-b-top">
-    <div class="avatar"></div>
-    <div>
-      <div class="name">Jastiper · {active.jastiperName}</div>
-      <div class="sub-role">{active.jastiperLoc}</div>
-    </div>
   </div>
-  <div class="msg">{active.jastiperMsg}</div>
-</div>
-</div>
 
-  <!-- Gambar khusus mobile: vertical crop, ikut kategori aktif -->
-  <div class="hero-mobile-img">
-    {#each categories as c, i}
-      <img src={c.image} alt={c.imageAlt} class:active={i === current} />
-    {/each}
-  </div>
+  <!-- =======================================================
+       BOTTOM WAVE
+  ======================================================== -->
 
-  <div class="hero-curve">
-    <svg viewBox="0 0 1440 80" preserveAspectRatio="none">
-      <path d="M0,40 C 240,90 420,0 720,20 C 1020,40 1200,90 1440,30 L1440,80 L0,80 Z" />
+  <div class="hero-wave">
+    <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+      <path d="
+        M0 65
+        C150 105 300 100 470 72
+        C650 42 760 35 920 62
+        C1100 94 1260 98 1440 45
+        L1440 120
+        L0 120
+        Z
+      " />
     </svg>
   </div>
+
 </section>
 
 <style>
+
+  /* =========================================================
+     HERO
+  ========================================================= */
+
   .hero {
-    position: relative;
-    padding: 72px 64px 100px;
-    overflow: hidden;
+  position: relative;
+  width: 100%;
+  min-height: 590px;
+  overflow: hidden;
+  color: #2a1a10;
+  transition: background 0.8s ease;
+}
+
+.hero h1,
+.hero-description,
+.badge,
+.picker-label {
+  text-shadow: none;
+}
+
+.hero h1 {
+  color: #1f1208;
+}
+
+/* Teks deskripsi & label dibuat lebih gelap + lebih tebal
+   agar tidak "kalah" dengan area krem/putih di sisi kiri. */
+.hero-description {
+  color: #3b2716;
+  font-weight: 600;
+}
+
+.badge {
+  color: #C2410C;
+  font-weight: 800;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(194, 65, 12, 0.3);
+}
+
+.badge-dot {
+  background: #FF6B1A;
+}
+
+.picker-label {
+  color: #3b2716;
+  font-weight: 700;
+}
+
+.btn-outline {
+  color: #2a1a10;
+  border: 1.5px solid rgba(42, 26, 16, 0.35);
+  background: transparent;
+}
+
+  /* =========================================================
+     CONTAINER
+  ========================================================= */
+
+  .hero-container {
+    width: min(1180px, calc(100% - 100px));
+    min-height: 590px;
+    margin: 0 auto;
     display: grid;
-    grid-template-columns: 1.05fr 1fr;
-    gap: 40px;
+    grid-template-columns: 1fr 1fr;
     align-items: center;
-    min-height: 560px;
-    transition: background 1.1s ease;
+    gap: 30px;
+    position: relative;
+    z-index: 5;
   }
 
-  .hero-curve {
+  /* =========================================================
+     DECORATIVE GLOW
+  ========================================================= */
+
+  .orange-glow {
     position: absolute;
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    height: 60px;
-    z-index: 1;
+    border-radius: 50%;
+    filter: blur(70px);
     pointer-events: none;
   }
-  .hero-curve svg {
-    display: block;
-    width: 100%;
-    height: 100%;
+
+  .glow-one {
+    width: 330px;
+    height: 330px;
+    top: -170px;
+    right: 20%;
+    background: rgba(255, 194, 76, .35);
   }
-  .hero-curve path {
-  fill: var(--color-bg, #FFF8EC);
-}
+
+  .glow-two {
+    width: 280px;
+    height: 280px;
+    bottom: -160px;
+    left: 5%;
+    background: rgba(255, 184, 74, .22);
+  }
+
+  /* =========================================================
+     LEFT
+  ========================================================= */
 
   .hero-left {
     position: relative;
-    z-index: 3;
+    z-index: 10;
+    padding: 70px 0 100px;
   }
+
+  /* =========================================================
+     BADGE
+  ========================================================= */
 
   .badge {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: rgba(255, 255, 255, 0.14);
-    border: 1px solid rgba(255, 255, 255, 0.35);
-    color: #ffe9d6;
-    padding: 7px 16px;
+    padding: 7px 15px;
     border-radius: 999px;
-    font-size: 12.5px;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    margin-bottom: 22px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    margin-bottom: 20px;
   }
-  .badge .dot {
+
+  .badge-dot {
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: #ffc64b;
+    background: #FFD04A;
   }
 
-  h1 {
-    font-family: 'Fraunces', serif;
+  /* =========================================================
+     HEADING
+  ========================================================= */
+
+  .hero h1 {
+    margin: 0;
+    max-width: 620px;
+    font-family: "Fraunces", Georgia, serif;
+    font-size: clamp(58px, 6.2vw, 84px);
+    line-height: 1.03;
+    letter-spacing: -2px;
     font-weight: 600;
-    font-size: 60px;
-    line-height: 1.05;
-    color: #fff;
-    letter-spacing: -0.01em;
-    margin: 0 0 20px;
-  }
-  h1 .accent {
-    transition: color 0.8s ease;
   }
 
-  .sub {
-    color: #ffe4d2;
-    font-size: 16.5px;
-    line-height: 1.6;
-    max-width: 440px;
-    margin: 0 0 28px;
-    min-height: 78px;
+  .hero h1 span {
+    transition: color .7s ease;
   }
+
+  /* =========================================================
+     DESCRIPTION
+  ========================================================= */
+
+  .hero-description {
+    max-width: 480px;
+    min-height: 88px;
+    margin: 24px 0 28px;
+    font-size: 18.5px;
+    max-width: 500px;   
+    line-height: 1.65;
+  }
+
+  /* =========================================================
+     PICKER
+  ========================================================= */
 
   .picker-row {
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 30px;
+    gap: 10px;
+    margin-bottom: 28px;
   }
+
   .picker-label {
-    color: #ffe4d2;
+    margin-right: 5px;
     font-size: 12.5px;
-    font-weight: 600;
-    letter-spacing: 0.03em;
-    margin-right: 4px;
+    font-weight: 700;
   }
+
+  /* Tombol bulat kategori: setiap kategori punya warna sendiri
+     lewat --cat-color, sehingga saat pindah kategori, tombol
+     yang aktif langsung terasa berbeda satu sama lain. */
   .pick {
-    width: 52px;
-    height: 52px;
+    width: 49px;
+    height: 49px;
+    padding: 0;
     border-radius: 50%;
-    border: 2px solid rgba(255, 255, 255, 0.6);
-    background: rgba(255, 255, 255, 0.2);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 22px;
     cursor: pointer;
-    transition: transform 0.3s ease, border-color 0.3s ease, background 0.3s ease;
-    padding: 0;
+    border: 2px solid rgba(255, 255, 255, .55);
+    background: rgba(255, 255, 255, .18);
+    color: #ffffff;
+    transition: transform .3s ease, background .3s ease, border-color .3s ease, color .3s ease, box-shadow .3s ease;
   }
+
   .pick:hover {
-    transform: translateY(-3px);
-  }
-  .pick.active {
-    border-color: #fff;
-    background: rgba(255, 255, 255, 0.28);
-    transform: translateY(-4px) scale(1.06);
+  background: rgba(255, 255, 255, .85);
+  border-color: var(--cat-color);
+}
+.pick.active {
+  background: #ffffff;
+  border-color: #ffffff;
+  color: var(--cat-color);
+  box-shadow: 0 10px 22px rgba(0,0,0,.18), 0 0 0 4px rgba(255,255,255,.55);
+  transform: translateY(-4px) scale(1.08);
+}
+
+  .pick:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 3px;
   }
 
   .pick :global(svg) {
-  width: 20px;
-  height: 20px;
-  color: #fff;
-}
-
-  .pick:focus-visible,
-  .btn-primary:focus-visible,
-  .btn-outline:focus-visible {
-    outline: 2px solid #fff;
-    outline-offset: 2px;
+    width: 19px;
+    height: 19px;
   }
+
+  /* =========================================================
+     BUTTONS
+  ========================================================= */
 
   .cta-row {
     display: flex;
-    gap: 14px;
+    align-items: center;
+    gap: 13px;
   }
+
+  .btn-primary,
+  .btn-outline {
+    min-height: 53px;
+    padding: 0 25px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 800;
+    text-decoration: none;
+    transition: all .25s ease;
+  }
+
+  /* Tombol utama: latar solid warna kategori aktif + shadow,
+     supaya jelas terlihat sebagai tombol, bukan sekadar teks. */
   .btn-primary {
-  background: #fff;
-  border: none;
-  padding: 15px 28px;
-  border-radius: 999px;
-  font-weight: 700;
-  font-size: 15px;
-  cursor: pointer;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  transition: color 0.8s ease;
-}
-.btn-outline {
-  background: transparent;
-  color: #fff;
-  border: 1.5px solid rgba(255, 255, 255, 0.55);
-  padding: 15px 26px;
-  border-radius: 999px;
-  font-weight: 700;
-  font-size: 15px;
-  cursor: pointer;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  transition: background 0.25s ease, border-color 0.25s ease;
-}
-  .btn-outline:hover {
-    background: rgba(255, 255, 255, 0.12);
-    border-color: rgba(255, 255, 255, 0.8);
+    background: var(--btn-color);
+    color: #ffffff;
+    border: none;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, .25);
   }
+
+  .btn-primary:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 34px rgba(0, 0, 0, .32);
+  }
+
+  .btn-primary span {
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .25);
+    font-size: 13px;
+  }
+
+  .btn-outline {
+  color: var(--btn-color);
+  border: 2px solid var(--btn-color);
+  background: rgba(255, 255, 255, .65);
+}
+
+.btn-outline:hover {
+  background: var(--btn-color);
+  color: #ffffff;
+  border-color: var(--btn-color);
+  transform: translateY(-4px);
+}
+
+  .btn-primary:focus-visible,
+  .btn-outline:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 3px;
+  }
+
+  /* =========================================================
+     RIGHT
+  ========================================================= */
 
   .hero-right {
     position: relative;
-    height: 460px;
-    z-index: 2;
-  }
-  .blob {
-    position: absolute;
-    top: 50%;
-    left: 52%;
-    transform: translate(-50%, -50%);
-    width: 380px;
-    height: 380px;
-    border-radius: 50%;
-    overflow: hidden;
-    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22);
-  }
-  .blob-img {
-    position: absolute;
-    inset: 0;
+    height: 530px;
     display: flex;
     align-items: center;
     justify-content: center;
-    opacity: 0;
-    transition: opacity 1s ease, transform 1.2s ease;
-    transform: scale(1.06);
+    z-index: 4;
   }
-  .blob-img.active {
+
+  /* =========================================================
+     BACKGROUND ORGANIC SHAPES
+  ========================================================= */
+
+  .visual-bg {
+    position: absolute;
+    pointer-events: none;
+  }
+
+  .visual-bg-one {
+    width: 500px;
+    height: 440px;
+    right: -20px;
+    top: 40px;
+    background: rgba(255,196,75,.34);
+    border-radius: 55% 45% 62% 38% / 45% 58% 42% 55%;
+    transform: rotate(-8deg);
+  }
+
+  .visual-bg-two {
+    width: 220px;
+    height: 190px;
+    right: -65px;
+    bottom: 30px;
+    background: rgba(255,211,103,.34);
+    border-radius: 65% 35% 55% 45% / 45% 55% 40% 60%;
+    transform: rotate(18deg);
+  }
+
+  /* =========================================================
+     DECORATIVE LINE
+  ========================================================= */
+
+  .visual-line {
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    right: 35px;
+    top: 45px;
+    border: 18px solid rgba(255,210,93,.6);
+    border-left-color: transparent;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    transform: rotate(25deg);
+    z-index: 1;
+  }
+
+  /* =========================================================
+     MAIN IMAGE
+  ========================================================= */
+
+  .hero-photo {
+    position: relative;
+    width: 455px;
+    height: 430px;
+    z-index: 3;
+    overflow: hidden;
+    border-radius: 45% 55% 32% 68% / 58% 42% 65% 35%;
+    transform: rotate(1deg);
+    box-shadow: 0 25px 55px rgba(72,28,10,.28);
+  }
+
+  /* =========================================================
+     IMAGE SLIDES
+  ========================================================= */
+
+  .photo-slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transform: scale(1.08);
+    transition: opacity .8s ease, transform 1.1s ease;
+  }
+
+  .photo-slide.active {
     opacity: 1;
     transform: scale(1);
   }
-  .blob-img img {
+
+  .photo-slide img {
     width: 100%;
     height: 100%;
+    display: block;
     object-fit: cover;
   }
 
-.float-card {
-  position: absolute;
-  background: #fff;
-  border-radius: 16px;
-  padding: 14px 18px;
-  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.18);
-  z-index: 4;
-  animation: bob 5s ease-in-out infinite;
-  will-change: transform;
-  backface-visibility: hidden;
-}
-  .card-a {
-    top: 14px;
-    left: -14px;
-    width: 206px;
-  }
-  .card-b {
-    bottom: 26px;
-    right: -18px;
-    width: 210px;
-    animation-duration: 5.6s;
-    animation-direction: alternate-reverse;
-  }
-  @keyframes bob {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0);
-  }
-  50% {
-    transform: translate3d(0, -8px, 0);
-  }
-}
+  /* =========================================================
+     FLOATING CARD
+  ========================================================= */
 
-  .pill-nego {
-    display: inline-block;
-    background: #fdecd9;
-    color: #9a5a16;
-    font-size: 11px;
-    font-weight: 700;
-    padding: 4px 10px;
-    border-radius: 999px;
+  .float-card {
+    position: absolute;
+    z-index: 8;
+    background: rgba(255,255,255,.98);
+    color: #302017;
+    border-radius: 15px;
+    box-shadow: 0 15px 35px rgba(60,20,5,.20);
+    animation: floating 5s ease-in-out infinite;
+  }
+
+  /* =========================================================
+     CARD A
+  ========================================================= */
+
+  .card-a {
+    width: 210px;
+    top: 48px;
+    left: -5px;
+    padding: 15px 17px;
+  }
+
+  .nego-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 9px;
     margin-bottom: 8px;
-  }
-  .card-a .title {
+    border-radius: 999px;
+    background: #fff0dc;
+    color: #9c5b19;
+    font-size: 10px;
     font-weight: 700;
-    font-size: 14.5px;
-    color: #2b1b12;
   }
-  .card-a .meta {
-    font-size: 12px;
-    color: #8a7a6c;
+
+  .nego-icon {
+    font-size: 10px;
   }
+
+  .card-title {
+    padding-right: 32px;
+    font-size: 14px;
+    font-weight: 800;
+  }
+
+  .card-meta {
+    color: #958378;
+    font-size: 11.5px;
+    margin-top: 2px;
+  }
+
+  .card-arrow {
+    position: absolute;
+    right: 13px;
+    bottom: 13px;
+    width: 31px;
+    height: 31px;
+    border-radius: 50%;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+  }
+
+  /* =========================================================
+     CARD B
+  ========================================================= */
+
+  .card-b {
+    width: 215px;
+    right: -8px;
+    bottom: 68px;
+    padding: 14px 16px;
+    animation: floating 5.6s ease-in-out infinite reverse;
+  }
+
   .card-b-top {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 9px;
     margin-bottom: 8px;
   }
+
   .avatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #ff7a3d, #ffc64b);
+    width: 33px;
+    height: 33px;
     flex-shrink: 0;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ff913d, #ffc74c);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 800;
   }
-  .card-b .name {
-    font-weight: 700;
-    font-size: 13px;
-    color: #2b1b12;
-  }
-  .card-b .sub-role {
-    font-size: 11px;
-    color: #8a7a6c;
-  }
-  .card-b .msg {
+
+  .name {
+    color: #33231b;
     font-size: 12.5px;
-    color: #4a3524;
+    font-weight: 800;
   }
 
-  /* Gambar vertical khusus mobile - disembunyikan di desktop */
-  .hero-mobile-img {
-    display: none;
+  .sub-role {
+    color: #98877b;
+    font-size: 10.5px;
   }
 
-  /* ===== MOBILE & TABLET (<= 900px) ===== */
-  @media (max-width: 900px) {
+  .msg {
+    color: #594336;
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  /* =========================================================
+     DOTS
+  ========================================================= */
+
+  .dots {
+    position: absolute;
+    right: -5px;
+    bottom: 25px;
+    width: 65px;
+    display: grid;
+    grid-template-columns: repeat(4, 5px);
+    gap: 7px;
+    z-index: 4;
+  }
+
+  .dots span {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.45);
+  }
+
+  /* =========================================================
+     FLOATING ANIMATION
+  ========================================================= */
+
+  @keyframes floating {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-7px); }
+  }
+
+  /* =========================================================
+     WAVE
+  ========================================================= */
+
+  .hero-wave {
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    width: 100%;
+    height: 75px;
+    z-index: 7;
+    pointer-events: none;
+  }
+
+  .hero-wave svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .hero-wave path {
+    fill: #fff8ed;
+  }
+
+  /* =========================================================
+     TABLET
+  ========================================================= */
+
+  @media (max-width: 1000px) {
+    .hero-container {
+      width: calc(100% - 50px);
+      grid-template-columns: 1fr 0.95fr;
+      gap: 15px;
+    }
+
+    .hero h1 {
+      font-size: 48px;
+    }
+
+    .hero-photo {
+      width: 390px;
+      height: 390px;
+    }
+
+    .card-a {
+      left: -15px;
+    }
+
+    .card-b {
+      right: -15px;
+    }
+  }
+
+  /* =========================================================
+     MOBILE
+  ========================================================= */
+
+  @media (max-width: 768px) {
     .hero {
-      grid-template-columns: 1fr auto;
-      grid-template-areas: "left img" "curve curve";
-      padding: 28px 20px 40px;
-      min-height: 0;
-      gap: 14px;
-      align-items: center;
+      min-height: auto;
+    }
+
+    .hero-container {
+      width: calc(100% - 32px);
+      min-height: auto;
+      grid-template-columns: 1fr;
+      gap: 0;
     }
 
     .hero-left {
-      grid-area: left;
-      text-align: left;
-      transform: translateX(10px);
+      padding: 45px 0 25px;
     }
 
-    /* Sembunyikan elemen versi desktop di mobile */
+    .hero h1 {
+      font-size: clamp(40px, 11vw, 55px);
+    }
+
+    .hero-description {
+      min-height: auto;
+      font-size: 15px;
+    }
+
     .hero-right {
-      display: none;
+      height: 390px;
+      margin-bottom: 45px;
     }
-    .sub {
-      display: none;
+
+    .hero-photo {
+      width: 330px;
+      height: 330px;
     }
+
+    .visual-bg-one {
+      width: 370px;
+      height: 350px;
+    }
+
+    .card-a {
+      top: 20px;
+      left: 0;
+      width: 185px;
+    }
+
+    .card-b {
+      right: 0;
+      bottom: 30px;
+      width: 190px;
+    }
+  }
+
+  /* =========================================================
+     SMALL PHONE
+  ========================================================= */
+
+  @media (max-width: 480px) {
+    .hero-container {
+      width: calc(100% - 24px);
+    }
+
+    .hero-left {
+      padding-top: 35px;
+    }
+
+    .badge {
+      font-size: 9px;
+      padding: 6px 10px;
+    }
+
+    .hero h1 {
+      font-size: 38px;
+      letter-spacing: -1px;
+    }
+
+    .hero-description {
+      font-size: 14px;
+    }
+
     .picker-row {
-      display: none;
+      gap: 7px;
     }
 
-    /* Ganti lengkungan jadi kotak biasa (hilangkan SVG curve) */
-    .hero-curve {
-      display: none;
+    .pick {
+      width: 43px;
+      height: 43px;
     }
 
-    h1 {
-      font-size: 26px;
-      margin: 0 0 18px;
+    .btn-primary,
+    .btn-outline {
+      min-height: 45px;
+      padding: 0 17px;
+      font-size: 12px;
     }
-    .badge {
+
+    .hero-right {
+      height: 330px;
+    }
+
+    .hero-photo {
+      width: 280px;
+      height: 280px;
+    }
+
+    .card-a {
+      width: 155px;
+      padding: 11px 13px;
+    }
+
+    .card-title {
+      font-size: 12px;
+    }
+
+    .card-meta {
       font-size: 10px;
-      padding: 5px 10px;
-      margin-bottom: 14px;
     }
 
-    .cta-row {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 8px;
-    }
-    .btn-primary,
-    .btn-outline {
-      padding: 10px 18px;
-      font-size: 13px;
+    .card-b {
+      width: 165px;
+      padding: 11px 13px;
     }
 
-    /* Gambar vertical mobile, ikut kategori aktif */
-    .hero-mobile-img {
-      grid-area: img;
-      display: block;
-      position: relative;
-      flex: 0 0 auto;
-      width: 100px;
-      height: 150px;
-      border-radius: 14px;
-      overflow: hidden;
-      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
-      transform: translateX(-16px);
+    .name {
+      font-size: 11px;
     }
-    .hero-mobile-img img {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      opacity: 0;
-      transition: opacity 1s ease;
+
+    .msg {
+      font-size: 10.5px;
     }
-    .hero-mobile-img img.active {
-      opacity: 1;
+
+    .hero-wave {
+      height: 55px;
     }
   }
 
-  /* ===== HP KECIL (<= 420px) ===== */
-  @media (max-width: 420px) {
-    .hero {
-      padding: 24px 16px 32px;
-      gap: 10px;
-    }
-    h1 {
-      font-size: 22px;
-    }
-    .badge {
-      font-size: 9.5px;
-      padding: 4px 9px;
-    }
-    .btn-primary,
-    .btn-outline {
-      padding: 9px 16px;
-      font-size: 12.5px;
-    }
-    .hero-mobile-img {
-      width: 84px;
-      height: 128px;
-      border-radius: 12px;
-    }
-  }
 </style>
