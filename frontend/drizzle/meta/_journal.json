@@ -15,6 +15,20 @@
       "when": 1788848662555,
       "tag": "0001_strange_speedball",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1788933200044,
+      "tag": "0002_complete_lily_hollister",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1788936796912,
+      "tag": "0003_rich_fantastic_four",
+      "breakpoints": true
     }
   ]
 }

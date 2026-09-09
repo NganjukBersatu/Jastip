@@ -107,6 +107,27 @@
         ></textarea>
       </label>
 
+<!-- NOMOR WA -->
+<label class="flex flex-col gap-2">
+  <span class="text-[13.5px] font-bold text-ink">
+    Nomor WhatsApp
+  </span>
+
+  <span class="text-[12.5px] text-ink-soft leading-relaxed">
+    Dipakai pelanggan untuk menghubungimu langsung saat bayar transfer
+    bank / e-wallet. Wajib diisi.
+  </span>
+
+  <input
+    type="tel"
+    name="noWa"
+    value={data.profil?.noWa ?? ''}
+    placeholder="08123456789"
+    required
+    class="w-full rounded-xl border border-ink/15 bg-bg px-4 py-3 text-sm text-ink outline-none transition placeholder:text-ink-soft/60 focus:border-primary focus:ring-2 focus:ring-primary/10"
+  />
+</label>
+
       <!-- DESKRIPSI -->
       <label class="flex flex-col gap-2">
         <span class="text-[13.5px] font-bold text-ink">

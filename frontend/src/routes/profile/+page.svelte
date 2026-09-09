@@ -10,7 +10,7 @@
 </script>
 
 <svelte:head>
-  <title>Profil Saya — Titipa</title>
+  <title>Profil Saya — Nitip</title>
 </svelte:head>
 
 

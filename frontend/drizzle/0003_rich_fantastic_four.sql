@@ -1,0 +1,1 @@
+ALTER TABLE "pesanan" ADD COLUMN "pembayaran_dikonfirmasi" boolean DEFAULT false NOT NULL;

@@ -25,14 +25,23 @@ export const actions: Actions = {
 		const area = data.get('area')?.toString().trim();
 		const alamat = data.get('alamat')?.toString().trim() || null;
 		const deskripsi = data.get('deskripsi')?.toString().trim() || null;
+		const noWaRaw = data.get('noWa')?.toString().trim();
 
 		if (!area) {
 			return fail(400, { error: 'Kota/wilayah utama wajib diisi.' });
 		}
+		if (!noWaRaw) {
+			return fail(400, { error: 'Nomor WhatsApp wajib diisi.' });
+		}
+		if (!/^0[0-9]{9,13}$/.test(noWaRaw)) {
+			return fail(400, {
+				error: 'Format nomor WhatsApp tidak valid. Contoh: 08123456789'
+			});
+		}
 
 		await db
 			.update(jastiperProfiles)
-			.set({ area, alamat, deskripsi })
+			.set({ area, alamat, deskripsi, noWa: noWaRaw })
 			.where(eq(jastiperProfiles.userId, locals.user!.id));
 
 		return { sukses: true };

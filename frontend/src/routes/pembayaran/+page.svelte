@@ -105,6 +105,13 @@
           </label>
         {/each}
       </div>
+
+      {#if metodeDipilih === 'transfer_bank' || metodeDipilih === 'e_wallet'}
+        <p class="mt-3 text-xs text-ink-soft leading-relaxed bg-bg-alt rounded-xl px-4 py-3">
+          Setelah pesanan dibuat, kamu akan diarahkan untuk chat langsung dengan
+          jastiper lewat WhatsApp untuk menyelesaikan pembayaran.
+        </p>
+      {/if}
     </div>
 
     <button

@@ -1,4 +1,28 @@
 <script>
+  let { data } = $props();
+
+  /** @param {number} angka */
+  function formatRupiah(angka) {
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0
+    }).format(angka);
+  }
+
+  /** @param {string} noWa */
+  function formatNomorWa(noWa) {
+    const bersih = noWa.replace(/\D/g, '');
+    return bersih.startsWith('0') ? '62' + bersih.slice(1) : bersih;
+  }
+
+  /**
+   * @param {{ jastiperId: string, namaJastiper: string, noWa: string | null, total: number, perluWa: boolean }} k
+   */
+  function buatLinkWa(k) {
+    const pesan = `Halo ${k.namaJastiper}, saya baru saja pesan di Nitip (total ${formatRupiah(k.total)}). Saya mau lanjut bayar, ini konfirmasi pesanan saya ya.`;
+    return `https://wa.me/${formatNomorWa(k.noWa ?? '')}?text=${encodeURIComponent(pesan)}`;
+  }
 </script>
 
 <svelte:head>
@@ -13,6 +37,38 @@
   <p class="text-ink-soft text-sm max-w-[380px] mx-auto">
     Terima kasih sudah nitip. Jastiper akan segera memproses pesanan kamu.
   </p>
+
+  {#if data.kelompokJastiper.some((k) => k.perluWa)}
+    <div class="mt-10 text-left space-y-3">
+      <p class="text-xs font-bold uppercase tracking-wide text-ink-soft text-center mb-4">
+        Lanjutkan pembayaran lewat WhatsApp jastiper
+      </p>
+
+      {#each data.kelompokJastiper.filter((k) => k.perluWa) as k (k.jastiperId)}
+        <div class="border border-ink/10 rounded-2xl px-4 py-4 bg-white">
+          <div class="flex justify-between items-center mb-3">
+            <span class="font-semibold text-sm">{k.namaJastiper}</span>
+            <span class="font-display font-bold text-sm">{formatRupiah(k.total)}</span>
+          </div>
+
+          {#if k.noWa}
+            <a
+              href={buatLinkWa(k)}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="block text-center w-full py-3 rounded-full bg-green-600 text-white font-bold text-sm transition hover:-translate-y-0.5"
+            >
+              Chat via WhatsApp
+            </a>
+          {:else}
+            <p class="text-xs text-red-600 leading-relaxed">
+              Jastiper ini belum melengkapi nomor WhatsApp. Hubungi admin Nitip untuk bantuan pembayaran.
+            </p>
+          {/if}
+        </div>
+      {/each}
+    </div>
+  {/if}
 
   <a
     href="/publik/katalog"
