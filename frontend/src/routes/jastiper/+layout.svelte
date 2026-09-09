@@ -34,6 +34,11 @@
       icon: '<path d="M21 8 12 3 3 8l9 5 9-5Z"/><path d="M3 8v9l9 5 9-5V8"/><path d="M12 13v9"/>'
     },
     {
+      href: '/jastiper/laporan',
+      label: 'Laporan',
+      icon: '<path d="M3 3v18h18"/><path d="M18.5 9 13 14.5l-3-3L4 18"/>'
+    },
+    {
       href: '/jastiper/ongkir',
       label: 'Ongkir wilayah',
       icon: '<path d="M3 7h11v9H3z"/><path d="M14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="18" cy="18" r="2"/>'

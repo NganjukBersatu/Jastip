@@ -12,7 +12,7 @@
 </script>
 
 <svelte:head>
-  <title>Dashboard — Titipa</title>
+  <title>Dashboard — Nitip</title>
 </svelte:head>
 
 <div class="w-full max-w-[1140px] mx-auto px-4 py-8 sm:px-6 sm:py-10 lg:px-8">

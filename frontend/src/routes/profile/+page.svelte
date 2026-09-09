@@ -13,7 +13,7 @@
 </script>
 
 <svelte:head>
-  <title>Profil Saya — Titipa</title>
+  <title>Profil Saya — Nitip</title>
 </svelte:head>
 
 <div class="bg-bg min-h-[calc(100vh-76px)] py-16">

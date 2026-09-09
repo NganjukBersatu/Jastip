@@ -1,0 +1,1 @@
+ALTER TABLE "jastiper_profiles" ADD COLUMN "no_wa" text;

@@ -105,6 +105,7 @@ export const actions: Actions = {
 			: [];
 
 		const jastiperIdUnik = [...new Set(items.map((i) => i.jastiperId))];
+		const idPesananBaru: string[] = [];
 
 		for (const jastiperId of jastiperIdUnik) {
 			const itemKelompok = items.filter((i) => i.jastiperId === jastiperId);
@@ -119,9 +120,10 @@ export const actions: Actions = {
 				// ongkir cuma ditaruh di baris pertama tiap jastiper, biar tidak dobel kehitung
 				const ongkirBarisIni = i === 0 ? ongkirKelompok : 0;
 				const totalHarga = item.hargaSatuan * item.jumlah + ongkirBarisIni;
+				const idBaru = randomUUID();
 
 				await db.insert(pesanan).values({
-					id: randomUUID(),
+					id: idBaru,
 					produkId: item.produkId,
 					pelangganId: locals.user.id,
 					jastiperId: item.jastiperId,
@@ -134,11 +136,16 @@ export const actions: Actions = {
 					metodePembayaran,
 					status: 'menunggu_konfirmasi'
 				});
+
+				idPesananBaru.push(idBaru);
 			}
 		}
 
 		await db.delete(keranjangItem).where(eq(keranjangItem.pelangganId, locals.user.id));
 
-		throw redirect(303, '/pembayaran/selesai');
+		// ID pesanan yang baru dibuat dikirim lewat query string supaya halaman
+		// selesai bisa menampilkan ringkasan + tombol WA per jastiper tanpa
+		// perlu tabel/state tambahan, dan tetap aman dibuka ulang dari riwayat browser.
+		throw redirect(303, `/pembayaran/selesai?ids=${idPesananBaru.join(',')}`);
 	}
 };
