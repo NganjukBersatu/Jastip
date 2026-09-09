@@ -1,5 +1,9 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
+  import { heroThemeState } from '$lib/stores/heroTheme.svelte.js';
+
+  const heroTheme = heroThemeState();
+
 
   // =========================================================
   // DATA HERO
@@ -134,6 +138,10 @@
   });
 
   let active = $derived(categories[current]);
+
+  $effect(() => {
+  heroTheme.set(active.bg);
+});
 </script>
 
 <!-- =========================================================
