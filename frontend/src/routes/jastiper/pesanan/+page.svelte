@@ -3,9 +3,9 @@
 
   let { data } = $props();
 
-/** @type {string | null} */
-let pesananTerbuka = $state(null);
-	
+  /** @type {string | null} */
+  let pesananTerbuka = $state(null);
+
   /** @param {number} angka */
   function formatRupiah(angka) {
     return new Intl.NumberFormat('id-ID', {
@@ -67,24 +67,24 @@ let pesananTerbuka = $state(null);
   <title>Pesanan — Nitip</title>
 </svelte:head>
 
-<div class="w-full max-w-[900px] px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+<div class="w-full max-w-[1140px] mx-auto px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
   <!-- HEADER -->
-  <div class="mb-7 sm:mb-8">
-    <h1 class="text-2xl sm:text-[28px] font-extrabold tracking-tight text-ink">
+  <div class="mb-8 sm:mb-10 pb-6 border-b border-ink/10">
+    <h1 class="text-2xl sm:text-[30px] font-extrabold tracking-tight text-ink">
       Pesanan
     </h1>
 
-    <p class="text-ink-soft mt-1.5 text-sm sm:text-[15px] leading-relaxed">
+    <p class="text-ink-soft mt-2 text-sm sm:text-[15px] leading-relaxed">
       Pesanan yang masuk, perlu diantar ke mana, dan riwayatnya.
     </p>
   </div>
 
   <!-- PESANAN SEARAH -->
   {#if data.kelompokSatuJalur.length > 0}
-    <section class="mb-8">
-      <div class="mb-3">
-        <h2 class="font-bold text-[15px] text-ink">
-          🛵 Bisa dibeli &amp; diantar bareng
+    <section class="mb-10">
+      <div class="mb-3.5">
+        <h2 class="font-bold text-[15px] text-ink flex items-center gap-1.5">
+          <span>🛵</span> Bisa dibeli &amp; diantar bareng
         </h2>
 
         <p class="text-[13px] text-ink-soft mt-0.5 leading-relaxed">
@@ -94,14 +94,16 @@ let pesananTerbuka = $state(null);
 
       <div class="flex flex-col gap-3">
         {#each data.kelompokSatuJalur as kelompok (kelompok.wilayah)}
-          <div class="bg-orange-50 border border-orange-200 rounded-2xl p-4">
-            <div class="font-bold text-[13.5px] capitalize">
-              {kelompok.wilayah} · {kelompok.daftar.length} pesanan
+          <div class="bg-orange-50 border border-orange-200/80 rounded-2xl p-4 sm:p-5">
+            <div class="font-bold text-[13.5px] capitalize flex items-center gap-2">
+              <span class="w-1.5 h-1.5 rounded-full bg-orange-400"></span>
+              {kelompok.wilayah}
+              <span class="font-normal text-ink-soft">· {kelompok.daftar.length} pesanan</span>
             </div>
 
             <div class="flex flex-col gap-2 mt-3">
               {#each kelompok.daftar as p (p.id)}
-                <div class="bg-white rounded-xl px-3.5 py-3 text-[13px] flex flex-col gap-1 sm:flex-row sm:justify-between sm:items-center">
+                <div class="bg-white rounded-xl px-3.5 py-3 text-[13px] flex flex-col gap-1 sm:flex-row sm:justify-between sm:items-center shadow-[0_1px_2px_rgba(0,0,0,0.03)]">
                   <span class="font-semibold">
                     {p.produkNama}
                     <span class="font-normal text-ink-soft">
@@ -123,28 +125,33 @@ let pesananTerbuka = $state(null);
 
   <!-- PESANAN AKTIF -->
   <section>
-    <div class="mb-3">
+    <div class="mb-3.5 flex items-center gap-2">
       <h2 class="font-bold text-[15px] text-ink">
         Pesanan aktif
       </h2>
 
-      <p class="text-xs text-ink-soft mt-0.5">
-        Pesanan yang masih perlu diproses
-      </p>
+      {#if data.pesananAktif.length > 0}
+        <span class="text-[11px] font-bold bg-ink/8 text-ink-soft px-2 py-0.5 rounded-full">
+          {data.pesananAktif.length}
+        </span>
+      {/if}
     </div>
+    <p class="text-xs text-ink-soft -mt-3 mb-4">
+      Pesanan yang masih perlu diproses
+    </p>
 
     {#if data.pesananAktif.length === 0}
-      <div class="bg-white rounded-2xl border border-dashed border-ink/15 px-5 py-10 sm:p-12 text-center">
-        <div class="w-12 h-12 mx-auto mb-4 rounded-2xl bg-bg flex items-center justify-center">
-          <span class="text-xl">📦</span>
+      <div class="bg-white rounded-2xl border border-dashed border-ink/15 px-5 py-14 sm:p-16 text-center">
+        <div class="w-14 h-14 mx-auto mb-4 rounded-full bg-orange-50 flex items-center justify-center">
+          <span class="text-2xl">📦</span>
         </div>
 
-        <div class="font-bold text-sm">
+        <div class="font-bold text-[15px] text-ink">
           Belum ada pesanan aktif
         </div>
 
-        <div class="text-[13px] text-ink-soft mt-1">
-          Pesanan baru bakal muncul di sini.
+        <div class="text-[13.5px] text-ink-soft mt-1.5 max-w-[280px] mx-auto leading-relaxed">
+          Pesanan baru dari pelanggan bakal langsung muncul di sini.
         </div>
       </div>
     {:else}
@@ -153,7 +160,7 @@ let pesananTerbuka = $state(null);
           {@const st = labelStatus(p.status)}
 
           <div
-            class="bg-white rounded-2xl border border-ink/10 overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.025)] transition hover:shadow-md"
+            class="bg-white rounded-2xl border border-ink/10 overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.025)] transition hover:shadow-md hover:border-ink/15"
           >
             <!-- RINGKASAN -->
             <button
@@ -327,8 +334,8 @@ let pesananTerbuka = $state(null);
 
   <!-- RIWAYAT -->
   {#if data.riwayat.length > 0}
-    <section class="mt-9 sm:mt-10">
-      <div class="mb-3">
+    <section class="mt-10 sm:mt-12">
+      <div class="mb-3.5">
         <h2 class="font-bold text-[15px] text-ink">
           Riwayat
         </h2>
@@ -342,7 +349,7 @@ let pesananTerbuka = $state(null);
         {#each data.riwayat as p (p.id)}
           {@const st = labelStatus(p.status)}
 
-          <div class="bg-white rounded-xl border border-ink/10 px-4 py-3.5 flex items-center justify-between gap-4">
+          <div class="bg-white rounded-xl border border-ink/10 px-4 py-3.5 flex items-center justify-between gap-4 transition hover:border-ink/15">
             <div class="min-w-0">
               <div class="font-semibold text-[13.5px] truncate">
                 {p.produkNama}

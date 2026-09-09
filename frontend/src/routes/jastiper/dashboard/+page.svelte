@@ -15,11 +15,11 @@
   <title>Dashboard — Titipa</title>
 </svelte:head>
 
-<div class="w-full max-w-[1080px] px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+<div class="w-full max-w-[1140px] mx-auto px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
   <!-- HEADER -->
-  <div class="mb-7 sm:mb-8">
+  <div class="mb-8 sm:mb-10 pb-6 border-b border-ink/10">
     <div class="flex items-center gap-2.5">
-      <h1 class="text-2xl sm:text-[28px] font-extrabold tracking-tight text-ink">
+      <h1 class="text-2xl sm:text-[30px] font-extrabold tracking-tight text-ink">
         Halo, {data.user.nama.split(' ')[0]}
       </h1>
 
@@ -36,14 +36,14 @@
       </svg>
     </div>
 
-    <p class="text-ink-soft mt-1.5 text-sm sm:text-[15px]">
+    <p class="text-ink-soft mt-2 text-sm sm:text-[15px]">
       Ini ringkasan lapak titip kamu hari ini.
     </p>
   </div>
 
   <!-- PROFIL WARNING -->
   {#if areaBelumDiisi}
-    <div class="mb-7 rounded-2xl border border-primary/20 bg-bg-alt p-4 sm:p-5">
+    <div class="mb-8 rounded-2xl border border-primary/20 bg-bg-alt p-4 sm:p-5">
       <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div class="min-w-0">
           <div class="font-bold text-sm text-ink">
@@ -57,7 +57,7 @@
 
         <a
           href="/jastiper/pengaturan"
-          class="shrink-0 inline-flex items-center justify-center rounded-xl bg-ink text-bg font-bold text-[13px] px-4 py-3 hover:-translate-y-0.5 hover:shadow-md transition"
+          class="shrink-0 inline-flex items-center justify-center rounded-xl bg-ink text-bg font-bold text-[13px] px-4 py-3 min-h-[44px] hover:-translate-y-0.5 hover:shadow-md transition"
         >
           Lengkapi sekarang
         </a>
@@ -67,7 +67,7 @@
 
   <!-- STATISTIK -->
   <section>
-    <div class="mb-3">
+    <div class="mb-3.5">
       <h2 class="text-sm font-extrabold text-ink">Ringkasan lapak</h2>
       <p class="text-xs text-ink-soft mt-0.5">Aktivitas tokomu saat ini</p>
     </div>
@@ -75,7 +75,7 @@
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
       {#each kartuStatistik as kartu}
         <div
-          class="rounded-2xl sm:rounded-[22px] p-4 sm:p-5 {kartu.warna} shadow-[0_2px_10px_rgba(0,0,0,0.025)] transition hover:-translate-y-0.5 hover:shadow-md"
+          class="rounded-2xl p-4 sm:p-5 {kartu.warna} shadow-[0_2px_10px_rgba(0,0,0,0.025)] transition hover:-translate-y-0.5 hover:shadow-md"
         >
           <div class="font-display text-2xl sm:text-3xl font-semibold">
             {kartu.nilai}
@@ -90,8 +90,8 @@
   </section>
 
   <!-- AKSI CEPAT -->
-  <section class="mt-8 sm:mt-9">
-    <div class="mb-3">
+  <section class="mt-9 sm:mt-10">
+    <div class="mb-3.5">
       <h2 class="text-sm font-extrabold text-ink">Aksi cepat</h2>
       <p class="text-xs text-ink-soft mt-0.5">
         Kelola lapakmu dengan cepat
@@ -101,7 +101,7 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
       <a
         href="/jastiper/produk/baru"
-        class="bg-white rounded-2xl border border-ink/10 p-4 sm:p-5 hover:border-primary/40 hover:-translate-y-0.5 hover:shadow-md transition"
+        class="bg-white rounded-2xl border border-ink/10 p-4 sm:p-5 shadow-[0_2px_12px_rgba(0,0,0,0.025)] hover:border-primary/40 hover:-translate-y-0.5 hover:shadow-md transition"
       >
         <div class="w-10 h-10 rounded-xl bg-bg-alt flex items-center justify-center">
           <svg class="w-5 h-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round">
@@ -117,7 +117,7 @@
 
       <a
         href="/jastiper/ongkir"
-        class="bg-white rounded-2xl border border-ink/10 p-4 sm:p-5 hover:border-primary/40 hover:-translate-y-0.5 hover:shadow-md transition"
+        class="bg-white rounded-2xl border border-ink/10 p-4 sm:p-5 shadow-[0_2px_12px_rgba(0,0,0,0.025)] hover:border-primary/40 hover:-translate-y-0.5 hover:shadow-md transition"
       >
         <div class="w-10 h-10 rounded-xl bg-bg-alt flex items-center justify-center">
           <svg class="w-5 h-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
@@ -136,7 +136,7 @@
 
       <a
         href="/jastiper/pengajuan-harga"
-        class="bg-white rounded-2xl border border-ink/10 p-4 sm:p-5 hover:border-primary/40 hover:-translate-y-0.5 hover:shadow-md transition"
+        class="bg-white rounded-2xl border border-ink/10 p-4 sm:p-5 shadow-[0_2px_12px_rgba(0,0,0,0.025)] hover:border-primary/40 hover:-translate-y-0.5 hover:shadow-md transition"
       >
         <div class="w-10 h-10 rounded-xl bg-bg-alt flex items-center justify-center">
           <svg class="w-5 h-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
@@ -153,29 +153,34 @@
   </section>
 
   <!-- PESANAN TERBARU -->
-  <section class="mt-8 sm:mt-9">
-    <div class="mb-3">
-      <h2 class="text-lg font-display font-semibold text-ink">
+  <section class="mt-9 sm:mt-10">
+    <div class="mb-3.5 flex items-center gap-2">
+      <h2 class="font-bold text-[15px] text-ink">
         Pesanan terbaru
       </h2>
 
-      <p class="text-xs text-ink-soft mt-0.5">
-        Aktivitas pesanan terakhir
-      </p>
+      {#if data.pesananTerbaru.length > 0}
+        <span class="text-[11px] font-bold bg-ink/8 text-ink-soft px-2 py-0.5 rounded-full">
+          {data.pesananTerbaru.length}
+        </span>
+      {/if}
     </div>
+    <p class="text-xs text-ink-soft -mt-2.5 mb-4">
+      Aktivitas pesanan terakhir
+    </p>
 
     {#if data.pesananTerbaru.length === 0}
-      <div class="bg-white rounded-2xl border border-dashed border-ink/15 px-5 py-10 sm:p-10 text-center">
-        <div class="w-12 h-12 mx-auto mb-4 rounded-2xl bg-bg flex items-center justify-center">
-          <svg class="w-6 h-6 text-ink-soft" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+      <div class="bg-white rounded-2xl border border-dashed border-ink/15 px-5 py-14 sm:p-16 text-center">
+        <div class="w-14 h-14 mx-auto mb-4 rounded-full bg-orange-50 flex items-center justify-center">
+          <svg class="w-6 h-6 text-primary-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
             <path d="M22 12h-6l-2 3h-4l-2-3H2" />
             <path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11Z" />
           </svg>
         </div>
 
-        <div class="font-bold text-sm">Belum ada pesanan masuk</div>
+        <div class="font-bold text-[15px] text-ink">Belum ada pesanan masuk</div>
 
-        <div class="text-[13px] text-ink-soft mt-1 leading-relaxed">
+        <div class="text-[13.5px] text-ink-soft mt-1.5 max-w-[300px] mx-auto leading-relaxed">
           Pesanan dari pelanggan bakal muncul di sini begitu ada yang order.
         </div>
       </div>
