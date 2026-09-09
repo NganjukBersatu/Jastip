@@ -357,7 +357,7 @@
 							</div>
 							<div class="font-bold text-[15px] mt-1.5 line-clamp-2 min-h-[2.5em]">{item.nama}</div>
 							<div class="flex justify-between items-center mt-3 gap-2">
-								<div class="font-display font-semibold text-base">
+								<div class="font-display font-semibold text-base min-w-0 truncate">
 									{formatRupiah(item.harga)}
 									{#if item.hargaTipe === 'nego'}
 										<span class="text-[11px] font-semibold text-ink-soft font-sans block"
@@ -378,7 +378,7 @@
 										Pesan →
 									</a>
 								{:else if item.hargaTipe === 'nego'}
-									<form method="POST" action="?/chatJastiper" use:enhance>
+									<form method="POST" action="?/chatJastiper" use:enhance class="shrink-0"> 
 										<input type="hidden" name="produkId" value={item.id} />
 										<button
 											type="submit"
