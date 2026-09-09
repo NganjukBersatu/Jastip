@@ -1,19 +1,27 @@
 <script>
   import { page } from '$app/stores';
   import { notifikasiState } from '$lib/stores/notifikasi.svelte';
+  import { heroThemeState } from '$lib/stores/heroTheme.svelte.js';
 
-  // Halaman aktif, dipakai untuk highlight menu — kirim dari parent, mis. active="katalog"
   let { active = '' } = $props();
 
   let user = $derived($page.data.user);
   let inisial = $derived(user?.nama?.charAt(0)?.toUpperCase() ?? '?');
 
   const notifikasi = notifikasiState();
+  const heroTheme = heroThemeState();
 
-  // Sembunyikan navbar di semua halaman jastiper
   let isJastiperPage = $derived($page.url.pathname.startsWith('/jastiper'));
+  let isHomePage = $derived($page.url.pathname === '/');
 
-  // State untuk buka/tutup menu mobile
+  // Di halaman Home, navbar ikut gradient Hero (biar menyatu sempurna).
+  // Di halaman lain, pakai warna flat krem seperti biasa.
+  let navBackground = $derived(
+    isHomePage
+      ? heroTheme.bg
+      : '#FFE4C7'
+  );
+
   let menuTerbuka = $state(false);
 
   function toggleMenu() {
@@ -26,27 +34,31 @@
 </script>
 
 {#if !isJastiperPage}
-  <nav class="sticky top-0 z-50 bg-bg border-b border-ink/10">
+  <nav class="sticky top-0 z-50" style="background: {navBackground};">
     <div class="max-w-[1180px] mx-auto px-5 sm:px-8 h-[68px] sm:h-[76px] flex items-center justify-between overflow-hidden">
+      <!-- Logo -->
       <div class="flex-1 flex items-center">
         <a href="/" class="flex items-center -ml-9 sm:-ml-10" onclick={tutupMenu}>
-          <img src="/images/logo.png" alt="Nitip" class="h-2 sm:h-28 w-auto" />
+          <img src="/images/logo.png" alt="Nitip" class="h-10 sm:h-12 w-auto" />
         </a>
       </div>
 
+      <!-- Menu desktop -->
       <div class="hidden md:flex gap-9 font-semibold text-sm flex-shrink-0">
-        <a href="/"
+        <a
+          href="/"
           class="opacity-75 hover:opacity-100 transition {active === 'home' ? 'opacity-100 text-primary-dark' : ''}"
         >
           Home
         </a>
 
-      <a
+        <a
           href="/publik/katalog"
           class="opacity-75 hover:opacity-100 transition {active === 'katalog' ? 'opacity-100 text-primary-dark' : ''}"
         >
           Katalog
         </a>
+
         {#if user?.role !== 'jastiper'}
           <a
             href="/publik/jadi-jastiper"
@@ -55,6 +67,7 @@
             Jadi jastiper
           </a>
         {/if}
+
         <a
           href="/publik/cara-kerja"
           class="opacity-75 hover:opacity-100 transition {active === 'cara-kerja' ? 'opacity-100 text-primary-dark' : ''}"
@@ -62,7 +75,6 @@
           Cara kerja
         </a>
 
-        <!-- Menu khusus role pelanggan -->
         {#if user?.role === 'pelanggan'}
           <a
             href="/pelanggan/chat"
@@ -70,7 +82,9 @@
           >
             Chat jastiper
             {#if notifikasi.jumlah > 0}
-              <span class="absolute -top-2 -right-3 bg-primary text-bg text-[10px] font-bold rounded-full min-w-4 h-4 px-1 flex items-center justify-center">
+              <span
+                class="absolute -top-2 -right-3 bg-primary text-bg text-[10px] font-bold rounded-full min-w-4 h-4 px-1 flex items-center justify-center"
+              >
                 {notifikasi.jumlah > 9 ? '9+' : notifikasi.jumlah}
               </span>
             {/if}
@@ -80,11 +94,10 @@
             href="/pesanan"
             class="opacity-75 hover:opacity-100 transition {active === 'pesanan' ? 'opacity-100 text-primary-dark' : ''}"
           >
-           Lihat pesanan
+            Lihat pesanan
           </a>
         {/if}
 
-        <!-- Menu khusus role jastiper -->
         {#if user?.role === 'jastiper'}
           <a
             href="/jastiper/dashboard"
@@ -95,6 +108,7 @@
         {/if}
       </div>
 
+      <!-- Kanan -->
       <div class="flex-1 flex items-center justify-end gap-3">
         {#if user?.role === 'pelanggan'}
           <a
@@ -102,7 +116,15 @@
             aria-label="Keranjang"
             class="w-9 h-9 rounded-full flex items-center justify-center hover:bg-ink/5 transition"
           >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="w-5 h-5"
+            >
               <circle cx="9" cy="21" r="1" />
               <circle cx="20" cy="21" r="1" />
               <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
@@ -121,9 +143,13 @@
             {user.nama.split(' ')[0]}
           </a>
         {:else}
-          <a href="/publik/masuk" class="hidden sm:inline-block font-bold text-sm opacity-80 hover:opacity-100 transition">
+          <a
+            href="/publik/masuk"
+            class="hidden sm:inline-block font-bold text-sm opacity-80 hover:opacity-100 transition"
+          >
             Masuk
           </a>
+
           <a
             href="/publik/daftar"
             class="hidden sm:inline-flex items-center justify-center rounded-pill bg-ink text-bg font-bold text-sm px-6 py-3 transition hover:-translate-y-0.5"
@@ -132,7 +158,6 @@
           </a>
         {/if}
 
-        <!-- Tombol hamburger, cuma tampil di bawah md -->
         <button
           type="button"
           aria-label={menuTerbuka ? 'Tutup menu' : 'Buka menu'}
@@ -141,12 +166,28 @@
           class="md:hidden w-9 h-9 rounded-full flex items-center justify-center hover:bg-ink/5 transition"
         >
           {#if menuTerbuka}
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="w-5 h-5"
+            >
               <line x1="18" y1="6" x2="6" y2="18" />
               <line x1="6" y1="6" x2="18" y2="18" />
             </svg>
           {:else}
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="w-5 h-5"
+            >
               <line x1="3" y1="6" x2="21" y2="6" />
               <line x1="3" y1="12" x2="21" y2="12" />
               <line x1="3" y1="18" x2="21" y2="18" />
@@ -158,7 +199,7 @@
 
     <!-- Panel menu mobile -->
     {#if menuTerbuka}
-      <div class="md:hidden border-t border-ink/10 bg-bg">
+      <div class="md:hidden" style="background: {navBackground};">
         <div class="flex flex-col py-2">
           <a
             href="/"
@@ -175,6 +216,7 @@
           >
             Katalog
           </a>
+
           {#if user?.role !== 'jastiper'}
             <a
               href="/publik/jadi-jastiper"
@@ -184,6 +226,7 @@
               Jadi jastiper
             </a>
           {/if}
+
           <a
             href="/publik/cara-kerja"
             onclick={tutupMenu}
@@ -200,11 +243,14 @@
             >
               Chat jastiper
               {#if notifikasi.jumlah > 0}
-                <span class="ml-2 inline-flex items-center justify-center bg-primary text-bg text-[10px] font-bold rounded-full min-w-4 h-4 px-1">
+                <span
+                  class="ml-2 inline-flex items-center justify-center bg-primary text-bg text-[10px] font-bold rounded-full min-w-4 h-4 px-1"
+                >
                   {notifikasi.jumlah > 9 ? '9+' : notifikasi.jumlah}
                 </span>
               {/if}
             </a>
+
             <a
               href="/pesanan"
               onclick={tutupMenu}
@@ -225,8 +271,7 @@
           {/if}
         </div>
 
-        <!-- Aksi akun, cuma tampil di panel mobile (sm:hidden di navbar sudah disembunyikan di atas) -->
-        <div class="sm:hidden px-5 pb-4 pt-1 border-t border-ink/10">
+        <div class="sm:hidden px-5 pb-4 pt-1">
           {#if user}
             <a
               href="/profile"
@@ -247,6 +292,7 @@
               >
                 Masuk
               </a>
+
               <a
                 href="/publik/daftar"
                 onclick={tutupMenu}
