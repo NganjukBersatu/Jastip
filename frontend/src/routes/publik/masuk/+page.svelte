@@ -35,11 +35,6 @@
         <div class="pot"></div>
       </div>
 
-      <div class="plant-text">
-        <b>nitip</b>
-        <span>♥</span>
-      </div>
-
       <div class="packages">
         <div class="package-top">
           <div class="package-line"></div>
@@ -277,7 +272,7 @@
   .hero h1 {
     margin: 10px 0;
     font-family: var(--font-display);
-    font-size: 28px;          /* sebelumnya 25px */
+    font-size: 28px;
     font-style: italic;
     color: #2a1a0e;
   }
@@ -286,7 +281,7 @@
     max-width: 450px;
     margin: auto;
     color: #7a5e44;
-    font-size: 15px;          /* sebelumnya 12px */
+    font-size: 15px;
     line-height: 1.7;
   }
 
@@ -299,58 +294,44 @@
     margin-top: 5px;
   }
 
+  /* Tanaman dibuat lebih besar & proporsional, tanpa teks yang menabrak daun */
   .plant {
     position: absolute;
-    left: 10px;
+    left: 15px;
     bottom: 18px;
-    width: 75px;
-    height: 90px;
+    width: 95px;
+    height: 115px;
   }
 
   .pot {
     position: absolute;
     bottom: 0;
-    left: 19px;
-    width: 42px;
-    height: 40px;
-    border-radius: 5px 5px 14px 14px;
+    left: 22px;
+    width: 52px;
+    height: 48px;
+    border-radius: 6px 6px 16px 16px;
     background: #f1dfc1;
+    box-shadow: inset 0 -6px 0 rgba(0,0,0,.04);
   }
 
   .leaf {
     position: absolute;
-    bottom: 30px;
-    left: 35px;
-    width: 22px;
-    height: 57px;
+    bottom: 38px;
+    left: 46px;
+    width: 26px;
+    height: 68px;
     border-radius: 100% 0;
     background: #8cae5b;
+    transform-origin: bottom center;
   }
 
-  .leaf-1 { transform: rotate(-40deg); }
-  .leaf-2 { transform: rotate(8deg); }
-  .leaf-3 { transform: rotate(42deg); }
-
-  .plant-text {
-    position: absolute;
-    left: 70px;
-    bottom: 45px;
-    color: #ff641d;
-    font-family: var(--font-display);
-    font-size: 23px;
-    font-weight: 900;
-  }
-
-  .plant-text span {
-    display: block;
-    text-align: center;
-    font-family: var(--font-sans);
-    font-size: 13px;
-  }
+  .leaf-1 { transform: translateX(-14px) rotate(-38deg); background: #7ba14e; }
+  .leaf-2 { transform: translateX(0) rotate(6deg); background: #8cae5b; }
+  .leaf-3 { transform: translateX(14px) rotate(40deg); background: #9bbd6c; }
 
   .packages {
     position: absolute;
-    left: 30%;
+    left: 33%;
     bottom: 20px;
     width: 150px;
     height: 130px;
@@ -500,13 +481,13 @@
   }
 
   .feature strong {
-    font-size: 13px;          /* sebelumnya 10px */
+    font-size: 13px;
   }
 
   .feature small {
     margin-top: 2px;
     color: #987c62;
-    font-size: 12px;          /* sebelumnya 8px */
+    font-size: 12px;
   }
 
   /* LOGIN */
@@ -530,7 +511,7 @@
 
   .login-header span {
     color: #ff641d;
-    font-size: 13px;          /* sebelumnya 11px */
+    font-size: 13px;
     font-weight: 700;
   }
 
@@ -545,7 +526,7 @@
   .login-header p {
     margin: 0;
     color: #8b7766;
-    font-size: 14px;          /* sebelumnya 11px */
+    font-size: 14px;
   }
 
   .login-form {
@@ -559,7 +540,7 @@
   .form-group label {
     display: block;
     margin-bottom: 7px;
-    font-size: 13px;          /* sebelumnya 11px */
+    font-size: 13px;
     font-weight: 700;
   }
 
@@ -586,7 +567,7 @@
     border-radius: 11px;
     outline: none;
     font-family: var(--font-sans);
-    font-size: 14px;          /* sebelumnya 11px */
+    font-size: 14px;
     color: #2a1a0e;
   }
 
@@ -625,7 +606,7 @@
   }
 
   .forgot a {
-    font-size: 13px;          /* sebelumnya 10px */
+    font-size: 13px;
   }
 
   .login-button {
@@ -636,7 +617,7 @@
     background: linear-gradient(135deg,#ff641d,#f45112);
     color: white;
     font-family: var(--font-sans);
-    font-size: 15px;          /* sebelumnya 12px */
+    font-size: 15px;
     font-weight: 700;
     cursor: pointer;
   }
@@ -657,7 +638,7 @@
   .divider p {
     margin: 0;
     color: #999;
-    font-size: 13px;          /* sebelumnya 10px */
+    font-size: 13px;
   }
 
   .google-button {
@@ -672,7 +653,7 @@
     background: white;
     color: #222;
     text-decoration: none;
-    font-size: 14px;          /* sebelumnya 11px */
+    font-size: 14px;
     font-weight: 700;
   }
 
@@ -690,7 +671,7 @@
     margin: 20px 0 0;
     text-align: center;
     color: #8b8b8b;
-    font-size: 13px;          /* sebelumnya 10px */
+    font-size: 13px;
   }
 
   .register a {

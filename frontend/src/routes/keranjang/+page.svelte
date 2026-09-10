@@ -7,6 +7,7 @@
   // Default-nya pilihan pertama kalau jastiper itu punya opsi ongkir.
   let wilayahTerpilih = $state(
     Object.fromEntries(
+      // svelte-ignore state_referenced_locally
       data.kelompokJastiper.map((k) => [k.jastiperId, k.ongkirOptions[0]?.id ?? ''])
     )
   );
@@ -58,21 +59,34 @@
   <title>Keranjang — Nitip.</title>
 </svelte:head>
 
-<section class="max-w-[900px] mx-auto px-5 md:px-8 py-10 sm:py-14">
-  <h1 class="text-2xl md:text-3xl font-bold mb-6 sm:mb-8">Keranjang kamu</h1>
+<div class="w-full max-w-310 mx-auto px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
+  <!-- HEADER -->
+  <div class="mb-8 sm:mb-10 pb-6 border-b border-ink/10">
+    <h1 class="text-2xl sm:text-[30px] font-extrabold tracking-tight text-ink">Keranjang kamu</h1>
+  </div>
 
   {#if data.kelompokJastiper.length === 0}
-    <div class="text-center py-20 bg-bg-alt rounded-[26px]">
-      <p class="text-lg font-semibold">Keranjang masih kosong</p>
-      <p class="text-ink-soft text-sm mt-1">Yuk cari titipan di katalog dulu.</p>
-      <a href="/publik/katalog" class="inline-block mt-6 px-6 py-3 rounded-full bg-ink text-bg font-bold text-sm">
+    <div class="bg-white rounded-2xl border border-dashed border-ink/15 px-5 py-14 sm:p-16 text-center">
+      <div class="w-14 h-14 mx-auto mb-4 rounded-full bg-orange-50 flex items-center justify-center">
+        <span class="text-2xl">🛒</span>
+      </div>
+
+      <div class="font-bold text-[15px] text-ink">Keranjang masih kosong</div>
+      <div class="text-[13.5px] text-ink-soft mt-1.5 max-w-75 mx-auto leading-relaxed">
+        Yuk cari titipan di katalog dulu.
+      </div>
+
+      <a
+        href="/publik/katalog"
+        class="inline-block mt-6 px-6 py-3 rounded-full bg-ink text-bg font-bold text-sm hover:-translate-y-0.5 hover:shadow-md transition"
+      >
         Lihat katalog
       </a>
     </div>
   {:else}
-    <div class="space-y-8">
+    <div class="space-y-6">
       {#each data.kelompokJastiper as kelompok (kelompok.jastiperId)}
-        <div class="bg-white border border-ink/10 rounded-[22px] p-4 sm:p-5">
+        <div class="bg-white rounded-2xl border border-ink/10 shadow-[0_2px_12px_rgba(0,0,0,0.025)] p-4 sm:p-5">
           <div class="text-[13px] font-bold text-ink-soft uppercase tracking-wide mb-3">
             Jastiper {kelompok.jastiperNama} · {kelompok.area ?? '—'}
           </div>
@@ -88,8 +102,8 @@
                   {/if}
                 </div>
 
-                <div class="flex-1 min-w-[150px]">
-                  <div class="font-bold text-sm">{item.namaProduk}</div>
+                <div class="flex-1 min-w-37.5">
+                  <div class="font-bold text-sm text-ink">{item.namaProduk}</div>
                   <div class="font-display font-semibold mt-1">{formatRupiah(item.hargaSatuan)}</div>
                 </div>
 
@@ -165,7 +179,7 @@
     </div>
 
     <div class="mt-10 flex justify-between items-center border-t border-ink/10 pt-6">
-      <span class="font-bold text-lg">Total</span>
+      <span class="font-bold text-lg text-ink">Total</span>
       <span class="font-display font-bold text-2xl">{formatRupiah(totalHarga)}</span>
     </div>
 
@@ -187,4 +201,4 @@
       </a>
     {/if}
   {/if}
-</section>
+</div>

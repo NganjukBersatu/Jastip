@@ -25,12 +25,21 @@
   <title>Pembayaran — Nitip.</title>
 </svelte:head>
 
-<section class="max-w-[700px] mx-auto px-5 md:px-8 py-14">
-  <h1 class="text-2xl md:text-3xl font-bold mb-8">Pembayaran</h1>
+<div class="w-full max-w-310 mx-auto px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
+  <!-- HEADER -->
+  <div class="mb-8 sm:mb-10 pb-6 border-b border-ink/10">
+    <h1 class="text-2xl sm:text-[30px] font-extrabold tracking-tight text-ink">Pembayaran</h1>
+    <p class="text-ink-soft mt-2 text-sm sm:text-[15px] leading-relaxed">
+      Cek ringkasan pesanan dan selesaikan pembayaranmu.
+    </p>
+  </div>
 
   {#if form?.error}
-    <div class="mb-6 bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3">
-      {form.error}
+    <div class="mb-6 flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 px-4 py-3.5 text-[13.5px] font-semibold leading-relaxed text-red-700">
+      <span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-red-100 text-[11px] font-extrabold">
+        !
+      </span>
+      <span>{form.error}</span>
     </div>
   {/if}
 
@@ -39,14 +48,14 @@
 
     <!-- Ringkasan pesanan, dikelompokkan per jastiper (ongkir beda-beda tiap jastiper) -->
     <div>
-      <h2 class="font-bold text-sm uppercase tracking-wide text-ink-soft mb-3">Ringkasan pesanan</h2>
+      <h2 class="font-bold text-[15px] text-ink mb-3">Ringkasan pesanan</h2>
       <div class="space-y-4">
         {#each data.kelompokJastiper as kelompok (kelompok.jastiperId)}
-          <div class="bg-white border border-ink/10 rounded-2xl divide-y divide-ink/10">
+          <div class="bg-white border border-ink/10 rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.025)] divide-y divide-ink/10 overflow-hidden">
             {#each kelompok.items as item (item.produkId)}
               <div class="flex justify-between items-center px-4 py-3">
                 <div>
-                  <div class="font-semibold text-sm">{item.namaProduk}</div>
+                  <div class="font-semibold text-sm text-ink">{item.namaProduk}</div>
                   <div class="text-xs text-ink-soft">{item.jumlah} x {formatRupiah(item.hargaSatuan)}</div>
                 </div>
                 <div class="font-display font-semibold text-sm">
@@ -54,7 +63,7 @@
                 </div>
               </div>
             {/each}
-            <div class="flex justify-between items-center px-4 py-3 text-sm bg-bg-alt rounded-b-2xl">
+            <div class="flex justify-between items-center px-4 py-3 text-sm bg-bg-alt">
               <span class="text-ink-soft">Ongkir {kelompok.wilayah ? `(${kelompok.wilayah})` : ''}</span>
               <span class="font-semibold">{formatRupiah(kelompok.ongkir)}</span>
             </div>
@@ -70,7 +79,7 @@
 
     <!-- Alamat pengiriman -->
     <div>
-      <label for="alamat" class="font-bold text-sm uppercase tracking-wide text-ink-soft mb-3 block">
+      <label for="alamat" class="font-bold text-[15px] text-ink mb-3 block">
         Alamat pengiriman
       </label>
       <textarea
@@ -85,7 +94,7 @@
 
     <!-- Metode pembayaran -->
     <div>
-      <span class="font-bold text-sm uppercase tracking-wide text-ink-soft mb-3 block">
+      <span class="font-bold text-[15px] text-ink mb-3 block">
         Metode pembayaran
       </span>
       <div class="space-y-2.5">
@@ -121,4 +130,4 @@
       Bayar sekarang · {formatRupiah(data.totalBayar)}
     </button>
   </form>
-</section>
+</div>

@@ -27,31 +27,42 @@
 	<title>Chat jastiper — Nitip</title>
 </svelte:head>
 
-<div class="p-8 max-w-180 mx-auto">
-	<h1 class="text-[28px]">Chat jastiper</h1>
-	<p class="text-ink-soft mt-1 text-[15px]">Semua percakapan nego harga kamu.</p>
+<div class="w-full max-w-310 mx-auto px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
+	<!-- HEADER -->
+	<div class="mb-8 sm:mb-10 pb-6 border-b border-ink/10">
+		<h1 class="text-2xl sm:text-[30px] font-extrabold tracking-tight text-ink">Chat jastiper</h1>
+		<p class="text-ink-soft mt-2 text-sm sm:text-[15px] leading-relaxed">
+			Semua percakapan nego harga kamu.
+		</p>
+	</div>
 
-	{#if data.daftarPercakapan.length === 0}
-		<div class="mt-8 bg-white rounded-2xl border border-dashed border-ink/15 p-12 text-center">
-			<div class="font-bold text-sm">Belum ada percakapan</div>
-			<div class="text-[13.5px] text-ink-soft mt-1">
-				Klik "Chat jastiper" di produk yang bisa dinego buat mulai obrolan.
-			</div>
-		</div>
-	{:else}
-		<div class="mt-6 flex flex-col gap-3">
+	<!-- ===== DAFTAR PERCAKAPAN ===== -->
+	<div class="mb-3.5 flex items-center gap-2">
+		<h2 class="font-bold text-[15px] text-ink">Daftar percakapan</h2>
+
+		{#if data.daftarPercakapan.length > 0}
+			<span class="text-[11px] font-bold bg-ink/8 text-ink-soft px-2 py-0.5 rounded-full">
+				{data.daftarPercakapan.length}
+			</span>
+		{/if}
+	</div>
+
+	{#if data.daftarPercakapan.length > 0}
+		<div class="flex flex-col gap-3">
 			{#each data.daftarPercakapan as p (p.id)}
 				{@const st = labelStatus(p.status)}
 				<a
 					href="/pelanggan/chat/{p.id}"
-					class="bg-white rounded-2xl border border-ink/10 p-4 flex justify-between items-start gap-4 hover:border-ink/25 transition"
+					class="bg-white rounded-2xl border border-ink/10 shadow-[0_2px_12px_rgba(0,0,0,0.025)] p-4 sm:p-5 flex justify-between items-start gap-4 transition hover:shadow-md hover:border-ink/15"
 				>
 					<div class="min-w-0">
-						<div class="flex items-center gap-2">
-							<span class="font-bold text-sm">{p.namaItem}</span>
-							<span class="text-[11px] font-bold px-2 py-0.5 rounded-full {st.kelas} shrink-0">{st.teks}</span>
+						<div class="flex items-center gap-2 flex-wrap">
+							<span class="font-bold text-sm text-ink">{p.namaItem}</span>
+							<span class="text-[11px] font-extrabold px-2.5 py-0.5 rounded-full {st.kelas} shrink-0">
+								{st.teks}
+							</span>
 						</div>
-						<div class="text-[13px] text-ink-soft mt-0.5">dengan {p.jastiperNama}</div>
+						<div class="text-[13px] text-ink-soft mt-1">dengan {p.jastiperNama}</div>
 						{#if p.pesanTerakhir}
 							<div class="text-[13px] text-ink-soft mt-1.5 truncate">
 								{p.pesanTerakhir.isi}
@@ -68,6 +79,17 @@
 					</div>
 				</a>
 			{/each}
+		</div>
+	{:else}
+		<div class="bg-white rounded-2xl border border-dashed border-ink/15 px-5 py-14 sm:p-16 text-center">
+			<div class="w-14 h-14 mx-auto mb-4 rounded-full bg-orange-50 flex items-center justify-center">
+				<span class="text-2xl">💬</span>
+			</div>
+
+			<div class="font-bold text-[15px] text-ink">Belum ada percakapan</div>
+			<div class="text-[13.5px] text-ink-soft mt-1.5 max-w-75 mx-auto leading-relaxed">
+				Klik "Chat jastiper" di produk yang bisa dinego buat mulai obrolan.
+			</div>
 		</div>
 	{/if}
 </div>
