@@ -27,7 +27,7 @@
 	<title>Chat jastiper — Nitip</title>
 </svelte:head>
 
-<div class="p-8 max-w-[720px] mx-auto">
+<div class="p-8 max-w-180 mx-auto">
 	<h1 class="text-[28px]">Chat jastiper</h1>
 	<p class="text-ink-soft mt-1 text-[15px]">Semua percakapan nego harga kamu.</p>
 

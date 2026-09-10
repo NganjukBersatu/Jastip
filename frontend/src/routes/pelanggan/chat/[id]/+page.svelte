@@ -527,7 +527,7 @@
 										placeholder="Jumlah"
 										required
 										min="1"
-										class="w-[75px]
+										class="w-18.75
 										       rounded-xl
 										       border border-ink/15
 										       px-3 py-2.5
@@ -716,7 +716,7 @@
 			</div>
 		{:else}
 			<div class="flex-1 flex items-center justify-center">
-				<div class="text-center max-w-[280px]">
+				<div class="text-center max-w-70">
 					<div
 						class="w-12 h-12 rounded-full bg-white
 						       border border-ink/10
