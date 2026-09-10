@@ -49,7 +49,7 @@ class="sticky top-0 z-50 transition-colors duration-300 {blendWithHero
       </div>
 
       <!-- Menu desktop -->
-      <div class="hidden md:flex gap-9 font-semibold text-sm flex-shrink-0">
+      <div class="hidden md:flex gap-9 font-semibold text-sm shrink-0">
         <a
           href="/"
           class="opacity-80 hover:opacity-100 transition {active === 'home' ? (blendWithHero ? 'opacity-100' : 'opacity-100 text-primary-dark') : ''}"

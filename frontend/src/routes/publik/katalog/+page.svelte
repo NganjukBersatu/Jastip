@@ -1,6 +1,19 @@
 <script>
-	import { goto } from '$app/navigation';
+		import { goto } from '$app/navigation';
 	import { enhance } from '$app/forms';
+	import { onMount } from 'svelte';
+
+		onMount(() => {
+		if (window.location.hash === '#produk') {
+			const scrollKeProduk = () => {
+				document.getElementById('produk')?.scrollIntoView({ behavior: 'instant' });
+			};
+			scrollKeProduk();
+			// Ulangi setelah gambar-gambar selesai loading, jaga-jaga layout geser
+			setTimeout(scrollKeProduk, 150);
+			setTimeout(scrollKeProduk, 500);
+		}
+	});
 	/** @type {{ data: import('./$types').PageData, form: any }} */
 	let { data, form } = $props();
 	/** @typedef {import('./$types').PageData['daftarProduk'][number]} Produk */
@@ -107,10 +120,10 @@
 <!-- ===== HERO ===== -->
 <section
 	class="relative overflow-hidden bg-linear-to-br from-orange-100 via-amber-100 to-white
-	       pt-8 pb-10 lg:pt-10 lg:pb-14 lg:min-h-90 flex items-center"
+	       pt-8 pb-10 xl:pt-10 xl:pb-14 xl:min-h-90 flex items-center"
 >
-	<div class="max-w-295 mx-auto px-4 md:px-6 relative z-10 w-full flex items-center justify-between gap-8">
-		<div class="lg:max-w-130 shrink-0">
+						<div class="max-w-295 mx-auto px-4 md:px-6 relative z-10 w-full flex flex-col xl:flex-row items-center justify-between gap-8">
+				<div class="w-full xl:max-w-130 xl:shrink-0 flex flex-col items-center text-center xl:items-start xl:text-left">
 			<span
 				class="inline-flex items-center gap-2 bg-white text-primary-dark text-sm font-bold px-4 py-2.5 rounded-full shadow-sm"
 			>
@@ -127,12 +140,12 @@
 				Katalog Jastip
 			</span>
 
-			<h1 class="mt-5 text-[42px] md:text-[60px] leading-tight font-extrabold text-ink">
+						<h1 class="mt-5 text-[30px] sm:text-[36px] md:text-[60px] leading-[1.15] font-extrabold text-ink">
 	Temukan Berbagai Layanan
 	<span class="block text-primary">Jastip di Sini!</span>
 </h1>
 
-<p class="mt-3 text-ink-soft max-w-130 text-lg md:text-xl">
+<p class="mt-3 text-ink-soft max-w-130 text-[15px] sm:text-base md:text-xl">
 	Dari produk fashion, makanan, elektronik, hingga layanan jasa, semua bisa kamu temukan
 	dengan mudah di Nitip.
 </p>
@@ -181,12 +194,14 @@
 			</div>
 		</div>
 
-		<img
+				<img
 			src="/hero-images/nitip-hero.png"
 			alt="Ilustrasi Nitip"
-			class="hidden lg:block absolute -right-30 top-1/1 -translate-y-1/2
-			       h-[110%] max-h-115 w-auto object-contain z-0 drop-shadow-2xl
-			       animate-float"
+							class="block mt-6 mx-auto w-full max-w-90
+			       xl:absolute xl:mt-0 xl:mx-0 xl:-right-30 xl:top-1/2 xl:-translate-y-1/2
+			       xl:h-[110%] xl:max-h-115 xl:max-w-none xl:w-auto
+			       object-contain z-0 drop-shadow-2xl
+			       animate-float-mobile xl:animate-float"
 		/>
 	</div>
 
@@ -209,7 +224,7 @@
 </section>
 
 <!-- ===== SEARCH + FILTER + GRID ===== -->
-<section class="py-10 bg-linear-to-br from-amber-100 via-yellow-50 to-amber-50 relative overflow-hidden">
+<section id="produk" class="py-10 bg-linear-to-br from-amber-100 via-yellow-50 to-amber-50 relative overflow-hidden">
 
 	<!-- Dekorasi glow pojok -->
 	<div class="pointer-events-none absolute -left-10 -top-10 w-72 h-72 bg-orange-200/60 rounded-full blur-3xl"></div>
@@ -218,10 +233,10 @@
 	<div class="pointer-events-none absolute left-1/3 top-1/2 w-64 h-64 bg-amber-100/50 rounded-full blur-3xl"></div>
 	<!-- Search bar: full width, mepet kiri-kanan, terpisah dari container max-w -->
 	<div class="px-4 md:px-6 -mt-6 relative z-20">
-		<div
-			class="flex gap-3 flex-wrap items-center bg-white rounded-2xl shadow-[0_10px_30px_rgba(42,26,14,0.08)] p-1.5 w-full"
+				<div
+			class="flex flex-col sm:flex-row gap-3 sm:items-center bg-white rounded-2xl shadow-[0_10px_30px_rgba(42,26,14,0.08)] p-1.5 w-full"
 		>
-			<div class="flex-1 min-w-55 flex items-center gap-2 px-3">
+			<div class="flex-1 sm:min-w-55 flex items-center gap-2 px-3">
 				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4 text-ink-soft shrink-0">
 					<circle cx="11" cy="11" r="7" />
 					<line x1="21" y1="21" x2="16.65" y2="16.65" />
@@ -234,12 +249,13 @@
 				/>
 			</div>
 
+									<div class="flex gap-3 sm:shrink-0">
 			<!-- Dropdown Area -->
-			<div class="relative">
+			<div class="relative flex-1 sm:flex-initial">
 				<button
 					type="button"
 					onclick={() => { areaOpen = !areaOpen; urutanOpen = false; }}
-					class="rounded-full px-4 py-1.5 bg-bg-alt text-ink text-sm font-semibold outline-none focus:ring-2 focus:ring-accent flex items-center gap-2 hover:bg-accent/30 transition-colors"
+									class="w-full sm:w-auto justify-center rounded-full px-3 py-1.5 bg-bg-alt text-ink text-xs sm:text-sm font-semibold outline-none focus:ring-2 focus:ring-accent flex items-center gap-1.5 sm:gap-2 hover:bg-accent/30 transition-colors whitespace-nowrap"
 				>
 					{areaAktif}
 					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-3.5 h-3.5 transition-transform {areaOpen ? 'rotate-180' : ''}">
@@ -268,12 +284,12 @@
 				{/if}
 			</div>
 
-			<!-- Dropdown Urutan -->
-			<div class="relative">
+						<!-- Dropdown Urutan -->
+			<div class="relative flex-1 sm:flex-initial">
 				<button
 					type="button"
 					onclick={() => { urutanOpen = !urutanOpen; areaOpen = false; }}
-					class="rounded-full px-4 py-1.5 bg-bg-alt text-ink text-sm font-semibold outline-none focus:ring-2 focus:ring-accent flex items-center gap-2 hover:bg-accent/30 transition-colors"
+										class="w-full sm:w-auto justify-center rounded-full px-3 py-1.5 bg-bg-alt text-ink text-xs sm:text-sm font-semibold outline-none focus:ring-2 focus:ring-accent flex items-center gap-1.5 sm:gap-2 hover:bg-accent/30 transition-colors whitespace-nowrap"
 				>
 					Urutan: {urutanList.find((u) => u.value === urutan)?.label}
 					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-3.5 h-3.5 transition-transform {urutanOpen ? 'rotate-180' : ''}">
@@ -303,13 +319,25 @@
 			</div>
 		</div>
 	</div>
+</div>
 
 	<div class="max-w-295 mx-auto px-4 md:px-6 relative z-10">
-		<div class="flex gap-2.5 flex-wrap mt-8 mb-8">
+				<div class="flex gap-2.5 overflow-x-auto no-scrollbar mt-8 mb-8 -mx-4 px-4 sm:mx-0 sm:px-0">
 			{#each kategoriList as kategori}
-				<button
-					onclick={() => (kategoriAktif = kategori)}
-					class="px-4 py-2 rounded-full text-sm font-bold transition-colors
+								<button
+					onclick={(e) => {
+						kategoriAktif = kategori;
+						const tombol = e.currentTarget;
+						const kontainer = tombol.parentElement;
+						if (kontainer) {
+							const target =
+								tombol.offsetLeft -
+								kontainer.clientWidth / 2 +
+								tombol.clientWidth / 2;
+							kontainer.scrollTo({ left: target, behavior: 'smooth' });
+						}
+					}}
+					class="shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-colors
 					{kategoriAktif === kategori ? 'bg-primary text-white shadow-[0_6px_16px_rgba(234,88,12,0.45)] ring-2 ring-white/80' : 'bg-white text-ink-soft shadow-sm hover:bg-accent/40'}"
 				>
 					{kategori}
@@ -324,7 +352,7 @@
 		</p>
 
 		{#if hasilFilter.length > 0}
-			<div class="grid gap-4 sm:gap-6 grid-cols-[repeat(auto-fill,minmax(200px,1fr))]">
+						<div class="grid gap-2 sm:gap-6 grid-cols-3 sm:grid-cols-[repeat(auto-fill,minmax(200px,1fr))]">
 				{#each hasilFilter as item}
 					<div
 						role="button"
@@ -335,80 +363,61 @@
 						transition-transform hover:-translate-y-1.5 cursor-pointer"
 					>
 						<div class="aspect-4/3 relative overflow-hidden">
-							<img src={item.gambarUrl} alt={item.nama} class="w-full h-full object-cover" />
-							<div
-								class="absolute inset-0 bg-linear-to-t from-black/25 via-transparent to-transparent"
-							></div>
-							<span
-								class="absolute top-3 left-3 text-[11px] font-extrabold px-2.5 py-1 rounded-full shadow-sm
-								{item.hargaTipe === 'nego' ? 'bg-accent text-ink' : 'bg-white/95 text-ink'}"
-							>
-								{item.hargaTipe === 'nego' ? 'Bisa nego' : 'Harga tetap'}
-							</span>
-						</div>
-						<div class="px-4 pt-4 pb-4.5">
-							<div class="flex justify-between items-center gap-2">
-								<span
-									class="text-[11px] font-bold text-primary-dark uppercase tracking-wide truncate"
-								>
-									{item.area ?? '-'}
-								</span>
-								<span class="text-[11px] text-ink-soft truncate">{item.jastiperNama}</span>
-							</div>
-							<div class="font-bold text-[15px] mt-1.5 line-clamp-2 min-h-[2.5em]">{item.nama}</div>
-							<div class="flex justify-between items-center mt-3 gap-2">
-								<div class="font-display font-semibold text-base min-w-0 truncate">
-									{formatRupiah(item.harga)}
-									{#if item.hargaTipe === 'nego'}
-										<span class="text-[11px] font-semibold text-ink-soft font-sans block"
-											>mulai dari</span
-										>
-									{:else if tampilan === 'jasa' && 'satuan' in item && item.satuan}
-										<span class="text-[11px] font-semibold text-ink-soft font-sans block"
-											>{item.satuan}</span
-										>
-									{/if}
-								</div>
-								{#if tampilan === 'jasa'}
-									<a href={`/pelanggan/pesan-jasa/${item.id}`}
-										onclick={(e) => e.stopPropagation()}
-										class="rounded-full bg-ink text-bg font-bold text-xs px-3.5 py-2 whitespace-nowrap
-										hover:bg-primary-dark transition-colors"
-									>
-										Pesan →
-									</a>
-								{:else if item.hargaTipe === 'nego'}
-									<form method="POST" action="?/chatJastiper" use:enhance class="shrink-0"> 
-										<input type="hidden" name="produkId" value={item.id} />
-										<button
-											type="submit"
-											onclick={(e) => e.stopPropagation()}
-											class="rounded-full bg-ink text-bg font-bold text-xs px-3.5 py-2 whitespace-nowrap
-											hover:bg-primary-dark transition-colors flex items-center gap-1.5"
-										>
-											<svg
-												viewBox="0 0 24 24"
-												fill="none"
-												stroke="currentColor"
-												stroke-width="2"
-												class="w-3.5 h-3.5"
-											>
-												<path
-													d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"
-												/>
-											</svg>
-											Chat
-										</button>
-									</form>
-								{:else}
-									<div
-										class="w-9 h-9 rounded-full bg-ink text-white flex items-center justify-center text-base font-bold shrink-0"
-									>
-										→
-									</div>
-								{/if}
-							</div>
-						</div>
+  <img src={item.gambarUrl} alt={item.nama} class="w-full h-full object-cover" />
+  <div class="absolute inset-0 bg-linear-to-t from-black/25 via-transparent to-transparent"></div>
+  <span
+    class="absolute top-2 left-2 sm:top-3 sm:left-3 text-[7px] sm:text-[11px] font-extrabold px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded-full shadow-sm leading-tight
+    {item.hargaTipe === 'nego' ? 'bg-accent text-ink' : 'bg-white/95 text-ink'}"
+  >
+    {item.hargaTipe === 'nego' ? 'Nego' : 'Tetap'}
+  </span>
+</div>
+
+<div class="px-2.5 pt-2.5 pb-3 sm:px-4 sm:pt-4 sm:pb-4.5">
+  <div class="font-bold text-[12px] sm:text-[15px] line-clamp-2 min-h-[2.1em] sm:min-h-[2.5em] leading-tight">
+    {item.nama}
+  </div>
+
+  <div class="flex items-center justify-between mt-2 sm:mt-3 gap-1.5">
+    <div class="font-display font-semibold text-[12px] sm:text-base min-w-0 truncate flex-1">
+      {formatRupiah(item.harga)}
+      {#if item.hargaTipe === 'nego'}
+        <span class="text-[9px] sm:text-[11px] font-semibold text-ink-soft font-sans block">mulai dari</span>
+      {:else if tampilan === 'jasa' && 'satuan' in item && item.satuan}
+        <span class="text-[9px] sm:text-[11px] font-semibold text-ink-soft font-sans block">{item.satuan}</span>
+      {/if}
+    </div>
+
+    {#if tampilan === 'jasa'}
+      <a href={`/pelanggan/pesan-jasa/${item.id}`}
+        onclick={(e) => e.stopPropagation()}
+        class="rounded-full bg-ink text-bg font-bold text-[9px] sm:text-xs px-2 sm:px-3.5 py-1 sm:py-2 whitespace-nowrap shrink-0
+        hover:bg-primary-dark transition-colors"
+      >
+        →
+      </a>
+    {:else if item.hargaTipe === 'nego'}
+      <form method="POST" action="?/chatJastiper" use:enhance class="shrink-0">
+        <input type="hidden" name="produkId" value={item.id} />
+        <button
+          type="submit"
+          onclick={(e) => e.stopPropagation()}
+          class="rounded-full bg-ink text-bg font-bold w-7 h-7 sm:w-auto sm:px-3.5 sm:py-2 text-[10px] sm:text-xs
+          flex items-center justify-center shrink-0 hover:bg-primary-dark transition-colors gap-1.5"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-3.5 h-3.5">
+            <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" />
+          </svg>
+          <span class="hidden sm:inline">Chat</span>
+        </button>
+      </form>
+        {:else}
+      <div class="w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-ink text-white flex items-center justify-center text-sm sm:text-base font-bold shrink-0">
+        →
+      </div>
+    {/if}
+  </div>
+</div>
 					</div>
 				{/each}
 			</div>
@@ -424,6 +433,13 @@
 		{/if}
 	</div>
 </section>
+
+<footer class="py-16 border-t border-ink/10">
+  <div class="max-w-295 mx-auto px-8 flex justify-between flex-wrap gap-3 text-sm text-ink-soft">
+    <span>© 2026 Nitip. Semua hak dilindungi.</span>
+    <span>Dibuat untuk jastiper Jawa Timur</span>
+  </div>
+</footer>
 
 <!-- ===== MODAL DETAIL ===== -->
 {#if itemDipilih}
@@ -530,6 +546,26 @@
 {/if}
 
 <style>
+	:global(.no-scrollbar) {
+		scrollbar-width: none;
+		-ms-overflow-style: none;
+	}
+	:global(.no-scrollbar::-webkit-scrollbar) {
+		display: none;
+	}
+
+	/* Animasi mengambang untuk mobile (posisi normal, tanpa offset -50%) */
+	@keyframes float-mobile {
+		0%,
+		100% {
+			transform: translateY(0px);
+		}
+		50% {
+			transform: translateY(-12px);
+		}
+	}
+
+	/* Animasi mengambang untuk desktop (posisi absolute, ada offset -50%) */
 	@keyframes float {
 		0%,
 		100% {
@@ -538,6 +574,10 @@
 		50% {
 			transform: translateY(-50%) translateY(-16px);
 		}
+	}
+
+	:global(.animate-float-mobile) {
+		animation: float-mobile 4s ease-in-out infinite;
 	}
 
 	:global(.animate-float) {

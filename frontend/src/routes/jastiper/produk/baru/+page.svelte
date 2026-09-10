@@ -6,14 +6,14 @@
   let hargaTipe = $state('tetap');
   let mengirim = $state(false);
 
-  const kategoriList = ['makanan','Jajanan & oleh-oleh', 'Skincare', 'Tiket event', 'Fashion', 'Barang langka', 'Lainnya'];
+  const kategoriList = ['makanan', 'Jajanan & oleh-oleh', 'Skincare', 'Tiket event', 'Fashion', 'Elektronik', 'Barang langka', 'Lainnya'];
 </script>
 
 <svelte:head>
   <title>Tambah produk — Nitip</title>
 </svelte:head>
 
-<div class="w-full max-w-[1140px] mx-auto px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
+<div class="w-full max-w-285 mx-auto px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
   <!-- Back link -->
   
    <a href="/jastiper/produk"
@@ -31,7 +31,7 @@
       Tambah produk baru
     </h1>
 
-    <p class="text-ink-soft mt-2 text-sm sm:text-[15px] leading-relaxed max-w-[620px]">
+    <p class="text-ink-soft mt-2 text-sm sm:text-[15px] leading-relaxed max-w-155">
       Isi detail barang yang mau kamu tawarkan.
     </p>
   </div>
@@ -170,7 +170,7 @@
     <button
       type="submit"
       disabled={mengirim}
-      class="mt-2 inline-flex h-[46px] w-full items-center justify-center rounded-xl bg-ink px-6 text-sm font-bold text-bg shadow-sm transition hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+      class="mt-2 inline-flex h-11.5 w-full items-center justify-center rounded-xl bg-ink px-6 text-sm font-bold text-bg shadow-sm transition hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
     >
       {mengirim ? 'Menyimpan...' : 'Simpan produk'}
     </button>

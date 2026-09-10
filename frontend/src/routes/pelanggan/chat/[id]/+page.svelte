@@ -292,7 +292,7 @@
 </svelte:head>
 
 <div
-	class="p-4 sm:p-6 lg:p-8 max-w-[900px] mx-auto
+	class="p-4 sm:p-6 lg:p-8 max-w-310 mx-auto
 	       flex flex-col h-[calc(100vh-4rem)]"
 >
 	<!-- ===================================================== -->
@@ -300,6 +300,26 @@
 	<!-- ===================================================== -->
 
 	<div class="shrink-0">
+		<a
+			href="/pelanggan/chat"
+			class="inline-flex items-center gap-1
+			       text-[13px] font-semibold text-ink
+			       hover:text-ink/70 transition mb-1"
+		>
+			<svg
+				class="w-3.5 h-3.5"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2.5"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			>
+				<polyline points="15 18 9 12 15 6" />
+			</svg>
+			Kembali
+		</a>
+
 		<div class="flex items-center justify-between gap-4">
 			<div class="min-w-0">
 				<h1
@@ -527,7 +547,7 @@
 										placeholder="Jumlah"
 										required
 										min="1"
-										class="w-[75px]
+										class="w-18.75
 										       rounded-xl
 										       border border-ink/15
 										       px-3 py-2.5
@@ -716,7 +736,7 @@
 			</div>
 		{:else}
 			<div class="flex-1 flex items-center justify-center">
-				<div class="text-center max-w-[280px]">
+				<div class="text-center max-w-70">
 					<div
 						class="w-12 h-12 rounded-full bg-white
 						       border border-ink/10
