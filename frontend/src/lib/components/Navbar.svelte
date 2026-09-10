@@ -1,7 +1,7 @@
 <script>
   import { page } from '$app/stores';
   import { notifikasiState } from '$lib/stores/notifikasi.svelte';
-  import { heroThemeState } from '$lib/stores/heroTheme.svelte.js';
+import { heroThemeState } from '$lib/stores/heroTheme.svelte.js';
 
   let { active = '' } = $props();
 
@@ -14,15 +14,12 @@
   let isJastiperPage = $derived($page.url.pathname.startsWith('/jastiper'));
   let isHomePage = $derived($page.url.pathname === '/');
 
-  // Di halaman Home, navbar ikut gradient Hero (biar menyatu sempurna).
-  // Di halaman lain, pakai warna flat krem seperti biasa.
-  let navBackground = $derived(
-    isHomePage
-      ? heroTheme.bg
-      : '#FFE4C7'
-  );
-
   let menuTerbuka = $state(false);
+
+  // Transparan & teks putih HANYA saat masih di atas Hero (Home page,
+  // sebelum Hero terlewati). Di tempat lain (scroll lewat Hero, atau
+  // halaman selain Home) navbar solid dengan teks gelap seperti biasa.
+  let blendWithHero = $derived(isHomePage && heroTheme.overHero && !menuTerbuka);
 
   function toggleMenu() {
     menuTerbuka = !menuTerbuka;
@@ -34,12 +31,20 @@
 </script>
 
 {#if !isJastiperPage}
-  <nav class="sticky top-0 z-50" style="background: {navBackground};">
+  <nav
+class="sticky top-0 z-50 transition-colors duration-300 {blendWithHero
+  ? 'bg-transparent text-ink -mb-[68px] sm:-mb-[76px]'
+  : 'bg-bg text-ink shadow-sm'}"
+ >
     <div class="max-w-[1180px] mx-auto px-5 sm:px-8 h-[68px] sm:h-[76px] flex items-center justify-between overflow-hidden">
       <!-- Logo -->
       <div class="flex-1 flex items-center">
-        <a href="/" class="flex items-center -ml-9 sm:-ml-10" onclick={tutupMenu}>
-          <img src="/images/logo.png" alt="Nitip" class="h-10 sm:h-12 w-auto" />
+        <a href="/" class="flex items-center" onclick={tutupMenu}>
+          <img
+            src="/images/logo.png"
+            alt="Nitip"
+          class="h-18 sm:h-22 w-auto"
+          />
         </a>
       </div>
 
@@ -47,14 +52,14 @@
       <div class="hidden md:flex gap-9 font-semibold text-sm flex-shrink-0">
         <a
           href="/"
-          class="opacity-75 hover:opacity-100 transition {active === 'home' ? 'opacity-100 text-primary-dark' : ''}"
+          class="opacity-80 hover:opacity-100 transition {active === 'home' ? (blendWithHero ? 'opacity-100' : 'opacity-100 text-primary-dark') : ''}"
         >
           Home
         </a>
 
         <a
           href="/publik/katalog"
-          class="opacity-75 hover:opacity-100 transition {active === 'katalog' ? 'opacity-100 text-primary-dark' : ''}"
+          class="opacity-80 hover:opacity-100 transition {active === 'katalog' ? (blendWithHero ? 'opacity-100' : 'opacity-100 text-primary-dark') : ''}"
         >
           Katalog
         </a>
@@ -62,7 +67,7 @@
         {#if user?.role !== 'jastiper'}
           <a
             href="/publik/jadi-jastiper"
-            class="opacity-75 hover:opacity-100 transition {active === 'jastiper' ? 'opacity-100 text-primary-dark' : ''}"
+            class="opacity-80 hover:opacity-100 transition {active === 'jastiper' ? (blendWithHero ? 'opacity-100' : 'opacity-100 text-primary-dark') : ''}"
           >
             Jadi jastiper
           </a>
@@ -70,7 +75,7 @@
 
         <a
           href="/publik/cara-kerja"
-          class="opacity-75 hover:opacity-100 transition {active === 'cara-kerja' ? 'opacity-100 text-primary-dark' : ''}"
+          class="opacity-80 hover:opacity-100 transition {active === 'cara-kerja' ? (blendWithHero ? 'opacity-100' : 'opacity-100 text-primary-dark') : ''}"
         >
           Cara kerja
         </a>
@@ -78,12 +83,12 @@
         {#if user?.role === 'pelanggan'}
           <a
             href="/pelanggan/chat"
-            class="relative opacity-75 hover:opacity-100 transition {active === 'chat' ? 'opacity-100 text-primary-dark' : ''}"
+            class="relative opacity-80 hover:opacity-100 transition {active === 'chat' ? (blendWithHero ? 'opacity-100' : 'opacity-100 text-primary-dark') : ''}"
           >
             Chat jastiper
             {#if notifikasi.jumlah > 0}
               <span
-                class="absolute -top-2 -right-3 bg-primary text-bg text-[10px] font-bold rounded-full min-w-4 h-4 px-1 flex items-center justify-center"
+                class="absolute -top-2 -right-3 bg-primary text-white text-[10px] font-bold rounded-full min-w-4 h-4 px-1 flex items-center justify-center"
               >
                 {notifikasi.jumlah > 9 ? '9+' : notifikasi.jumlah}
               </span>
@@ -92,7 +97,7 @@
 
           <a
             href="/pesanan"
-            class="opacity-75 hover:opacity-100 transition {active === 'pesanan' ? 'opacity-100 text-primary-dark' : ''}"
+            class="opacity-80 hover:opacity-100 transition {active === 'pesanan' ? (blendWithHero ? 'opacity-100' : 'opacity-100 text-primary-dark') : ''}"
           >
             Lihat pesanan
           </a>
@@ -101,7 +106,7 @@
         {#if user?.role === 'jastiper'}
           <a
             href="/jastiper/dashboard"
-            class="opacity-75 hover:opacity-100 transition {active === 'dashboard' ? 'opacity-100 text-primary-dark' : ''}"
+            class="opacity-80 hover:opacity-100 transition {active === 'dashboard' ? (blendWithHero ? 'opacity-100' : 'opacity-100 text-primary-dark') : ''}"
           >
             Dashboard
           </a>
@@ -114,7 +119,7 @@
           <a
             href="/keranjang"
             aria-label="Keranjang"
-            class="w-9 h-9 rounded-full flex items-center justify-center hover:bg-ink/5 transition"
+            class="w-9 h-9 rounded-full flex items-center justify-center transition {blendWithHero ? 'hover:bg-white/15' : 'hover:bg-ink/5'}"
           >
             <svg
               viewBox="0 0 24 24"
@@ -145,14 +150,14 @@
         {:else}
           <a
             href="/publik/masuk"
-            class="hidden sm:inline-block font-bold text-sm opacity-80 hover:opacity-100 transition"
+            class="hidden sm:inline-block font-bold text-sm opacity-85 hover:opacity-100 transition"
           >
             Masuk
           </a>
 
           <a
             href="/publik/daftar"
-            class="hidden sm:inline-flex items-center justify-center rounded-pill bg-ink text-bg font-bold text-sm px-6 py-3 transition hover:-translate-y-0.5"
+           class="hidden sm:inline-flex items-center justify-center rounded-pill font-bold text-sm px-6 py-3 transition hover:-translate-y-0.5 bg-ink text-bg"
           >
             Daftar
           </a>
@@ -163,7 +168,7 @@
           aria-label={menuTerbuka ? 'Tutup menu' : 'Buka menu'}
           aria-expanded={menuTerbuka}
           onclick={toggleMenu}
-          class="md:hidden w-9 h-9 rounded-full flex items-center justify-center hover:bg-ink/5 transition"
+          class="md:hidden w-9 h-9 rounded-full flex items-center justify-center transition {blendWithHero ? 'hover:bg-white/15' : 'hover:bg-ink/5'}"
         >
           {#if menuTerbuka}
             <svg
@@ -197,9 +202,10 @@
       </div>
     </div>
 
-    <!-- Panel menu mobile -->
+    <!-- Panel menu mobile: selalu solid + teks gelap, biar tetap kebaca
+         apapun kondisi navbar-nya (transparan atau tidak) -->
     {#if menuTerbuka}
-      <div class="md:hidden" style="background: {navBackground};">
+      <div class="md:hidden bg-bg text-ink">
         <div class="flex flex-col py-2">
           <a
             href="/"
@@ -244,7 +250,7 @@
               Chat jastiper
               {#if notifikasi.jumlah > 0}
                 <span
-                  class="ml-2 inline-flex items-center justify-center bg-primary text-bg text-[10px] font-bold rounded-full min-w-4 h-4 px-1"
+                  class="ml-2 inline-flex items-center justify-center bg-primary text-white text-[10px] font-bold rounded-full min-w-4 h-4 px-1"
                 >
                   {notifikasi.jumlah > 9 ? '9+' : notifikasi.jumlah}
                 </span>

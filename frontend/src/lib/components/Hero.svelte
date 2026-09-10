@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
-  import { heroThemeState } from '$lib/stores/heroTheme.svelte.js';
+import { heroThemeState } from '$lib/stores/heroTheme.svelte.js';
 
   const heroTheme = heroThemeState();
 
@@ -139,8 +139,26 @@
 
   let active = $derived(categories[current]);
 
-  $effect(() => {
-  heroTheme.set(active.bg);
+let heroEl: HTMLElement | undefined = $state();
+
+$effect(() => {
+  if (!heroEl) return;
+  const el = heroEl;
+
+  function cekPosisi() {
+    const tinggiHero = el.offsetHeight;
+    const tinggiNavbar = 76;
+    heroTheme.setOverHero(window.scrollY < tinggiHero - tinggiNavbar);
+  }
+
+  cekPosisi();
+  window.addEventListener('scroll', cekPosisi, { passive: true });
+  window.addEventListener('resize', cekPosisi, { passive: true });
+
+  return () => {
+    window.removeEventListener('scroll', cekPosisi);
+    window.removeEventListener('resize', cekPosisi);
+  };
 });
 </script>
 
@@ -148,7 +166,7 @@
      HERO
 ========================================================= -->
 
-<section class="hero" style={`background: ${active.bg};`}>
+<section class="hero" bind:this={heroEl} style={`background: ${active.bg};`}>
 
   <!-- Decorative glow -->
   <div class="orange-glow glow-one"></div>
@@ -341,6 +359,8 @@
   background: transparent;
 }
 
+
+
   /* =========================================================
      CONTAINER
   ========================================================= */
@@ -391,7 +411,7 @@
   .hero-left {
     position: relative;
     z-index: 10;
-    padding: 70px 0 100px;
+    padding: 145px 0 100px;
   }
 
   /* =========================================================
