@@ -35,7 +35,7 @@
 
 {#if !isJastiperPage}
   <nav class="sticky top-0 z-50" style="background: {navBackground};">
-    <div class="max-w-[1180px] mx-auto px-5 sm:px-8 h-[68px] sm:h-[76px] flex items-center justify-between overflow-hidden">
+    <div class="max-w-295 mx-auto px-5 sm:px-8 h-17 sm:h-19 flex items-center justify-between overflow-hidden">
       <!-- Logo -->
       <div class="flex-1 flex items-center">
         <a href="/" class="flex items-center -ml-9 sm:-ml-10" onclick={tutupMenu}>
@@ -44,7 +44,7 @@
       </div>
 
       <!-- Menu desktop -->
-      <div class="hidden md:flex gap-9 font-semibold text-sm flex-shrink-0">
+      <div class="hidden md:flex gap-9 font-semibold text-sm shrink-0">
         <a
           href="/"
           class="opacity-75 hover:opacity-100 transition {active === 'home' ? 'opacity-100 text-primary-dark' : ''}"
