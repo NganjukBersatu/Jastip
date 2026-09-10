@@ -1,11 +1,11 @@
 <section class="py-14 sm:py-24" id="jadi-jastiper">
-  <div class="max-w-[1180px] mx-auto px-5 sm:px-8">
+  <div class="max-w-295 mx-auto px-5 sm:px-8">
     <div class="bg-ink text-bg rounded-[28px] sm:rounded-[36px] p-6 sm:p-10 md:p-16 grid md:grid-cols-[1.2fr_0.8fr] gap-10 items-center">
       <div>
         <h2 class="text-white text-[26px] sm:text-[28px] md:text-[40px]">
           Sering bolak-balik pasar? Jadiin cuan.
         </h2>
-        <p class="mt-4 text-bg/75 max-w-[440px] text-[14.5px] sm:text-[15.5px]">
+        <p class="mt-4 text-bg/75 max-w-110 text-[14.5px] sm:text-[15.5px]">
           Buka lapak titip di area kamu, atur sendiri harga dan ongkirnya.
           Pesanan masuk rapi ke satu dashboard.
         </p>
@@ -33,7 +33,7 @@
         </a>
       </div>
 
-      <div class="rounded-[26px] h-70 hidden md:flex items-center justify-center overflow-hidden bg-gradient-to-br from-primary to-primary-dark">
+      <div class="rounded-card h-70 hidden md:flex items-center justify-center overflow-hidden bg-linear-to-br from-primary to-primary-dark">
         <img
           src="/hero-images/hero-jastiper.jpg"
           alt="Ilustrasi jastiper mengelola pesanan lewat dashboard Nitip"

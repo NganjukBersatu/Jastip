@@ -20,7 +20,7 @@
   <title>Kelola Jasa — Nitip.</title>
 </svelte:head>
 
-<div class="w-full max-w-[1140px] mx-auto px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
+<div class="w-full max-w-285 mx-auto px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
   <!-- HEADER -->
   <div class="flex justify-between items-start gap-4 flex-wrap mb-8 sm:mb-10 pb-6 border-b border-ink/10">
     <div>
@@ -32,7 +32,7 @@
 
     <button
       onclick={() => (formVisible = !formVisible)}
-      class="shrink-0 rounded-full bg-ink text-bg font-bold text-sm px-5 py-2.5 min-h-[44px] hover:-translate-y-0.5 hover:shadow-md transition"
+      class="shrink-0 rounded-full bg-ink text-bg font-bold text-sm px-5 py-2.5 min-h-11 hover:-translate-y-0.5 hover:shadow-md transition"
     >
       {formVisible ? 'Tutup form' : '+ Tambah jasa'}
     </button>
@@ -198,7 +198,7 @@
 
       <button
         type="submit"
-        class="w-full sm:w-auto mt-7 min-h-[48px] px-8 py-3.5 rounded-full font-bold text-[15px] bg-accent text-ink transition hover:-translate-y-0.5 hover:shadow-md"
+        class="w-full sm:w-auto mt-7 min-h-12 px-8 py-3.5 rounded-full font-bold text-[15px] bg-accent text-ink transition hover:-translate-y-0.5 hover:shadow-md"
       >
         Simpan jasa
       </button>
@@ -220,9 +220,9 @@
     <div class="grid gap-6 grid-cols-[repeat(auto-fill,minmax(240px,1fr))]">
       {#each data.daftarJasa as j}
         <div class="bg-white rounded-2xl overflow-hidden border border-ink/10 shadow-[0_2px_12px_rgba(0,0,0,0.025)] transition hover:shadow-md hover:border-ink/15 {!j.aktif ? 'opacity-60' : ''}">
-          <div class="aspect-[4/3] relative overflow-hidden">
+          <div class="aspect-4/3 relative overflow-hidden">
             <img src={j.gambarUrl} alt={j.nama} class="w-full h-full object-cover" />
-            <div class="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent"></div>
+            <div class="absolute inset-0 bg-linear-to-t from-black/25 via-transparent to-transparent"></div>
 
             <span class="absolute bottom-3 left-3 text-[11px] font-extrabold px-2.5 py-1 rounded-full bg-ink/85 text-white uppercase tracking-wide">
               {j.kategori}
@@ -294,7 +294,7 @@
       </div>
 
       <div class="font-bold text-[15px] text-ink">Belum ada jasa</div>
-      <div class="text-[13.5px] text-ink-soft mt-1.5 max-w-[300px] mx-auto leading-relaxed">
+      <div class="text-[13.5px] text-ink-soft mt-1.5 max-w-75 mx-auto leading-relaxed">
         Tambahkan jasa pertamamu supaya muncul di katalog pelanggan.
       </div>
     </div>

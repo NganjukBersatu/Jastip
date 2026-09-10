@@ -58,7 +58,7 @@
 	<title>Pesan {data.jasa.nama} — Nitip</title>
 </svelte:head>
 
-<section class="max-w-[560px] mx-auto px-5 py-12">
+<section class="max-w-140 mx-auto px-5 py-12">
 	<a href="/publik/katalog" class="text-sm text-ink-soft hover:text-ink mb-4 inline-block"
 		>← Kembali ke katalog</a
 	>
@@ -67,7 +67,7 @@
 		<img
 			src={data.jasa.gambarUrl}
 			alt={data.jasa.nama}
-			class="w-full aspect-[16/9] object-cover"
+			class="w-full aspect-video object-cover"
 		/>
 		<div class="p-5">
 			<h1 class="font-bold text-xl">{data.jasa.nama}</h1>

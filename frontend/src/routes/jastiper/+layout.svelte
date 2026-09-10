@@ -105,7 +105,7 @@
 
           <!-- Icon -->
           <svg
-            class="w-[18px] h-[18px] shrink-0"
+            class="w-4.5 h-4.5 shrink-0"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
