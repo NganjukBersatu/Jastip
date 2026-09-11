@@ -21,7 +21,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 			status: pesanan.status,
 			createdAt: pesanan.createdAt,
 			produkNama: produk.nama,
-			pelangganNama: users.nama
+			pelangganNama: users.nama,
+			pembayaranDikonfirmasi: pesanan.pembayaranDikonfirmasi
 		})
 		.from(pesanan)
 		.innerJoin(produk, eq(pesanan.produkId, produk.id))
@@ -90,18 +91,55 @@ export const actions: Actions = {
 		if (!id) return fail(400, { error: 'ID tidak ditemukan.' });
 		return ubahStatus(id, locals.user!.id, 'dibelanjakan');
 	},
+
+    tandaiLunas: async ({ request, locals }) => {
+    const data = await request.formData();
+    const id = data.get('id')?.toString();
+    if (!id) return fail(400, { error: 'ID tidak ditemukan.' });
+
+    const [row] = await db
+        .select({ id: pesanan.id })
+        .from(pesanan)
+        .where(and(eq(pesanan.id, id), eq(pesanan.jastiperId, locals.user!.id)));
+
+    if (!row) return fail(404, { error: 'Pesanan tidak ditemukan.' });
+
+    await db
+        .update(pesanan)
+        .set({ pembayaranDikonfirmasi: true, dibayarPada: new Date() })
+        .where(eq(pesanan.id, id));
+},
+
 	mulaiAntar: async ({ request, locals }) => {
 		const data = await request.formData();
 		const id = data.get('id')?.toString();
 		if (!id) return fail(400, { error: 'ID tidak ditemukan.' });
 		return ubahStatus(id, locals.user!.id, 'dikirim');
 	},
-	selesaikan: async ({ request, locals }) => {
-		const data = await request.formData();
-		const id = data.get('id')?.toString();
-		if (!id) return fail(400, { error: 'ID tidak ditemukan.' });
-		return ubahStatus(id, locals.user!.id, 'selesai');
-	},
+selesaikan: async ({ request, locals }) => {
+	const data = await request.formData();
+	const id = data.get('id')?.toString();
+	if (!id) return fail(400, { error: 'ID tidak ditemukan.' });
+
+	const [row] = await db
+		.select({ id: pesanan.id, metodePembayaran: pesanan.metodePembayaran })
+		.from(pesanan)
+		.where(and(eq(pesanan.id, id), eq(pesanan.jastiperId, locals.user!.id)));
+
+	if (!row) return fail(404, { error: 'Pesanan tidak ditemukan.' });
+
+	await db
+		.update(pesanan)
+		.set({
+			status: 'selesai',
+			updatedAt: new Date(),
+			// COD dianggap lunas begitu selesai diantar
+			...(row.metodePembayaran === 'cod'
+				? { pembayaranDikonfirmasi: true, dibayarPada: new Date() }
+				: {})
+		})
+		.where(eq(pesanan.id, id));
+},
 	batalkan: async ({ request, locals }) => {
 		const data = await request.formData();
 		const id = data.get('id')?.toString();

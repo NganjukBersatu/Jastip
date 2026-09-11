@@ -16,6 +16,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			ongkir: pesanan.ongkir,
 			totalHarga: pesanan.totalHarga,
 			status: pesanan.status,
+			pembayaranDikonfirmasi: pesanan.pembayaranDikonfirmasi,
 			alamatKirim: pesanan.alamatKirim,
 			titikJemput: pesanan.titikJemput,
 			jarakKm: pesanan.jarakKm,

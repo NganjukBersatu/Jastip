@@ -29,7 +29,8 @@ export const jastiperProfiles = pgTable('jastiper_profiles', {
 	alamat: text('alamat'),
 	deskripsi: text('deskripsi'),
 	noWa: text('no_wa'),
-	terverifikasi: boolean('terverifikasi').notNull().default(false)
+	terverifikasi: boolean('terverifikasi').notNull().default(false),
+	statusAktif: boolean('status_aktif').notNull().default(true)
 });
 
 export const sessions = pgTable('sessions', {
@@ -134,6 +135,7 @@ export const pesanan = pgTable('pesanan', {
 	jarakKm: doublePrecision('jarak_km'), // BARU — khusus pesanan jasa
 	metodePembayaran: text('metode_pembayaran'),
 	pembayaranDikonfirmasi: boolean('pembayaran_dikonfirmasi').notNull().default(false),
+	dibayarPada: timestamp('dibayar_pada', { withTimezone: true }),
 	status: statusPesananEnum('status').notNull().default('menunggu_konfirmasi'),
 	createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 	updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow()

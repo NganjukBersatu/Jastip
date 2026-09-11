@@ -35,7 +35,8 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 			namaJastiper: itemKelompok[0].namaJastiper,
 			noWa: itemKelompok[0].noWa,
 			total: itemKelompok.reduce((jumlah, p) => jumlah + p.totalHarga, 0),
-			perluWa: metode === 'transfer_bank' || metode === 'e_wallet'
+			perluWa: metode === 'transfer_bank' || metode === 'e_wallet',
+			pesananIds: itemKelompok.map((p) => p.id)
 		};
 	});
 

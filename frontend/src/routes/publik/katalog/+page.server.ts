@@ -21,7 +21,12 @@ export const load: PageServerLoad = async () => {
 		.from(produk)
 		.innerJoin(users, eq(produk.jastiperId, users.id))
 		.leftJoin(jastiperProfiles, eq(produk.jastiperId, jastiperProfiles.userId))
-		.where(eq(produk.aktif, true));
+		.where(
+			and(
+				eq(produk.aktif, true),
+				eq(jastiperProfiles.statusAktif, true) // BARU: sembunyikan produk dari jastiper nonaktif
+			)
+		);
 
 	const daftarJasa = await db
 		.select({
@@ -39,7 +44,12 @@ export const load: PageServerLoad = async () => {
 		.from(jasa)
 		.innerJoin(users, eq(jasa.jastiperId, users.id))
 		.leftJoin(jastiperProfiles, eq(jasa.jastiperId, jastiperProfiles.userId))
-		.where(eq(jasa.aktif, true));
+		.where(
+			and(
+				eq(jasa.aktif, true),
+				eq(jastiperProfiles.statusAktif, true) // BARU
+			)
+		);
 
 	return { daftarProduk, daftarJasa };
 };
@@ -69,6 +79,16 @@ export const actions: Actions = {
 			if (!jasaAsli || !jasaAsli.aktif) return fail(400, { error: 'Jasa tidak tersedia.' });
 			jastiperId = jasaAsli.jastiperId;
 			harga = jasaAsli.harga;
+		}
+
+		// BARU: pastikan jastiper masih aktif sebelum mengizinkan chat/pengajuan harga
+		const [profilJastiper] = await db
+			.select({ statusAktif: jastiperProfiles.statusAktif })
+			.from(jastiperProfiles)
+			.where(eq(jastiperProfiles.userId, jastiperId));
+
+		if (!profilJastiper?.statusAktif) {
+			return fail(400, { error: 'Jastiper ini sedang tidak menerima pesanan.' });
 		}
 
 		const [pengajuanLama] = await db
@@ -114,6 +134,16 @@ export const actions: Actions = {
 		const [produkAsli] = await db.select().from(produk).where(eq(produk.id, produkId));
 		if (!produkAsli || !produkAsli.aktif) {
 			return fail(400, { error: 'Produk tidak tersedia.' });
+		}
+
+		// BARU: cek status aktif jastiper sebelum boleh masuk keranjang
+		const [profilJastiper] = await db
+			.select({ statusAktif: jastiperProfiles.statusAktif })
+			.from(jastiperProfiles)
+			.where(eq(jastiperProfiles.userId, produkAsli.jastiperId));
+
+		if (!profilJastiper?.statusAktif) {
+			return fail(400, { error: 'Jastiper ini sedang tidak menerima pesanan.' });
 		}
 
 		const [itemLama] = await db

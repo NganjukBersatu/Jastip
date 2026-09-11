@@ -44,30 +44,42 @@
         Lanjutkan pembayaran lewat WhatsApp jastiper
       </p>
 
-      {#each data.kelompokJastiper.filter((k) => k.perluWa) as k (k.jastiperId)}
-        <div class="border border-ink/10 rounded-2xl px-4 py-4 bg-white">
-          <div class="flex justify-between items-center mb-3">
-            <span class="font-semibold text-sm">{k.namaJastiper}</span>
-            <span class="font-display font-bold text-sm">{formatRupiah(k.total)}</span>
-          </div>
+{#each data.kelompokJastiper.filter((k) => k.perluWa) as k (k.jastiperId)}
+  <div class="border border-ink/10 rounded-2xl px-4 py-4 bg-white">
+    <div class="flex justify-between items-center mb-3">
+      <span class="font-semibold text-sm">{k.namaJastiper}</span>
+      <span class="font-display font-bold text-sm">{formatRupiah(k.total)}</span>
+    </div>
 
-          {#if k.noWa}
-            <a
-              href={buatLinkWa(k)}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="block text-center w-full py-3 rounded-full bg-green-600 text-white font-bold text-sm transition hover:-translate-y-0.5"
-            >
-              Chat via WhatsApp
-            </a>
-          {:else}
-            <p class="text-xs text-red-600 leading-relaxed">
-              Jastiper ini belum melengkapi nomor WhatsApp. Hubungi admin Nitip untuk bantuan pembayaran.
-            </p>
-          {/if}
-        </div>
+    {#if k.noWa}
+      <a
+        href={buatLinkWa(k)}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="block text-center w-full py-3 rounded-full bg-green-600 text-white font-bold text-sm transition hover:-translate-y-0.5"
+      >
+        Chat via WhatsApp
+      </a>
+    {:else}
+      <p class="text-xs text-red-600 leading-relaxed">
+        Jastiper ini belum melengkapi nomor WhatsApp. Hubungi admin Nitip untuk bantuan pembayaran.
+      </p>
+    {/if}
+
+    <!-- BARU: link struk per pesanan -->
+    <div class="mt-3 flex flex-col gap-1.5">
+      {#each k.pesananIds as pesananId}
+        <a
+          href="/pesanan/{pesananId}/struk"
+          class="text-center text-[12.5px] text-ink-soft underline underline-offset-2"
+        >
+          Lihat struk pesanan {k.pesananIds.length > 1 ? `#${k.pesananIds.indexOf(pesananId) + 1}` : ''}
+        </a>
       {/each}
     </div>
+  </div>
+{/each}
+ </div>
   {/if}
 
   <a

@@ -54,7 +54,10 @@
   {#if data.daftarPesanan.length === 0}
     <div class="bg-white rounded-2xl border border-dashed border-ink/15 px-5 py-14 sm:p-16 text-center">
       <div class="w-14 h-14 mx-auto mb-4 rounded-full bg-orange-50 flex items-center justify-center">
-        <span class="text-2xl">📦</span>
+        <svg class="w-6 h-6 text-primary-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+          <path d="M22 12h-6l-2 3h-4l-2-3H2" />
+          <path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11Z" />
+        </svg>
       </div>
 
       <div class="font-bold text-[15px] text-ink">Belum ada pesanan</div>
@@ -139,9 +142,12 @@
             <div class="flex gap-2 mt-3">
               {#if p.pengajuanHargaId}
                 <a href={`/pelanggan/chat/${p.pengajuanHargaId}`}
-                  class="flex-1 text-center rounded-full border-2 border-ink/15 text-ink font-bold text-[13px] py-2.5 hover:border-ink/40 transition"
+                  class="flex-1 flex items-center justify-center gap-1.5 text-center rounded-full border-2 border-ink/15 text-ink font-bold text-[13px] py-2.5 hover:border-ink/40 transition"
                 >
-                  💬 Chat jastiper
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+                  </svg>
+                  Chat jastiper
                 </a>
               {/if}
               {#if p.status === 'menunggu_konfirmasi'}
@@ -149,8 +155,12 @@
                   <input type="hidden" name="id" value={p.id} />
                   <button
                     type="submit"
-                    class="w-full rounded-full border-2 border-ink/15 text-ink-soft font-bold text-[13px] py-2.5 hover:border-red-300 hover:text-red-500 transition"
+                    class="w-full flex items-center justify-center gap-1.5 rounded-full border-2 border-ink/15 text-ink-soft font-bold text-[13px] py-2.5 hover:border-red-300 hover:text-red-500 transition"
                   >
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="9" />
+                      <path d="m15 9-6 6M9 9l6 6" />
+                    </svg>
                     Batalkan pesanan
                   </button>
                 </form>
@@ -181,6 +191,20 @@
                 <div class="font-semibold text-[13.5px]">{formatRupiah(p.totalHarga)}</div>
                 <span class="text-[11px] font-extrabold px-2 py-0.5 rounded-full {st.kelas}">{st.teks}</span>
               </div>
+
+              {#if p.pembayaranDikonfirmasi}
+                <a
+                  href="/pesanan/{p.id}/struk"
+                  aria-label="Lihat struk"
+                  class="w-8 h-8 rounded-full bg-green-50 text-green-600 flex items-center justify-center hover:bg-green-100 transition"
+                >
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 3h16v18l-3-2-2.5 2-2.5-2-2.5 2L7 19l-3 2V3Z" />
+                    <path d="M8 8h8M8 12h8M8 16h4" />
+                  </svg>
+                </a>
+              {/if}
+
               <form
                 method="POST"
                 action="?/hapusRiwayat"
@@ -192,9 +216,13 @@
                 <button
                   type="submit"
                   aria-label="Hapus riwayat"
-                  class="w-8 h-8 rounded-full bg-red-50 text-red-500 flex items-center justify-center text-xs font-bold hover:bg-red-100 transition"
+                  class="w-8 h-8 rounded-full bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-100 transition"
                 >
-                  🗑️
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 6h18" />
+                    <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                    <path d="M10 11v6M14 11v6" />
+                  </svg>
                 </button>
               </form>
             </div>
