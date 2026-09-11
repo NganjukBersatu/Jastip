@@ -3,6 +3,7 @@
 
   let { data, form } = $props();
   let mengirim = $state(false);
+  let mengubahStatus = $state(false);
 </script>
 
 <svelte:head>
@@ -20,6 +21,51 @@
       Info ini yang bakal dilihat pelanggan buat percaya sama lapak titip kamu.
     </p>
   </div>
+
+  <!-- KARTU STATUS AKTIF -->
+  <section class="mb-6 sm:mb-8 rounded-2xl border border-ink/10 bg-white p-5 sm:p-6 shadow-[0_2px_12px_rgba(0,0,0,0.025)]">
+    <div class="flex items-center justify-between gap-4">
+      <div class="min-w-0">
+        <h2 class="text-sm font-extrabold text-ink">Status lapak</h2>
+        <p class="text-[12.5px] text-ink-soft mt-1 leading-relaxed">
+          {#if data.profil?.statusAktif}
+            Lapakmu terlihat di katalog dan bisa menerima pesanan baru.
+          {:else}
+            Lapakmu disembunyikan dari katalog dan tidak menerima pesanan baru.
+          {/if}
+        </p>
+      </div>
+
+      <form
+        method="POST"
+        action="?/ubahStatusAktif"
+        use:enhance={() => {
+          mengubahStatus = true;
+          return async ({ update }) => {
+            await update();
+            mengubahStatus = false;
+          };
+        }}
+        class="shrink-0"
+      >
+        <input type="hidden" name="statusAktif" value={!data.profil?.statusAktif} />
+
+        <button
+          type="submit"
+          disabled={mengubahStatus}
+          aria-pressed={data.profil?.statusAktif}
+          aria-label="Ubah status aktif menerima pesanan"
+          class="relative inline-flex h-8 w-14 items-center rounded-full transition-colors duration-200 disabled:opacity-60
+            {data.profil?.statusAktif ? 'bg-green-500' : 'bg-ink/15'}"
+        >
+          <span
+            class="inline-block h-6 w-6 transform rounded-full bg-white shadow-md transition-transform duration-200
+              {data.profil?.statusAktif ? 'translate-x-7' : 'translate-x-1'}"
+          ></span>
+        </button>
+      </form>
+    </div>
+  </section>
 
   <!-- MESSAGE -->
   {#if form?.error}
@@ -42,9 +88,10 @@
     </div>
   {/if}
 
-  <!-- FORM -->
+  <!-- FORM PROFIL -->
   <form
     method="POST"
+    action="?/simpanProfil"
     class="rounded-2xl border border-ink/10 bg-white p-5 sm:p-6 shadow-[0_2px_12px_rgba(0,0,0,0.025)]"
     use:enhance={() => {
       mengirim = true;
@@ -107,26 +154,26 @@
         ></textarea>
       </label>
 
-<!-- NOMOR WA -->
-<label class="flex flex-col gap-2">
-  <span class="text-[13.5px] font-bold text-ink">
-    Nomor WhatsApp
-  </span>
+      <!-- NOMOR WA -->
+      <label class="flex flex-col gap-2">
+        <span class="text-[13.5px] font-bold text-ink">
+          Nomor WhatsApp
+        </span>
 
-  <span class="text-[12.5px] text-ink-soft leading-relaxed">
-    Dipakai pelanggan untuk menghubungimu langsung saat bayar transfer
-    bank / e-wallet. Wajib diisi.
-  </span>
+        <span class="text-[12.5px] text-ink-soft leading-relaxed">
+          Dipakai pelanggan untuk menghubungimu langsung saat bayar transfer
+          bank / e-wallet. Wajib diisi.
+        </span>
 
-  <input
-    type="tel"
-    name="noWa"
-    value={data.profil?.noWa ?? ''}
-    placeholder="08123456789"
-    required
-    class="w-full rounded-xl border border-ink/15 bg-bg px-4 py-3 text-sm text-ink outline-none transition placeholder:text-ink-soft/60 focus:border-primary focus:ring-2 focus:ring-primary/10"
-  />
-</label>
+        <input
+          type="tel"
+          name="noWa"
+          value={data.profil?.noWa ?? ''}
+          placeholder="08123456789"
+          required
+          class="w-full rounded-xl border border-ink/15 bg-bg px-4 py-3 text-sm text-ink outline-none transition placeholder:text-ink-soft/60 focus:border-primary focus:ring-2 focus:ring-primary/10"
+        />
+      </label>
 
       <!-- DESKRIPSI -->
       <label class="flex flex-col gap-2 lg:col-span-2">
@@ -172,8 +219,7 @@
         {/if}
       </div>
 
-      
-       <a href="/jastiper/ongkir"
+      <a href="/jastiper/ongkir"
         class="shrink-0 text-[12px] sm:text-[13px] font-bold text-primary-dark hover:underline"
       >
         Atur ongkir →

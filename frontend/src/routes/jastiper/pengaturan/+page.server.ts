@@ -20,7 +20,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 };
 
 export const actions: Actions = {
-	default: async ({ request, locals }) => {
+simpanProfil: async ({ request, locals }) => {
 		const data = await request.formData();
 		const area = data.get('area')?.toString().trim();
 		const alamat = data.get('alamat')?.toString().trim() || null;
@@ -45,5 +45,16 @@ export const actions: Actions = {
 			.where(eq(jastiperProfiles.userId, locals.user!.id));
 
 		return { sukses: true };
-	}
+	},
+
+	ubahStatusAktif: async ({ request, locals }) => {
+	const data = await request.formData();
+	const statusAktif = data.get('statusAktif') === 'true';
+
+	await db
+		.update(jastiperProfiles)
+		.set({ statusAktif })
+		.where(eq(jastiperProfiles.userId, locals.user!.id));
+}
 };
+

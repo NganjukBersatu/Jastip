@@ -256,6 +256,22 @@
                   </div>
                 </div>
 
+{#if (p.metodePembayaran === 'transfer_bank' || p.metodePembayaran === 'e_wallet') && !p.pembayaranDikonfirmasi}
+  <form method="POST" action="?/tandaiLunas" use:enhance class="mb-2.5">
+    <input type="hidden" name="id" value={p.id} />
+    <button
+      type="submit"
+      class="w-full min-h-[44px] rounded-xl bg-green-600 text-white font-bold text-[13px] px-4 py-2.5 hover:-translate-y-0.5 hover:shadow-md transition"
+    >
+      Tandai pembayaran lunas
+    </button>
+  </form>
+{:else if p.pembayaranDikonfirmasi}
+  <span class="inline-block mb-2.5 text-[11.5px] font-bold text-green-700 bg-green-50 px-3 py-1.5 rounded-full">
+    ✓ Pembayaran diterima
+  </span>
+{/if}
+
                 <!-- ACTION -->
                 <div class="flex flex-col sm:flex-row gap-2.5 mt-4">
                   {#if p.status === 'menunggu_konfirmasi'}
