@@ -67,7 +67,7 @@
   <title>Pesanan — Nitip</title>
 </svelte:head>
 
-<div class="w-full max-w-[1140px] mx-auto px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
+<div class="w-full max-w-285 mx-auto px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
   <!-- HEADER -->
   <div class="mb-8 sm:mb-10 pb-6 border-b border-ink/10">
     <h1 class="text-2xl sm:text-[30px] font-extrabold tracking-tight text-ink">
@@ -163,7 +163,7 @@
           Belum ada pesanan aktif
         </div>
 
-        <div class="text-[13.5px] text-ink-soft mt-1.5 max-w-[280px] mx-auto leading-relaxed">
+        <div class="text-[13.5px] text-ink-soft mt-1.5 max-w-70 mx-auto leading-relaxed">
           Pesanan baru dari pelanggan bakal langsung muncul di sini.
         </div>
       </div>
@@ -245,7 +245,7 @@
                       Antar ke
                     </span>
 
-                    <span class="font-medium text-right max-w-[70%] break-words">
+                    <span class="font-medium text-right max-w-[70%] wrap-break-word">
                       {p.alamatKirim ?? '—'}
                     </span>
                   </div>
@@ -298,7 +298,7 @@
 
                       <button
                         type="submit"
-                        class="w-full min-h-[44px] rounded-xl bg-ink text-bg font-bold text-[13px] px-4 py-2.5 hover:-translate-y-0.5 hover:shadow-md transition"
+                        class="w-full min-h-11 rounded-xl bg-ink text-bg font-bold text-[13px] px-4 py-2.5 hover:-translate-y-0.5 hover:shadow-md transition"
                       >
                         Mulai belanja
                       </button>
@@ -314,7 +314,7 @@
 
                       <button
                         type="submit"
-                        class="w-full min-h-[44px] rounded-xl border-2 border-ink/15 text-ink-soft font-bold text-[13px] px-4 py-2.5 hover:border-red-300 hover:text-red-500 transition"
+                        class="w-full min-h-11 rounded-xl border-2 border-ink/15 text-ink-soft font-bold text-[13px] px-4 py-2.5 hover:border-red-300 hover:text-red-500 transition"
                       >
                         Batalkan
                       </button>
@@ -330,7 +330,7 @@
 
                       <button
                         type="submit"
-                        class="w-full min-h-[44px] rounded-xl bg-ink text-bg font-bold text-[13px] px-4 py-2.5 hover:-translate-y-0.5 hover:shadow-md transition"
+                        class="w-full min-h-11 rounded-xl bg-ink text-bg font-bold text-[13px] px-4 py-2.5 hover:-translate-y-0.5 hover:shadow-md transition"
                       >
                         Mulai antar
                       </button>
@@ -346,7 +346,7 @@
 
                       <button
                         type="submit"
-                        class="w-full min-h-[44px] rounded-xl bg-primary text-bg font-bold text-[13px] px-4 py-2.5 hover:-translate-y-0.5 hover:shadow-md transition"
+                        class="w-full min-h-11 rounded-xl bg-primary text-bg font-bold text-[13px] px-4 py-2.5 hover:-translate-y-0.5 hover:shadow-md transition"
                       >
                         Tandai selesai
                       </button>

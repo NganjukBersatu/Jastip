@@ -29,6 +29,24 @@
 
 	let sedangPolling = false;
 
+	// ID pesan yang sedang diproses hapus (untuk disable tombolnya sementara)
+	/** @type {string | null} */
+	let menghapusId = $state(null);
+
+	// ID pesan yang menu titik-tiganya sedang terbuka
+	/** @type {string | null} */
+	let menuTerbukaId = $state(null);
+
+	// Posisi menu (fixed, dihitung dari lokasi tombol yang diklik)
+	let menuPosisi = $state({ top: 0, left: 0 });
+
+	// ID pesan yang sedang dalam mode edit
+	/** @type {string | null} */
+	let editIdAktif = $state(null);
+
+	// Isi sementara saat mengedit pesan
+	let isiEditSementara = $state('');
+
 	// Panel detail transaksi
 	let detailTerbuka = $state(false);
 
@@ -240,6 +258,117 @@
 	};
 
 	// =========================================================
+	// MENU TITIK-TIGA (Edit & Hapus)
+	// =========================================================
+
+	/**
+	 * @param {string} id
+	 * @param {MouseEvent} e
+	 */
+	function toggleMenu(id, e) {
+		if (menuTerbukaId === id) {
+			menuTerbukaId = null;
+			return;
+		}
+
+		const tombol = /** @type {HTMLElement} */ (e.currentTarget);
+		const rect = tombol.getBoundingClientRect();
+
+		const lebarMenu = 144; // sesuai w-36
+		const tinggiMenuPerkiraan = 90;
+
+		// buka ke atas kalau tombolnya dekat bagian bawah layar,
+		// kalau tidak, buka ke bawah seperti biasa
+		const bukaKeAtas = rect.bottom + tinggiMenuPerkiraan > window.innerHeight;
+
+		menuPosisi = {
+			top: bukaKeAtas ? rect.top - tinggiMenuPerkiraan - 4 : rect.bottom + 6,
+			left: Math.max(8, rect.right - lebarMenu)
+		};
+
+		menuTerbukaId = id;
+	}
+
+	function tutupMenu() {
+		menuTerbukaId = null;
+	}
+
+	// =========================================================
+	// EDIT PESAN
+	// =========================================================
+
+	/**
+	 * @param {{ id: string; isi: string }} pesan
+	 */
+	function mulaiEdit(pesan) {
+		editIdAktif = pesan.id;
+		isiEditSementara = pesan.isi;
+		menuTerbukaId = null;
+	}
+
+	function batalEdit() {
+		editIdAktif = null;
+		isiEditSementara = '';
+	}
+
+	/**
+	 * @param {string} pesanId
+	 * @returns {SubmitFunction}
+	 */
+	function handleEditPesan(pesanId) {
+		return () => {
+			return async ({ result }) => {
+				if (result.type === 'success' && result.data?.success) {
+					const isiBaru = /** @type {string} */ (result.data.isiBaru);
+
+					daftarPesan = daftarPesan.map((pesan) =>
+						pesan.id === pesanId ? { ...pesan, isi: isiBaru } : pesan
+					);
+
+					editIdAktif = null;
+					isiEditSementara = '';
+				} else {
+					alert('Gagal mengedit pesan. Coba lagi.');
+				}
+			};
+		};
+	}
+
+	// =========================================================
+	// HAPUS PESAN
+	// =========================================================
+
+	/**
+	 * @param {string} pesanId
+	 * @returns {SubmitFunction}
+	 */
+	function handleHapusPesan(pesanId) {
+		return () => {
+			menghapusId = pesanId;
+			menuTerbukaId = null;
+
+			return async ({ result }) => {
+				if (result.type === 'success') {
+					daftarPesan = daftarPesan.filter((pesan) => pesan.id !== pesanId);
+				} else {
+					alert('Gagal menghapus pesan. Coba lagi.');
+				}
+
+				menghapusId = null;
+			};
+		};
+	}
+
+	/**
+	 * @param {SubmitEvent} e
+	 */
+	function konfirmasiHapus(e) {
+		if (!confirm('Hapus pesan ini?')) {
+			e.preventDefault();
+		}
+	}
+
+	// =========================================================
 	// FORM TAWARAN
 	// =========================================================
 
@@ -287,21 +416,24 @@
 	}
 </script>
 
+<svelte:window onclick={tutupMenu} onresize={tutupMenu} />
+
 <svelte:head>
 	<title>Chat — {data.item.namaItem} — Nitip</title>
 </svelte:head>
 
 <div
 	class="p-4 sm:p-6 lg:p-8 max-w-310 mx-auto
-	       flex flex-col h-[calc(100vh-4rem)]"
+	       flex flex-col h-[calc(100vh-4rem)]
+	       overflow-x-hidden"
 >
 	<!-- ===================================================== -->
 	<!-- HEADER CHAT -->
 	<!-- ===================================================== -->
 
 	<div class="shrink-0">
-		<a
-			href="/pelanggan/chat"
+		
+			<a href="/pelanggan/chat"
 			class="inline-flex items-center gap-1
 			       text-[13px] font-semibold text-ink
 			       hover:text-ink/70 transition mb-1"
@@ -709,31 +841,171 @@
 
 	<div
 		bind:this={elemChat}
+		onscroll={tutupMenu}
 		class="flex-1 min-h-0 overflow-y-auto
 		       mt-4 flex flex-col gap-3
 		       pr-1 pb-1"
 	>
 		{#each daftarPesan as pesan (pesan.id)}
 			{@const punyaSaya = pesan.pengirimId === data.userId}
+			{@const sedangEdit = editIdAktif === pesan.id}
 
 			<div class="flex {punyaSaya ? 'justify-end' : 'justify-start'}">
-				<div
-					class="max-w-[78%] sm:max-w-[70%]
-					       rounded-2xl px-4 py-2.5
-					       text-[13.5px] sm:text-[14px]
-					       {punyaSaya
-						? 'bg-ink text-bg rounded-br-md'
-						: 'bg-white border border-ink/10 rounded-bl-md'}"
-				>
-					<div class="leading-relaxed">
-						{pesan.isi}
+				<div class="relative max-w-[78%] sm:max-w-[70%]">
+					<div
+						class="rounded-2xl px-4 py-2.5
+						       text-[13.5px] sm:text-[14px]
+						       {punyaSaya
+							? 'bg-ink text-bg rounded-br-md'
+							: 'bg-white border border-ink/10 rounded-bl-md'}"
+					>
+						{#if sedangEdit}
+							<form
+								method="POST"
+								action="?/editPesan"
+								use:enhance={handleEditPesan(pesan.id)}
+								class="flex flex-col gap-1.5 min-w-50"
+							>
+								<input type="hidden" name="pesanId" value={pesan.id} />
+
+								<input
+									type="text"
+									name="isi"
+									bind:value={isiEditSementara}
+									required
+									class="rounded-lg px-2.5 py-1.5
+									       text-[13px] text-ink
+									       border border-ink/20
+									       focus:outline-none
+									       focus:border-ink/40"
+								/>
+
+								<div class="flex gap-3 justify-end">
+									<button
+										type="button"
+										onclick={batalEdit}
+										class="text-[11px] font-semibold
+										       opacity-70 hover:opacity-100
+										       {punyaSaya ? 'text-bg' : 'text-ink'}"
+									>
+										Batal
+									</button>
+
+									<button
+										type="submit"
+										class="text-[11px] font-bold
+										       {punyaSaya ? 'text-bg' : 'text-primary-dark'}"
+									>
+										Simpan
+									</button>
+								</div>
+							</form>
+						{:else}
+							<div class="leading-relaxed">
+								{pesan.isi}
+							</div>
+
+							<div class="text-[10px] mt-1 opacity-60">
+								{formatJam(pesan.createdAt)}
+							</div>
+						{/if}
 					</div>
 
-					<div class="text-[10px] mt-1 opacity-60">
-						{formatJam(pesan.createdAt)}
-					</div>
+										<!-- TITIK TIGA — di dalam pojok bubble, seperti WA -->
+					{#if punyaSaya && !sedangEdit}
+						<button
+							type="button"
+							onclick={(e) => {
+								e.stopPropagation();
+								toggleMenu(pesan.id, e);
+							}}
+							aria-label="Opsi pesan"
+							class="absolute top-1 right-1
+							       w-5 h-5 rounded-full
+							       bg-white/90 border border-ink/10
+							       shadow
+							       flex items-center justify-center
+							       text-ink-soft hover:text-ink
+							       transition"
+						>
+							<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
+								<circle cx="12" cy="5" r="1.8" />
+								<circle cx="12" cy="12" r="1.8" />
+								<circle cx="12" cy="19" r="1.8" />
+							</svg>
+						</button>
+					{/if}
 				</div>
 			</div>
+
+			<!-- MENU DROPDOWN — fixed di viewport, gak pernah kepotong -->
+			{#if menuTerbukaId === pesan.id}
+				<div
+					onclick={(e) => e.stopPropagation()}
+					style="position: fixed; top: {menuPosisi.top}px; left: {menuPosisi.left}px;"
+					class="z-50 bg-white border border-ink/10
+					       rounded-xl shadow-xl
+					       py-1 w-36 overflow-hidden"
+				>
+					<button
+						type="button"
+						onclick={() => mulaiEdit(pesan)}
+						class="w-full flex items-center gap-2
+						       px-3 py-2 text-[12.5px] font-medium
+						       text-ink hover:bg-bg-alt
+						       transition text-left"
+					>
+						<svg
+							class="w-3.5 h-3.5"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+						>
+							<path d="M12 20h9" />
+							<path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z" />
+						</svg>
+						Edit
+					</button>
+
+					<form
+						method="POST"
+						action="?/hapusPesan"
+						use:enhance={handleHapusPesan(pesan.id)}
+						onsubmit={konfirmasiHapus}
+					>
+						<input type="hidden" name="pesanId" value={pesan.id} />
+
+						<button
+							type="submit"
+							disabled={menghapusId === pesan.id}
+							class="w-full flex items-center gap-2
+							       px-3 py-2 text-[12.5px] font-medium
+							       text-red-500 hover:bg-red-50
+							       transition text-left
+							       disabled:opacity-40"
+						>
+							<svg
+								class="w-3.5 h-3.5"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							>
+								<polyline points="3 6 5 6 21 6" />
+								<path
+									d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+								/>
+							</svg>
+							{menghapusId === pesan.id ? 'Menghapus...' : 'Hapus'}
+						</button>
+					</form>
+				</div>
+			{/if}
 		{:else}
 			<div class="flex-1 flex items-center justify-center">
 				<div class="text-center max-w-70">
