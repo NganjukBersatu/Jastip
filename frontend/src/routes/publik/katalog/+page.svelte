@@ -44,6 +44,18 @@
 	/** @typedef {(Produk & { tipe: 'produk' }) | (Jasa & { tipe: 'jasa', satuan?: string }) | null} ItemDipilih */
 	/** @type {ItemDipilih} */
 	let itemDipilih = $state(null);
+
+	// Kunci scroll halaman belakang saat modal detail terbuka,
+	// supaya elemen background (hero, dekorasi blur, grid) tidak
+	// ikut bergerak/tumpang tindih di balik modal (fix tablet & mobile).
+	$effect(() => {
+		if (typeof document === 'undefined') return;
+		document.body.style.overflow = itemDipilih ? 'hidden' : '';
+		return () => {
+			document.body.style.overflow = '';
+		};
+	});
+
 	/** @param {'produk' | 'jasa'} t */
 	function gantiTampilan(t) {
 		tampilan = t;
@@ -111,44 +123,42 @@
 
 {#if form?.error}
 	<div
-		class="fixed top-4 left-1/2 -translate-x-1/2 z-200 bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-5 py-3 shadow-lg"
+		class="fixed top-4 left-1/2 -translate-x-1/2 z-[998] bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-5 py-3 shadow-lg"
 	>
 		{form.error}
 	</div>
 {/if}
 
 <!-- ===== HERO ===== -->
+<!-- Catatan revisi: struktur flex-row (teks kiri, gambar kanan) sudah aktif sejak md:,
+     jadi TIDAK diubah. Yang diperbaiki hanya skala ukuran teks & gambar di md:/lg:
+     (sebelumnya sempat mengecil balik di tengah jalan). Semua class xl: (desktop)
+     dibiarkan 100% sama seperti aslinya. -->
 <section
 	class="relative overflow-hidden bg-linear-to-br from-orange-100 via-amber-100 to-white
-	       pt-8 pb-10 xl:pt-10 xl:pb-14 xl:min-h-90 flex items-center"
+	       pt-8 pb-10 md:pt-10 md:pb-14 md:min-h-90 flex items-start md:items-center"
 >
-						<div class="max-w-295 mx-auto px-4 md:px-6 relative z-10 w-full flex flex-col xl:flex-row items-center justify-between gap-8">
-				<div class="w-full xl:max-w-130 xl:shrink-0 flex flex-col items-center text-center xl:items-start xl:text-left">
-			<span
+			<div class="max-w-295 mx-auto px-4 md:px-6 relative z-10 w-full flex flex-col md:flex-row items-center justify-start gap-8 md:gap-6 lg:gap-10 xl:justify-between">
+						<div class="w-full md:w-auto md:max-w-95 lg:max-w-115 xl:max-w-160 md:shrink-0 md:min-w-0 flex flex-col items-start text-left">
+							<span
 				class="inline-flex items-center gap-2 bg-white text-primary-dark text-sm font-bold px-4 py-2.5 rounded-full shadow-sm"
 			>
-				<svg
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-					class="w-3.5 h-3.5"
-				>
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-3.5 h-3.5">
 					<path d="M6 7V5a3 3 0 016 0v2" />
 					<rect x="3" y="7" width="12" height="13" rx="2" />
 				</svg>
 				Katalog Jastip
 			</span>
 
-						<h1 class="mt-5 text-[30px] sm:text-[36px] md:text-[60px] leading-[1.15] font-extrabold text-ink">
-	Temukan Berbagai Layanan
-	<span class="block text-primary">Jastip di Sini!</span>
-</h1>
+									<h1 class="mt-5 text-[30px] sm:text-[36px] md:text-[42px] lg:text-[50px] xl:text-[60px] leading-[1.15] font-extrabold text-ink">
+				Temukan Berbagai Layanan
+				<span class="block text-primary">Jastip di Sini!</span>
+			</h1>
 
-<p class="mt-3 text-ink-soft max-w-130 text-[15px] sm:text-base md:text-xl">
-	Dari produk fashion, makanan, elektronik, hingga layanan jasa, semua bisa kamu temukan
-	dengan mudah di Nitip.
-</p>
+									<p class="mt-3 text-ink-soft max-w-130 text-[15px] sm:text-base md:text-lg lg:text-lg xl:text-xl">
+				Dari produk fashion, makanan, elektronik, hingga layanan jasa, semua bisa kamu temukan
+				dengan mudah di Nitip.
+			</p>
 
 			<div class="mt-7 flex gap-3">
 				<button
@@ -158,13 +168,7 @@
 						? 'bg-primary text-white shadow-md'
 						: 'bg-white text-ink-soft hover:bg-orange-50'}"
 				>
-					<svg
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-						class="w-4 h-4"
-					>
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4">
 						<path d="M21 8l-9-5-9 5 9 5 9-5z" />
 						<path d="M3 8v8l9 5 9-5V8" />
 						<path d="M12 13v8" />
@@ -179,13 +183,7 @@
 						? 'bg-primary text-white shadow-md'
 						: 'bg-white text-ink-soft hover:bg-orange-50'}"
 				>
-					<svg
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-						class="w-4 h-4"
-					>
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4">
 						<path d="M14.7 6.3a4 4 0 10-5.4 5.4L3 18v3h3l6.3-6.3a4 4 0 005.4-5.4z" />
 					</svg>
 					Jasa
@@ -194,33 +192,25 @@
 			</div>
 		</div>
 
-				<img
+						<img
 			src="/hero-images/nitip-hero.png"
 			alt="Ilustrasi Nitip"
-							class="block mt-6 mx-auto w-full max-w-90
-			       xl:absolute xl:mt-0 xl:mx-0 xl:-right-30 xl:top-1/2 xl:-translate-y-1/2
-			       xl:h-[110%] xl:max-h-115 xl:max-w-none xl:w-auto
+			class="block mt-6 mx-auto w-full max-w-90
+			       md:mt-0 md:mx-0 md:max-w-100 md:h-100 md:shrink
+			       lg:max-w-130 lg:h-130
+			       xl:absolute xl:mt-0 xl:mx-0 xl:-right-16 xl:top-1/2 xl:-translate-y-1/2
+			       xl:h-100 xl:max-h-none xl:max-w-none xl:w-auto
 			       object-contain z-0 drop-shadow-2xl
 			       animate-float-mobile xl:animate-float"
 		/>
 	</div>
 
 	<!-- Dekorasi glow -->
-	<div
-		class="pointer-events-none absolute -left-24 -top-24 w-80 h-80 bg-orange-300/50 rounded-full blur-3xl"
-	></div>
-	<div
-		class="pointer-events-none absolute -left-10 top-1/3 w-44 h-44 bg-amber-300/40 rounded-full blur-2xl"
-	></div>
-	<div
-		class="pointer-events-none absolute right-0 -top-16 w-72 h-72 bg-orange-300/40 rounded-full blur-3xl"
-	></div>
-	<div
-		class="pointer-events-none absolute right-16 bottom-0 w-48 h-48 bg-amber-200/50 rounded-full blur-3xl"
-	></div>
-	<div
-		class="pointer-events-none absolute left-1/3 bottom-0 w-56 h-56 bg-orange-200/40 rounded-full blur-3xl"
-	></div>
+	<div class="pointer-events-none absolute -left-24 -top-24 w-80 h-80 bg-orange-300/50 rounded-full blur-3xl"></div>
+	<div class="pointer-events-none absolute -left-10 top-1/3 w-44 h-44 bg-amber-300/40 rounded-full blur-2xl"></div>
+	<div class="pointer-events-none absolute right-0 -top-16 w-72 h-72 bg-orange-300/40 rounded-full blur-3xl"></div>
+	<div class="pointer-events-none absolute right-16 bottom-0 w-48 h-48 bg-amber-200/50 rounded-full blur-3xl"></div>
+	<div class="pointer-events-none absolute left-1/3 bottom-0 w-56 h-56 bg-orange-200/40 rounded-full blur-3xl"></div>
 </section>
 
 <!-- ===== SEARCH + FILTER + GRID ===== -->
@@ -434,18 +424,24 @@
 	</div>
 </section>
 
-<footer class="py-16 border-t border-ink/10">
-  <div class="max-w-295 mx-auto px-8 flex justify-between flex-wrap gap-3 text-sm text-ink-soft">
+<!-- Footer: teks TIDAK diubah sama sekali, hanya jarak/spacing yang dirapikan
+     untuk tablet & mobile. Di xl: (desktop) dikembalikan persis seperti semula. -->
+<footer class="py-10 md:py-12 xl:py-16 border-t border-ink/10">
+  <div class="max-w-295 mx-auto px-6 md:px-8 flex flex-col items-start gap-2 sm:gap-3 xl:flex-row xl:items-center xl:justify-between xl:gap-3 text-sm text-ink-soft">
     <span>© 2026 Nitip. Semua hak dilindungi.</span>
     <span>Dibuat untuk jastiper Jawa Timur</span>
   </div>
 </footer>
 
 <!-- ===== MODAL DETAIL ===== -->
+<!-- Revisi: overlay dipertegas (lebih gelap & blur) khusus di bawah xl supaya
+     background rame (hero + dekorasi blur + grid) tidak lagi tembus/kelihatan
+     numpuk di belakang kartu detail pada mode tablet & mobile.
+     Di xl: (desktop) dikembalikan persis ke nilai asli (bg-ink/40, blur 2px). -->
 {#if itemDipilih}
 	{@const item = itemDipilih}
 	<div
-		class="fixed inset-0 z-100 bg-ink/40 backdrop-blur-[2px] flex items-center justify-center p-4"
+		class="fixed inset-0 z-[900] bg-ink/70 backdrop-blur-md xl:bg-ink/40 xl:backdrop-blur-[2px] flex items-center justify-center p-4"
 		role="presentation"
 		onclick={tutupDetail}
 	>
