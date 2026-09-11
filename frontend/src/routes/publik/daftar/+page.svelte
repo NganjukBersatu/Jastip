@@ -146,6 +146,8 @@
 				================================================= -->
 				<div class="role-options">
 					<!-- PELANGGAN -->
+					<!-- svelte-ignore a11y_click_events_have_key_events -->
+					<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 					<label
 						class="role-card"
 						class:selected={role === 'pelanggan'}
@@ -181,6 +183,8 @@
 					</label>
 
 					<!-- JASTIPER -->
+					<!-- svelte-ignore a11y_click_events_have_key_events -->
+					<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 					<label
 						class="role-card"
 						class:selected={role === 'jastiper'}

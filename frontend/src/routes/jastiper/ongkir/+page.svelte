@@ -131,9 +131,23 @@
         class="rounded-2xl border border-dashed border-ink/15 bg-white px-5 py-14 text-center shadow-[0_2px_12px_rgba(0,0,0,0.02)] sm:px-10 sm:py-16"
       >
         <div
-          class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-orange-50 text-2xl"
+          class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10"
         >
-          🚚
+          <svg
+            class="w-7 h-7 text-primary-dark"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M3 16V7a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v9" />
+            <path d="M14 10h4.5a1 1 0 0 1 .9.55L21 14v2a1 1 0 0 1-1 1h-1" />
+            <path d="M3 16a1 1 0 0 0 1 1h1" />
+            <circle cx="7.5" cy="17.5" r="1.6" />
+            <circle cx="17" cy="17.5" r="1.6" />
+          </svg>
         </div>
 
         <div class="font-bold text-[15px] text-ink">

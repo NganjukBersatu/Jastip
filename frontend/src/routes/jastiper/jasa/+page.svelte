@@ -289,8 +289,24 @@
     </div>
   {:else}
     <div class="bg-white rounded-2xl border border-dashed border-ink/15 px-5 py-14 sm:p-16 text-center">
-      <div class="w-14 h-14 mx-auto mb-4 rounded-full bg-orange-50 flex items-center justify-center">
-        <span class="text-2xl">🧳</span>
+      <div class="w-14 h-14 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="26"
+          height="26"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.75"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="text-primary-dark"
+        >
+          <rect x="3" y="7.5" width="18" height="12.5" rx="2.5" />
+          <path d="M8.5 7.5V5.75A1.75 1.75 0 0 1 10.25 4h3.5A1.75 1.75 0 0 1 15.5 5.75V7.5" />
+          <path d="M3 12.5h18" />
+          <path d="M10.25 12.5v1.5a.5.5 0 0 0 .5.5h2.5a.5.5 0 0 0 .5-.5v-1.5" />
+        </svg>
       </div>
 
       <div class="font-bold text-[15px] text-ink">Belum ada jasa</div>

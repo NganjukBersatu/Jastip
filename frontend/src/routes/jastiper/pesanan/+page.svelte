@@ -142,8 +142,21 @@
 
     {#if data.pesananAktif.length === 0}
       <div class="bg-white rounded-2xl border border-dashed border-ink/15 px-5 py-14 sm:p-16 text-center">
-        <div class="w-14 h-14 mx-auto mb-4 rounded-full bg-orange-50 flex items-center justify-center">
-          <span class="text-2xl">📦</span>
+        <div class="w-14 h-14 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
+          <svg
+            class="w-7 h-7 text-primary-dark"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M21 8.5V16a2 2 0 0 1-1.05 1.76l-6.5 3.5a2 2 0 0 1-1.9 0l-6.5-3.5A2 2 0 0 1 4 16V8.5" />
+            <path d="M21 8.5 12 4 3 8.5 12 13l9-4.5Z" />
+            <path d="M8.25 6.25 15.75 10.5" />
+            <path d="M12 13v8" />
+          </svg>
         </div>
 
         <div class="font-bold text-[15px] text-ink">
