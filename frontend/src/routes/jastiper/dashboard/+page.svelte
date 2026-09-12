@@ -1,5 +1,10 @@
-<script>
+<script lang="ts">
+  import { onMount } from 'svelte';
+
   let { data } = $props();
+
+  // Nama yang ditampilkan (bisa override dari localStorage)
+  let displayNama = $state(data.user?.nama ?? '');
 
   const kartuStatistik = $derived([
     { label: 'Pesanan baru', nilai: data.statistik.pesananBaru, warna: 'bg-primary text-white' },
@@ -9,6 +14,25 @@
   ]);
 
   const areaBelumDiisi = $derived(!data.profil?.area);
+
+  // Nama depan untuk sapaan "Halo, ..."
+  const namaDepan = $derived((displayNama || data.user?.nama || 'Jastiper').split(' ')[0]);
+
+  onMount(() => {
+    if (!data.user?.email) return;
+
+    try {
+      const savedProfile = localStorage.getItem(`profile_${data.user.email}`);
+      if (savedProfile) {
+        const parsed = JSON.parse(savedProfile);
+        if (parsed?.nama) {
+          displayNama = parsed.nama;
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  });
 </script>
 
 <svelte:head>
@@ -20,7 +44,7 @@
   <div class="mb-8 sm:mb-10 pb-6 border-b border-ink/10">
     <div class="flex items-center gap-2.5">
       <h1 class="text-2xl sm:text-[30px] font-extrabold tracking-tight text-ink">
-        Halo, {data.user.nama.split(' ')[0]}
+        Halo, {namaDepan}
       </h1>
 
       <svg
