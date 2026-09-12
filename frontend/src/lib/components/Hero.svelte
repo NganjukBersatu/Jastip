@@ -409,10 +409,10 @@ $effect(() => {
   ========================================================= */
 
   .hero-left {
-    position: relative;
-    z-index: 10;
-    padding: 145px 0 100px;
-  }
+  position: relative;
+  z-index: 10;
+  padding: 75px 0 75px;
+}
 
   /* =========================================================
      BADGE
@@ -428,6 +428,8 @@ $effect(() => {
     font-weight: 700;
     letter-spacing: .04em;
     margin-bottom: 20px;
+    position: relative;
+    top: 12px;
   }
 
   .badge-dot {
