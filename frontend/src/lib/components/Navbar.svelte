@@ -351,11 +351,13 @@
               : 'opacity-80 hover:bg-ink/5'}"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4.5 h-4.5 shrink-0">
-              <rect x="3" y="3" width="7" height="7" rx="1.5" />
-              <rect x="14" y="3" width="7" height="7" rx="1.5" />
-              <rect x="3" y="14" width="7" height="7" rx="1.5" />
-              <rect x="14" y="14" width="7" height="7" rx="1.5" />
-            </svg>
+             <path d="M4 5h16" />
+              <path d="M4 12h16" />
+                <path d="M4 19h16" />
+              <circle cx="8" cy="5" r="1.2" fill="currentColor" stroke="none" />
+           <circle cx="8" cy="12" r="1.2" fill="currentColor" stroke="none" />
+         <circle cx="8" cy="19" r="1.2" fill="currentColor" stroke="none" />
+      </svg>
             Katalog
           </a>
 
