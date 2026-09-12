@@ -1,38 +1,89 @@
-<script>
+<script lang="ts">
   import { page } from '$app/stores';
   import { fly, fade } from 'svelte/transition';
+  import { onMount } from 'svelte';
   import { notifikasiState } from '$lib/stores/notifikasi.svelte';
   import { heroThemeState } from '$lib/stores/heroTheme.svelte.js';
 
   let path = $derived($page.url.pathname);
   let user = $derived($page.data.user);
 
-let active = $derived(
-  path === '/' ? 'home' :
-  path.startsWith('/publik/katalog') ? 'katalog' :
-  path.startsWith('/publik/jadi-jastiper') ? 'jastiper' :
-  path.startsWith('/publik/cara-kerja') ? 'cara-kerja' :
-  path.startsWith('/pelanggan/chat') ? 'chat' :
-  path.startsWith('/pesanan') ? 'pesanan' :
-  path.startsWith('/jastiper/dashboard') ? 'dashboard' :
-  (path === '/profile' && user?.role === 'jastiper') ? 'dashboard' :
-  ''
-);
+  let active = $derived(
+    path === '/'
+      ? 'home'
+      : path.startsWith('/publik/katalog')
+        ? 'katalog'
+        : path.startsWith('/publik/jadi-jastiper')
+          ? 'jastiper'
+          : path.startsWith('/publik/cara-kerja')
+            ? 'cara-kerja'
+            : path.startsWith('/pelanggan/chat')
+              ? 'chat'
+              : path.startsWith('/pesanan')
+                ? 'pesanan'
+                : path.startsWith('/jastiper/dashboard')
+                  ? 'dashboard'
+                  : path === '/profile' && user?.role === 'jastiper'
+                    ? 'dashboard'
+                    : ''
+  );
 
-  let inisial = $derived(user?.nama?.charAt(0)?.toUpperCase() ?? '?');
+  let displayNama = $state('');
+  let avatarUrl = $state<string | null>(null);
+
+  let inisial = $derived((displayNama || user?.nama || '?').charAt(0).toUpperCase());
+  let namaPendek = $derived((displayNama || user?.nama || '').split(' ')[0] || '');
 
   const notifikasi = notifikasiState();
   const heroTheme = heroThemeState();
 
   let isJastiperPage = $derived($page.url.pathname.startsWith('/jastiper'));
   let isHomePage = $derived($page.url.pathname === '/');
-
   let menuTerbuka = $state(false);
-
-  // Transparan & teks putih HANYA saat masih di atas Hero (Home page,
-  // sebelum Hero terlewati). Di tempat lain (scroll lewat Hero, atau
-  // halaman selain Home) navbar solid dengan teks gelap seperti biasa.
   let blendWithHero = $derived(isHomePage && heroTheme.overHero && !menuTerbuka);
+
+  function loadProfilDariStorage() {
+    const email = user?.email;
+    if (!email) {
+      displayNama = user?.nama ?? '';
+      avatarUrl = null;
+      return;
+    }
+
+    displayNama = user?.nama ?? '';
+
+    try {
+      const savedAvatar = localStorage.getItem(`avatar_${email}`);
+      avatarUrl = savedAvatar || null;
+
+      const savedProfile = localStorage.getItem(`profile_${email}`);
+      if (savedProfile) {
+        const parsed = JSON.parse(savedProfile);
+        if (parsed?.nama) displayNama = parsed.nama;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  $effect(() => {
+    user;
+    loadProfilDariStorage();
+  });
+
+  onMount(() => {
+    loadProfilDariStorage();
+
+    const onStorage = (e: StorageEvent) => {
+      if (!user?.email) return;
+      if (e.key === `profile_${user.email}` || e.key === `avatar_${user.email}`) {
+        loadProfilDariStorage();
+      }
+    };
+
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
+  });
 
   function toggleMenu() {
     menuTerbuka = !menuTerbuka;
@@ -57,31 +108,36 @@ let active = $derived(
       ? 'bg-transparent text-ink -mb-17 sm:-mb-19'
       : 'bg-bg text-ink shadow-sm'}"
   >
-   <div class="relative z-50 max-w-295 mx-auto px-5 sm:px-8 h-17 sm:h-19 flex items-center justify-between overflow-hidden">
-      
-    <!-- Logo -->
-<div class="flex-1 flex items-center -ml-4">
-  <a href="/" class="flex items-center" onclick={tutupMenu}>
-    <img
-      src="/images/logo.png"
-      alt="Nitip"
-      class="h-18 sm:h-22 w-auto"
-    />
-  </a>
-</div>
+    <div
+      class="relative z-50 max-w-295 mx-auto px-5 sm:px-8 h-17 sm:h-19 flex items-center justify-between overflow-hidden"
+    >
+      <!-- Logo -->
+      <div class="flex-1 flex items-center -ml-4">
+        <a href="/" class="flex items-center" onclick={tutupMenu}>
+          <img src="/images/logo.png" alt="Nitip" class="h-18 sm:h-22 w-auto" />
+        </a>
+      </div>
 
       <!-- Menu desktop -->
       <div class="hidden md:flex gap-9 font-semibold text-sm shrink-0">
         <a
           href="/"
-          class="opacity-80 hover:opacity-100 transition {active === 'home' ? (blendWithHero ? 'opacity-100' : 'opacity-100 text-primary-dark') : ''}"
+          class="opacity-80 hover:opacity-100 transition {active === 'home'
+            ? blendWithHero
+              ? 'opacity-100'
+              : 'opacity-100 text-primary-dark'
+            : ''}"
         >
           Home
         </a>
 
         <a
           href="/publik/katalog"
-          class="opacity-80 hover:opacity-100 transition {active === 'katalog' ? (blendWithHero ? 'opacity-100' : 'opacity-100 text-primary-dark') : ''}"
+          class="opacity-80 hover:opacity-100 transition {active === 'katalog'
+            ? blendWithHero
+              ? 'opacity-100'
+              : 'opacity-100 text-primary-dark'
+            : ''}"
         >
           Katalog
         </a>
@@ -89,7 +145,11 @@ let active = $derived(
         {#if user?.role !== 'jastiper'}
           <a
             href="/publik/jadi-jastiper"
-            class="opacity-80 hover:opacity-100 transition {active === 'jastiper' ? (blendWithHero ? 'opacity-100' : 'opacity-100 text-primary-dark') : ''}"
+            class="opacity-80 hover:opacity-100 transition {active === 'jastiper'
+              ? blendWithHero
+                ? 'opacity-100'
+                : 'opacity-100 text-primary-dark'
+              : ''}"
           >
             Jadi jastiper
           </a>
@@ -97,7 +157,11 @@ let active = $derived(
 
         <a
           href="/publik/cara-kerja"
-          class="opacity-80 hover:opacity-100 transition {active === 'cara-kerja' ? (blendWithHero ? 'opacity-100' : 'opacity-100 text-primary-dark') : ''}"
+          class="opacity-80 hover:opacity-100 transition {active === 'cara-kerja'
+            ? blendWithHero
+              ? 'opacity-100'
+              : 'opacity-100 text-primary-dark'
+            : ''}"
         >
           Cara kerja
         </a>
@@ -105,7 +169,11 @@ let active = $derived(
         {#if user?.role === 'pelanggan'}
           <a
             href="/pelanggan/chat"
-            class="relative opacity-80 hover:opacity-100 transition {active === 'chat' ? (blendWithHero ? 'opacity-100' : 'opacity-100 text-primary-dark') : ''}"
+            class="relative opacity-80 hover:opacity-100 transition {active === 'chat'
+              ? blendWithHero
+                ? 'opacity-100'
+                : 'opacity-100 text-primary-dark'
+              : ''}"
           >
             Chat jastiper
             {#if notifikasi.jumlah > 0}
@@ -119,7 +187,11 @@ let active = $derived(
 
           <a
             href="/pesanan"
-            class="opacity-80 hover:opacity-100 transition {active === 'pesanan' ? (blendWithHero ? 'opacity-100' : 'opacity-100 text-primary-dark') : ''}"
+            class="opacity-80 hover:opacity-100 transition {active === 'pesanan'
+              ? blendWithHero
+                ? 'opacity-100'
+                : 'opacity-100 text-primary-dark'
+              : ''}"
           >
             Lihat pesanan
           </a>
@@ -128,7 +200,11 @@ let active = $derived(
         {#if user?.role === 'jastiper'}
           <a
             href="/jastiper/dashboard"
-            class="opacity-80 hover:opacity-100 transition {active === 'dashboard' ? (blendWithHero ? 'opacity-100' : 'opacity-100 text-primary-dark') : ''}"
+            class="opacity-80 hover:opacity-100 transition {active === 'dashboard'
+              ? blendWithHero
+                ? 'opacity-100'
+                : 'opacity-100 text-primary-dark'
+              : ''}"
           >
             Dashboard
           </a>
@@ -141,7 +217,9 @@ let active = $derived(
           <a
             href="/keranjang"
             aria-label="Keranjang"
-            class="w-9 h-9 rounded-full flex items-center justify-center transition {blendWithHero ? 'hover:bg-white/15' : 'hover:bg-ink/5'}"
+            class="w-9 h-9 rounded-full flex items-center justify-center transition {blendWithHero
+              ? 'hover:bg-white/15'
+              : 'hover:bg-ink/5'}"
           >
             <svg
               viewBox="0 0 24 24"
@@ -164,10 +242,16 @@ let active = $derived(
             href="/profile"
             class="hidden sm:flex items-center gap-2.5 font-bold text-sm opacity-90 hover:opacity-100 transition"
           >
-            <span class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold">
-              {inisial}
-            </span>
-            {user.nama.split(' ')[0]}
+            {#if avatarUrl}
+              <img src={avatarUrl} alt="Foto profil" class="w-8 h-8 rounded-full object-cover" />
+            {:else}
+              <span
+                class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold"
+              >
+                {inisial}
+              </span>
+            {/if}
+            {namaPendek}
           </a>
         {:else}
           <a
@@ -190,7 +274,9 @@ let active = $derived(
           aria-label={menuTerbuka ? 'Tutup menu' : 'Buka menu'}
           aria-expanded={menuTerbuka}
           onclick={toggleMenu}
-          class="md:hidden w-9 h-9 rounded-full flex items-center justify-center transition {blendWithHero ? 'hover:bg-white/15' : 'hover:bg-ink/5'}"
+          class="md:hidden w-9 h-9 rounded-full flex items-center justify-center transition {blendWithHero
+            ? 'hover:bg-white/15'
+            : 'hover:bg-ink/5'}"
         >
           {#if menuTerbuka}
             <svg
@@ -224,32 +310,31 @@ let active = $derived(
       </div>
     </div>
 
-    <!-- ================= PANEL MENU MOBILE (revisi) =================
-         Drawer mengambang ala referensi: sudut melengkung penuh, label
-         grup "MENU" & "AKUN", badge rata kanan, baris profil jadi
-         pill dengan chevron. Navbar desktop di atas TIDAK disentuh. -->
+    <!-- Panel menu mobile LENGKAP -->
     {#if menuTerbuka}
-      <!-- Backdrop gelap, klik untuk menutup -->
       <button
-  type="button"
-  aria-label="Tutup menu"
-  onclick={tutupMenu}
-  transition:fade={{ duration: 200 }}
-  class="md:hidden fixed top-17 sm:top-19 left-0 right-0 bottom-0 z-40 bg-ink/40 border-0 p-0 cursor-default"
-></button>
+        type="button"
+        aria-label="Tutup menu"
+        onclick={tutupMenu}
+        transition:fade={{ duration: 200 }}
+        class="md:hidden fixed top-17 sm:top-19 left-0 right-0 bottom-0 z-40 bg-ink/40 border-0 p-0 cursor-default"
+      ></button>
 
-      <!-- Drawer mengambang, tinggi mengikuti isi -->
-<div
-  transition:fly={{ y: -12, duration: 250 }}
-  class="md:hidden fixed top-17 sm:top-19 left-0 right-0 z-50 w-full max-h-[calc(100vh-68px)] sm:max-h-[calc(100vh-76px)] bg-bg text-ink shadow-md overflow-y-auto rounded-b-2xl"
->
-       <p class="px-4 pt-1 pb-1 text-[10.5px] font-bold uppercase tracking-wider text-ink-soft/70">Menu</p>
+      <div
+        transition:fly={{ y: -12, duration: 250 }}
+        class="md:hidden fixed top-17 sm:top-19 left-0 right-0 z-50 w-full max-h-[calc(100vh-68px)] sm:max-h-[calc(100vh-76px)] bg-bg text-ink shadow-md overflow-y-auto rounded-b-2xl"
+      >
+        <p class="px-4 pt-1 pb-1 text-[10.5px] font-bold uppercase tracking-wider text-ink-soft/70">
+          Menu
+        </p>
 
         <div class="flex flex-col gap-1 py-1 px-2.5">
           <a
             href="/"
             onclick={tutupMenu}
-            class="flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition {active === 'home' ? 'text-primary-dark bg-primary/10' : 'opacity-80 hover:bg-ink/5'}"
+            class="flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition {active === 'home'
+              ? 'text-primary-dark bg-primary/10'
+              : 'opacity-80 hover:bg-ink/5'}"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4.5 h-4.5 shrink-0">
               <path d="M3 11l9-8 9 8" />
@@ -261,7 +346,9 @@ let active = $derived(
           <a
             href="/publik/katalog"
             onclick={tutupMenu}
-            class="flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition {active === 'katalog' ? 'text-primary-dark bg-primary/10' : 'opacity-80 hover:bg-ink/5'}"
+            class="flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition {active === 'katalog'
+              ? 'text-primary-dark bg-primary/10'
+              : 'opacity-80 hover:bg-ink/5'}"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4.5 h-4.5 shrink-0">
               <rect x="3" y="3" width="7" height="7" rx="1.5" />
@@ -276,7 +363,9 @@ let active = $derived(
             <a
               href="/publik/jadi-jastiper"
               onclick={tutupMenu}
-              class="flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition {active === 'jastiper' ? 'text-primary-dark bg-primary/10' : 'opacity-80 hover:bg-ink/5'}"
+              class="flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition {active === 'jastiper'
+                ? 'text-primary-dark bg-primary/10'
+                : 'opacity-80 hover:bg-ink/5'}"
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4.5 h-4.5 shrink-0">
                 <path d="M20 8v6M23 11h-6" />
@@ -290,7 +379,9 @@ let active = $derived(
           <a
             href="/publik/cara-kerja"
             onclick={tutupMenu}
-            class="flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition {active === 'cara-kerja' ? 'text-primary-dark bg-primary/10' : 'opacity-80 hover:bg-ink/5'}"
+            class="flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition {active === 'cara-kerja'
+              ? 'text-primary-dark bg-primary/10'
+              : 'opacity-80 hover:bg-ink/5'}"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4.5 h-4.5 shrink-0">
               <circle cx="12" cy="12" r="9" />
@@ -304,7 +395,9 @@ let active = $derived(
             <a
               href="/pelanggan/chat"
               onclick={tutupMenu}
-              class="flex items-center justify-between px-4 py-3 rounded-xl font-semibold text-sm transition {active === 'chat' ? 'text-primary-dark bg-primary/10' : 'opacity-80 hover:bg-ink/5'}"
+              class="flex items-center justify-between px-4 py-3 rounded-xl font-semibold text-sm transition {active === 'chat'
+                ? 'text-primary-dark bg-primary/10'
+                : 'opacity-80 hover:bg-ink/5'}"
             >
               <span class="flex items-center gap-3">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4.5 h-4.5 shrink-0">
@@ -322,7 +415,9 @@ let active = $derived(
             <a
               href="/pesanan"
               onclick={tutupMenu}
-              class="flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition {active === 'pesanan' ? 'text-primary-dark bg-primary/10' : 'opacity-80 hover:bg-ink/5'}"
+              class="flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition {active === 'pesanan'
+                ? 'text-primary-dark bg-primary/10'
+                : 'opacity-80 hover:bg-ink/5'}"
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4.5 h-4.5 shrink-0">
                 <path d="M6 2l1.5 4h9L18 2" />
@@ -338,7 +433,9 @@ let active = $derived(
             <a
               href="/jastiper/dashboard"
               onclick={tutupMenu}
-              class="flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition {active === 'dashboard' ? 'text-primary-dark bg-primary/10' : 'opacity-80 hover:bg-ink/5'}"
+              class="flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition {active === 'dashboard'
+                ? 'text-primary-dark bg-primary/10'
+                : 'opacity-80 hover:bg-ink/5'}"
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4.5 h-4.5 shrink-0">
                 <rect x="3" y="3" width="7" height="9" rx="1.5" />
@@ -351,9 +448,11 @@ let active = $derived(
           {/if}
         </div>
 
-        <!-- Bagian akun: label grup + pill profil / tombol Masuk-Daftar -->
+        <!-- Bagian akun mobile -->
         <div class="sm:hidden border-t border-ink/10 px-2.5 pt-2 pb-3">
-          <p class="px-1.5 pb-1 text-[10.5px] font-bold uppercase tracking-wider text-ink-soft/70">Akun</p>
+          <p class="px-1.5 pb-1 text-[10.5px] font-bold uppercase tracking-wider text-ink-soft/70">
+            Akun
+          </p>
           {#if user}
             <a
               href="/profile"
@@ -361,12 +460,30 @@ let active = $derived(
               class="flex items-center justify-between gap-2.5 rounded-xl bg-ink/5 hover:bg-ink/10 transition px-3 py-2.5"
             >
               <span class="flex items-center gap-2.5">
-                <span class="w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold shrink-0">
-                  {inisial}
-                </span>
-                <span class="text-sm font-bold">{user.nama.split(' ')[0]}</span>
+                {#if avatarUrl}
+                  <img
+                    src={avatarUrl}
+                    alt="Foto profil"
+                    class="w-9 h-9 rounded-full object-cover shrink-0"
+                  />
+                {:else}
+                  <span
+                    class="w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold shrink-0"
+                  >
+                    {inisial}
+                  </span>
+                {/if}
+                <span class="text-sm font-bold">{namaPendek}</span>
               </span>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 opacity-50 shrink-0">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="w-4 h-4 opacity-50 shrink-0"
+              >
                 <polyline points="9 18 15 12 9 6" />
               </svg>
             </a>
@@ -379,7 +496,6 @@ let active = $derived(
               >
                 Masuk
               </a>
-
               <a
                 href="/publik/daftar"
                 onclick={tutupMenu}
