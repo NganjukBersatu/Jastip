@@ -33,7 +33,7 @@
 	/** @type {string | null} */
 	let menghapusId = $state(null);
 
-	// ID pesan yang menu titik-tiganya sedang terbuka
+	// ID pesan yang menu opsinya sedang terbuka
 	/** @type {string | null} */
 	let menuTerbukaId = $state(null);
 
@@ -258,7 +258,7 @@
 	};
 
 	// =========================================================
-	// MENU TITIK-TIGA (Edit & Hapus)
+	// MENU OPSI PESAN (Edit & Hapus)
 	// =========================================================
 
 	/**
@@ -874,7 +874,7 @@
 									bind:value={isiEditSementara}
 									required
 									class="rounded-lg px-2.5 py-1.5
-									       text-[13px] text-ink
+									       text-[13px] text-ink bg-white
 									       border border-ink/20
 									       focus:outline-none
 									       focus:border-ink/40"
@@ -905,41 +905,47 @@
 								{pesan.isi}
 							</div>
 
-							<div class="text-[10px] mt-1 opacity-60">
-								{formatJam(pesan.createdAt)}
+							<!-- JAM + TOMBOL OPSI (chevron), sejajar, di dalam bubble -->
+							<div class="flex items-center justify-end gap-1.5 mt-1">
+								<span class="text-[10px] opacity-60">
+									{formatJam(pesan.createdAt)}
+								</span>
+
+								{#if punyaSaya}
+									<button
+										type="button"
+										onclick={(e) => {
+											e.stopPropagation();
+											toggleMenu(pesan.id, e);
+										}}
+										aria-label="Opsi pesan"
+										class="w-4 h-4 flex items-center justify-center
+										       rounded opacity-60 hover:opacity-100
+										       transition shrink-0"
+									>
+										<svg
+											class="w-3 h-3"
+											viewBox="0 0 24 24"
+											fill="none"
+											stroke="currentColor"
+											stroke-width="2.5"
+											stroke-linecap="round"
+											stroke-linejoin="round"
+										>
+											<polyline points="6 9 12 15 18 9" />
+										</svg>
+									</button>
+								{/if}
 							</div>
 						{/if}
 					</div>
-
-										<!-- TITIK TIGA — di dalam pojok bubble, seperti WA -->
-					{#if punyaSaya && !sedangEdit}
-						<button
-							type="button"
-							onclick={(e) => {
-								e.stopPropagation();
-								toggleMenu(pesan.id, e);
-							}}
-							aria-label="Opsi pesan"
-							class="absolute top-1 right-1
-							       w-5 h-5 rounded-full
-							       bg-white/90 border border-ink/10
-							       shadow
-							       flex items-center justify-center
-							       text-ink-soft hover:text-ink
-							       transition"
-						>
-							<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
-								<circle cx="12" cy="5" r="1.8" />
-								<circle cx="12" cy="12" r="1.8" />
-								<circle cx="12" cy="19" r="1.8" />
-							</svg>
-						</button>
-					{/if}
 				</div>
 			</div>
 
 			<!-- MENU DROPDOWN — fixed di viewport, gak pernah kepotong -->
 			{#if menuTerbukaId === pesan.id}
+				<!-- svelte-ignore a11y_click_events_have_key_events -->
+				<!-- svelte-ignore a11y_no_static_element_interactions -->
 				<div
 					onclick={(e) => e.stopPropagation()}
 					style="position: fixed; top: {menuPosisi.top}px; left: {menuPosisi.left}px;"

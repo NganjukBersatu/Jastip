@@ -274,7 +274,7 @@
     <input type="hidden" name="id" value={p.id} />
     <button
       type="submit"
-      class="w-full min-h-[44px] rounded-xl bg-green-600 text-white font-bold text-[13px] px-4 py-2.5 hover:-translate-y-0.5 hover:shadow-md transition"
+      class="w-full min-h-11 rounded-xl bg-green-600 text-white font-bold text-[13px] px-4 py-2.5 hover:-translate-y-0.5 hover:shadow-md transition"
     >
       Tandai pembayaran lunas
     </button>
