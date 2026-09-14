@@ -136,7 +136,6 @@ export const actions: Actions = {
 			return fail(400, { error: 'Produk tidak tersedia.' });
 		}
 
-		// BARU: cek status aktif jastiper sebelum boleh masuk keranjang
 		const [profilJastiper] = await db
 			.select({ statusAktif: jastiperProfiles.statusAktif })
 			.from(jastiperProfiles)
@@ -157,6 +156,8 @@ export const actions: Actions = {
 			await db.insert(keranjangItem).values({ id: randomUUID(), pelangganId: locals.user.id, produkId, jumlah: 1 });
 		}
 
-		throw redirect(303, '/keranjang');
+		// DIUBAH: tidak lagi redirect ke /keranjang — pelanggan tetap di katalog,
+		// cukup dikasih tahu lewat badge keranjang di navbar.
+		return { berhasilTambahKeranjang: true };
 	}
 };

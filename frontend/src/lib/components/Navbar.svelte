@@ -4,7 +4,7 @@
 import { heroThemeState } from '$lib/stores/heroTheme.svelte.js';
 
   let { active = '' } = $props();
-
+  let jumlahKeranjang = $derived($page.data.jumlahKeranjang ?? 0);
   let user = $derived($page.data.user);
   let inisial = $derived(user?.nama?.charAt(0)?.toUpperCase() ?? '?');
 
@@ -119,7 +119,7 @@ class="sticky top-0 z-50 transition-colors duration-300 {blendWithHero
           <a
             href="/keranjang"
             aria-label="Keranjang"
-            class="w-9 h-9 rounded-full flex items-center justify-center transition {blendWithHero ? 'hover:bg-white/15' : 'hover:bg-ink/5'}"
+            class="relative w-9 h-9 rounded-full flex items-center justify-center transition {blendWithHero ? 'hover:bg-white/15' : 'hover:bg-ink/5'}"
           >
             <svg
               viewBox="0 0 24 24"
@@ -134,6 +134,13 @@ class="sticky top-0 z-50 transition-colors duration-300 {blendWithHero
               <circle cx="20" cy="21" r="1" />
               <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
             </svg>
+            {#if jumlahKeranjang > 0}
+              <span
+                class="absolute -top-1 -right-1 bg-primary text-white text-[10px] font-bold rounded-full min-w-4 h-4 px-1 flex items-center justify-center"
+              >
+                {jumlahKeranjang > 9 ? '9+' : jumlahKeranjang}
+              </span>
+            {/if}
           </a>
         {/if}
 
