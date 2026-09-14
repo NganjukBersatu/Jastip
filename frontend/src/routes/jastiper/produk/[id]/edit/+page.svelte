@@ -3,8 +3,11 @@
 
   let { data, form } = $props();
 
+  // svelte-ignore state_referenced_locally
   let hargaTipe = $state(data.produk.hargaTipe);
+  // svelte-ignore state_referenced_locally
   let kategori = $state(data.produk.kategori ?? 'Lainnya');
+  // svelte-ignore state_referenced_locally
   let aktif = $state(data.produk.aktif);
   let mengirim = $state(false);
 

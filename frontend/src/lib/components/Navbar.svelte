@@ -6,7 +6,6 @@
   
 import { heroThemeState } from '$lib/stores/heroTheme.svelte.js';
 
-  let { active = '' } = $props();
   let jumlahKeranjang = $derived($page.data.jumlahKeranjang ?? 0);
   let path = $derived($page.url.pathname);
   let user = $derived($page.data.user);
@@ -220,7 +219,7 @@ import { heroThemeState } from '$lib/stores/heroTheme.svelte.js';
           <a
             href="/keranjang"
             aria-label="Keranjang"
-            class="w-9 h-9 rounded-full flex items-center justify-center transition {blendWithHero
+            class="relative w-9 h-9 rounded-full flex items-center justify-center transition {blendWithHero
               ? 'hover:bg-white/15'
               : 'hover:bg-ink/5'}"
           >
