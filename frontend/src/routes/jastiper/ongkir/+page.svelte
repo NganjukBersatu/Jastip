@@ -18,14 +18,14 @@
   <title>Ongkir wilayah — Nitip</title>
 </svelte:head>
 
-<div class="w-full max-w-[1140px] mx-auto px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
+<div class="w-full max-w-285 mx-auto px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
   <!-- Header -->
   <div class="mb-8 sm:mb-10 pb-6 border-b border-ink/10">
     <h1 class="text-2xl sm:text-[30px] font-extrabold tracking-[-0.02em] text-ink">
       Ongkir wilayah
     </h1>
 
-    <p class="text-ink-soft mt-2 text-sm sm:text-[15px] leading-relaxed max-w-[620px]">
+    <p class="text-ink-soft mt-2 text-sm sm:text-[15px] leading-relaxed max-w-155">
       Atur biaya kirim berbeda untuk tiap wilayah yang kamu layani.
     </p>
   </div>
@@ -102,7 +102,7 @@
       <button
         type="submit"
         disabled={mengirim}
-        class="inline-flex h-[46px] w-full items-center justify-center rounded-xl bg-ink px-6 text-sm font-bold text-bg shadow-sm transition hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+        class="inline-flex h-11.5 w-full items-center justify-center rounded-xl bg-ink px-6 text-sm font-bold text-bg shadow-sm transition hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
       >
         {mengirim ? 'Menambahkan...' : 'Tambah'}
       </button>
@@ -167,7 +167,7 @@
         {#each data.daftarOngkir as o, index (o.id)}
           <div
             class:!border-b-0={index === data.daftarOngkir.length - 1}
-            class="flex min-h-[72px] flex-col gap-3 border-b border-ink/10 px-4 py-4 transition hover:bg-bg/40 sm:flex-row sm:items-center sm:justify-between sm:px-5"
+            class="flex min-h-18 flex-col gap-3 border-b border-ink/10 px-4 py-4 transition hover:bg-bg/40 sm:flex-row sm:items-center sm:justify-between sm:px-5"
           >
             <!-- Informasi wilayah -->
             <div class="min-w-0">

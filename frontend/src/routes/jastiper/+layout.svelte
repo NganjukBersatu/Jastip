@@ -1,11 +1,34 @@
-<script>
+<script lang="ts">
   import { page } from '$app/stores';
+  import { onMount } from 'svelte';
   import { notifikasiState } from '$lib/stores/notifikasi.svelte';
 
   let { data, children } = $props();
 
-  // State notifikasi
   const notifikasi = notifikasiState();
+
+  // Nama & avatar yang ditampilkan (bisa override dari localStorage)
+  let displayNama = $state(data.user?.nama ?? '');
+  let avatarUrl = $state<string | null>(null);
+
+  let inisial = $derived((displayNama || '?').charAt(0).toUpperCase());
+
+  onMount(() => {
+    if (!data.user?.email) return;
+
+    try {
+      const savedAvatar = localStorage.getItem(`avatar_${data.user.email}`);
+      if (savedAvatar) avatarUrl = savedAvatar;
+
+      const savedProfile = localStorage.getItem(`profile_${data.user.email}`);
+      if (savedProfile) {
+        const parsed = JSON.parse(savedProfile);
+        if (parsed?.nama) displayNama = parsed.nama;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  });
 
   const menu = [
     {
@@ -49,10 +72,6 @@
       icon: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/>'
     }
   ];
-
-  let inisial = $derived(
-    data.user?.nama?.charAt(0)?.toUpperCase() ?? '?'
-  );
 </script>
 
 <div class="min-h-screen bg-bg flex flex-col lg:flex-row">
@@ -84,16 +103,13 @@
         >
           <path d="M15 18l-6-6 6-6" />
         </svg>
-
         Panel Jastiper
       </a>
     </div>
 
     <!-- Menu -->
     <nav class="flex-1 p-4 flex flex-col gap-1.5 overflow-y-auto">
-
       {#each menu as item}
-
         <a
           href={item.href}
           class="relative flex items-center gap-3 px-4 py-3 rounded-2xl
@@ -102,8 +118,6 @@
             ? 'bg-primary text-white shadow-sm'
             : 'text-ink-soft hover:bg-bg-alt hover:text-ink'}"
         >
-
-          <!-- Icon -->
           <svg
             class="w-4.5 h-4.5 shrink-0"
             viewBox="0 0 24 24"
@@ -118,8 +132,6 @@
 
           <span>{item.label}</span>
 
-          <!-- Badge notifikasi -->
-          <!-- Badge sekarang berada di Pengajuan harga -->
           {#if item.href === '/jastiper/pengajuan-harga' && notifikasi.jumlah > 0}
             <span
               class="ml-auto bg-primary text-bg text-[10px] font-bold
@@ -129,45 +141,42 @@
               {notifikasi.jumlah > 9 ? '9+' : notifikasi.jumlah}
             </span>
           {/if}
-
         </a>
-
       {/each}
-
     </nav>
 
     <!-- Profile -->
     <div class="p-4 border-t border-ink/10">
-
       <a
         href="/profile"
         class="flex items-center gap-3 px-3 py-2.5 rounded-2xl
                hover:bg-bg-alt transition"
       >
-
-        <span
-          class="w-9 h-9 rounded-full bg-primary text-white
-                 flex items-center justify-center text-xs font-bold shrink-0"
-        >
-          {inisial}
-        </span>
+        {#if avatarUrl}
+          <img
+            src={avatarUrl}
+            alt="Foto profil"
+            class="w-9 h-9 rounded-full object-cover shrink-0"
+          />
+        {:else}
+          <span
+            class="w-9 h-9 rounded-full bg-primary text-white
+                   flex items-center justify-center text-xs font-bold shrink-0"
+          >
+            {inisial}
+          </span>
+        {/if}
 
         <div class="min-w-0">
-
           <div class="text-sm font-bold truncate">
-            {data.user.nama}
+            {displayNama || data.user?.nama}
           </div>
-
           <div class="text-[12px] text-ink-soft">
             Lihat profil
           </div>
-
         </div>
-
       </a>
-
     </div>
-
   </aside>
 
 
@@ -179,32 +188,32 @@
     class="lg:hidden sticky top-0 z-40 bg-white/95
            backdrop-blur border-b border-ink/10"
   >
-
-    <!-- Header atas -->
     <div class="px-4 py-3 flex items-center justify-between gap-3">
-
       <a href="/" class="flex items-center gap-2.5 min-w-0">
-
-        <span
-          class="w-9 h-9 rounded-xl bg-primary text-white
-                 flex items-center justify-center text-sm
-                 font-extrabold shrink-0"
-        >
-          {inisial}
-        </span>
+        {#if avatarUrl}
+          <img
+            src={avatarUrl}
+            alt="Foto profil"
+            class="w-9 h-9 rounded-xl object-cover shrink-0"
+          />
+        {:else}
+          <span
+            class="w-9 h-9 rounded-xl bg-primary text-white
+                   flex items-center justify-center text-sm
+                   font-extrabold shrink-0"
+          >
+            {inisial}
+          </span>
+        {/if}
 
         <div class="min-w-0">
-
           <div class="text-sm font-extrabold text-ink truncate">
             Panel Jastiper
           </div>
-
           <div class="text-[11px] text-ink-soft truncate">
-            {data.user.nama}
+            {displayNama || data.user?.nama}
           </div>
-
         </div>
-
       </a>
 
       <a
@@ -213,20 +222,11 @@
       >
         Profil
       </a>
-
     </div>
 
-
-    <!-- ========================= -->
-    <!-- MOBILE MENU -->
-    <!-- ========================= -->
-
     <nav class="px-3 pb-3 overflow-x-auto">
-
       <div class="flex gap-1.5 min-w-max">
-
         {#each menu as item}
-
           <a
             href={item.href}
             class="relative flex items-center gap-2 px-3.5 py-2.5
@@ -236,8 +236,6 @@
               ? 'bg-primary text-white'
               : 'bg-bg text-ink-soft hover:bg-bg-alt hover:text-ink'}"
           >
-
-            <!-- Icon -->
             <svg
               class="w-4 h-4 shrink-0"
               viewBox="0 0 24 24"
@@ -252,8 +250,6 @@
 
             {item.label}
 
-            <!-- Badge notifikasi mobile -->
-            <!-- Badge sekarang berada di Pengajuan harga -->
             {#if item.href === '/jastiper/pengajuan-harga' && notifikasi.jumlah > 0}
               <span
                 class="ml-1 bg-primary text-bg text-[9px] font-bold
@@ -263,15 +259,10 @@
                 {notifikasi.jumlah > 9 ? '9+' : notifikasi.jumlah}
               </span>
             {/if}
-
           </a>
-
         {/each}
-
       </div>
-
     </nav>
-
   </header>
 
 
@@ -280,9 +271,7 @@
   <!-- ========================= -->
 
   <main class="flex-1 min-w-0 w-full">
-
     {@render children()}
-
   </main>
 
 </div>

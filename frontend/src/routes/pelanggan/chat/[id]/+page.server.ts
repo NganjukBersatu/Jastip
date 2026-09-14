@@ -104,10 +104,73 @@ export const actions: Actions = {
 		return { success: true };
 	},
 
-tandaiDibaca: async ({ params, locals }) => {
-	await tandaiSudahDibaca(params.id, locals.user!.id);
-	return { success: true };
-},
+	tandaiDibaca: async ({ params, locals }) => {
+		await tandaiSudahDibaca(params.id, locals.user!.id);
+		return { success: true };
+	},
+
+	// pelanggan hapus pesannya sendiri
+	hapusPesan: async ({ request, params, locals }) => {
+		const data = await request.formData();
+		const pesanId = data.get('pesanId')?.toString();
+
+		if (!pesanId) return fail(400, { error: 'ID pesan tidak valid.' });
+
+		const [pesan] = await db
+			.select({ id: pesanChat.id, pengirimId: pesanChat.pengirimId })
+			.from(pesanChat)
+			.where(
+				and(
+					eq(pesanChat.id, pesanId),
+					eq(pesanChat.pengajuanHargaId, params.id)
+				)
+			);
+
+		if (!pesan) return fail(404, { error: 'Pesan tidak ditemukan.' });
+
+		// hanya boleh menghapus pesan milik sendiri
+		if (pesan.pengirimId !== locals.user!.id) {
+			return fail(403, { error: 'Tidak boleh menghapus pesan ini.' });
+		}
+
+		await db.delete(pesanChat).where(eq(pesanChat.id, pesanId));
+
+		return { success: true };
+	},
+
+	// BARU: pelanggan edit pesannya sendiri
+	editPesan: async ({ request, params, locals }) => {
+		const data = await request.formData();
+		const pesanId = data.get('pesanId')?.toString();
+		const isiBaru = data.get('isi')?.toString().trim();
+
+		if (!pesanId) return fail(400, { error: 'ID pesan tidak valid.' });
+		if (!isiBaru) return fail(400, { error: 'Pesan tidak boleh kosong.' });
+
+		const [pesan] = await db
+			.select({ id: pesanChat.id, pengirimId: pesanChat.pengirimId })
+			.from(pesanChat)
+			.where(
+				and(
+					eq(pesanChat.id, pesanId),
+					eq(pesanChat.pengajuanHargaId, params.id)
+				)
+			);
+
+		if (!pesan) return fail(404, { error: 'Pesan tidak ditemukan.' });
+
+		// hanya boleh mengedit pesan milik sendiri
+		if (pesan.pengirimId !== locals.user!.id) {
+			return fail(403, { error: 'Tidak boleh mengedit pesan ini.' });
+		}
+
+		await db
+			.update(pesanChat)
+			.set({ isi: isiBaru })
+			.where(eq(pesanChat.id, pesanId));
+
+		return { success: true, pesanId, isiBaru };
+	},
 
 	ajukanTawaran: async ({ request, params, locals }) => {
 		const data = await request.formData();
@@ -150,7 +213,7 @@ tandaiDibaca: async ({ params, locals }) => {
 		return { success: true };
 	},
 
-	// BARU: pelanggan pilih wilayah tujuan buat hitung ongkir
+	// pelanggan pilih wilayah tujuan buat hitung ongkir
 	pilihWilayah: async ({ request, params, locals }) => {
 		const data = await request.formData();
 		const wilayahId = data.get('wilayahId')?.toString();
