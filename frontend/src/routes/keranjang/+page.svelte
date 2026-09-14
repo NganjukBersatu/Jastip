@@ -68,7 +68,19 @@
   {#if data.kelompokJastiper.length === 0}
     <div class="bg-white rounded-2xl border border-dashed border-ink/15 px-5 py-14 sm:p-16 text-center">
       <div class="w-14 h-14 mx-auto mb-4 rounded-full bg-orange-50 flex items-center justify-center">
-        <span class="text-2xl">🛒</span>
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="w-6 h-6 text-primary"
+        >
+          <circle cx="9" cy="21" r="1" />
+          <circle cx="20" cy="21" r="1" />
+          <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6" />
+        </svg>
       </div>
 
       <div class="font-bold text-[15px] text-ink">Keranjang masih kosong</div>
@@ -98,7 +110,20 @@
                   {#if item.gambarUrl}
                     <img src={item.gambarUrl} alt={item.namaProduk} class="w-full h-full object-cover" />
                   {:else}
-                    <span class="text-2xl">🛍️</span>
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="w-6 h-6 text-ink-soft"
+                    >
+                      <path d="M6 2l1.5 4h9L18 2" />
+                      <path d="M3.5 6h17l-1.2 12.5a2 2 0 01-2 1.5H6.7a2 2 0 01-2-1.5L3.5 6z" />
+                      <line x1="9" y1="10" x2="9" y2="14" />
+                      <line x1="15" y1="10" x2="15" y2="14" />
+                    </svg>
                   {/if}
                 </div>
 

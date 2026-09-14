@@ -8,7 +8,12 @@ import { buatTokenSesi, buatSesi } from '$lib/server/auth';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals }) => {
-	if (locals.user) throw redirect(303, '/publik/katalog');
+	// DIUBAH: sebelumnya semua user yang login (pelanggan maupun jastiper)
+	// ditendang ke /publik/katalog. Sekarang hanya jastiper yang login
+	// yang diarahkan pergi (karena mereka memang sudah tidak perlu daftar lagi).
+	// Pelanggan yang sudah login tetap boleh membuka halaman ini,
+	// misalnya untuk mendaftar jadi jastiper juga.
+	if (locals.user?.role === 'jastiper') throw redirect(303, '/jastiper/dashboard');
 };
 
 export const actions: Actions = {

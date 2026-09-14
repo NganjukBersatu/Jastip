@@ -2,6 +2,7 @@
 		import { goto, invalidateAll } from '$app/navigation';
 	import { enhance } from '$app/forms';
 	import { onMount } from 'svelte';
+	import { fly, fade } from 'svelte/transition';
 
 		onMount(() => {
 		if (window.location.hash === '#produk') {
@@ -45,6 +46,14 @@
 	/** @type {ItemDipilih} */
 	let itemDipilih = $state(null);
 
+	// BARU: jumlah produk yang dipilih pelanggan di modal detail sebelum ditambah ke keranjang
+	let jumlahDipilih = $state(1);
+
+	// BARU: state untuk toast ringkasan "berhasil ditambahkan ke keranjang"
+	let toastTampil = $state(false);
+	/** @type {ReturnType<typeof setTimeout> | undefined} */
+	let toastTimer;
+
 	// Kunci scroll halaman belakang saat modal detail terbuka,
 	// supaya elemen background (hero, dekorasi blur, grid) tidak
 	// ikut bergerak/tumpang tindih di balik modal (fix tablet & mobile).
@@ -54,6 +63,18 @@
 		return () => {
 			document.body.style.overflow = '';
 		};
+	});
+
+	// BARU: setiap kali form action tambahKeranjang berhasil, munculkan toast
+	// selama beberapa detik lalu tutup otomatis.
+	$effect(() => {
+		if (form?.berhasilTambahKeranjang) {
+			toastTampil = true;
+			clearTimeout(toastTimer);
+			toastTimer = setTimeout(() => {
+				toastTampil = false;
+			}, 2500);
+		}
 	});
 
 	/** @param {'produk' | 'jasa'} t */
@@ -75,6 +96,7 @@
 	 */
 	function bukaDetail(item, tipe) {
 		itemDipilih = /** @type {ItemDipilih} */ ({ ...item, tipe });
+		jumlahDipilih = 1; // BARU: reset jumlah tiap buka produk baru
 	}
 	function tutupDetail() {
 		itemDipilih = null;
@@ -82,6 +104,15 @@
 	function hubungiJastiper() {
 		goto('/publik/pesan');
 	}
+
+	// BARU: tambah/kurangi jumlah pilihan di modal, minimal 1
+	function tambahJumlah() {
+		jumlahDipilih += 1;
+	}
+	function kurangiJumlah() {
+		if (jumlahDipilih > 1) jumlahDipilih -= 1;
+	}
+
 	/**
 	 * @param {{ harga: number }} a
 	 * @param {{ harga: number }} b
@@ -126,6 +157,26 @@
 		class="fixed top-4 left-1/2 -translate-x-1/2 z-[998] bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-5 py-3 shadow-lg"
 	>
 		{form.error}
+	</div>
+{/if}
+
+<!-- BARU: toast ringkasan "berhasil ditambah ke keranjang" — muncul sebentar lalu hilang sendiri -->
+{#if toastTampil && form?.berhasilTambahKeranjang}
+	<div
+		transition:fly={{ y: -16, duration: 250 }}
+		class="fixed top-4 left-1/2 -translate-x-1/2 z-[999] bg-white border border-ink/10 shadow-[0_10px_30px_rgba(42,26,14,0.15)] rounded-2xl px-5 py-3.5 flex items-center gap-3 max-w-90"
+	>
+		<span class="w-9 h-9 shrink-0 rounded-full bg-primary/10 text-primary-dark flex items-center justify-center">
+			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="w-4.5 h-4.5">
+				<polyline points="20 6 9 17 4 12" />
+			</svg>
+		</span>
+		<div class="min-w-0">
+			<div class="font-bold text-sm text-ink truncate">Ditambahkan ke keranjang</div>
+			<div class="text-[13px] text-ink-soft truncate">
+				{form.jumlahDitambah}× {form.namaProdukDitambah}
+			</div>
+		</div>
 	</div>
 {/if}
 
@@ -509,6 +560,34 @@
 					{item.deskripsi ??
 						`Detail lengkap ${item.tipe === 'produk' ? 'produk' : 'jasa'} ini dari jastiper ${item.jastiperNama}.`}
 				</p>
+
+				<!-- BARU: stepper jumlah, hanya untuk produk harga tetap (bukan jasa, bukan nego) -->
+				{#if item.tipe === 'produk' && item.hargaTipe !== 'nego'}
+					<div class="mt-5 flex items-center justify-between bg-bg-alt rounded-2xl px-4 py-3">
+						<span class="text-sm font-semibold text-ink-soft">Jumlah</span>
+						<div class="flex items-center gap-4">
+							<button
+								type="button"
+								onclick={kurangiJumlah}
+								disabled={jumlahDipilih <= 1}
+								aria-label="Kurangi jumlah"
+								class="w-8 h-8 rounded-full bg-white text-ink flex items-center justify-center font-bold shadow-sm hover:bg-orange-50 transition disabled:opacity-30 disabled:cursor-not-allowed"
+							>
+								−
+							</button>
+							<span class="w-6 text-center font-bold text-base">{jumlahDipilih}</span>
+							<button
+								type="button"
+								onclick={tambahJumlah}
+								aria-label="Tambah jumlah"
+								class="w-8 h-8 rounded-full bg-white text-ink flex items-center justify-center font-bold shadow-sm hover:bg-orange-50 transition"
+							>
+								+
+							</button>
+						</div>
+					</div>
+				{/if}
+
 				<div class="mt-6">
 					{#if item.tipe === 'jasa'}
 						<a
@@ -534,11 +613,13 @@
 										await update({ reset: false });
 										if (result.type === 'success') {
 											await invalidateAll();
+											tutupDetail();
 										}
 									};
 								}}
 							>
 								<input type="hidden" name="produkId" value={item.id} />
+								<input type="hidden" name="jumlah" value={jumlahDipilih} />
 								<button
 									type="submit"
 									aria-label="Tambah ke keranjang"
@@ -552,7 +633,7 @@
 								</button>
 							</form>
 							<a
-								href={`/pembayaran?mode=langsung&produkId=${item.id}&jumlah=1`}
+								href={`/pembayaran?mode=langsung&produkId=${item.id}&jumlah=${jumlahDipilih}`}
 								class="flex-1 text-center py-3.5 rounded-full font-bold text-[15px] bg-ink text-bg transition-transform hover:-translate-y-0.5"
 							>
 								Beli

@@ -131,6 +131,11 @@ export const actions: Actions = {
 		const produkId = data.get('produkId')?.toString();
 		if (!produkId) return fail(400, { error: 'Produk tidak ditemukan.' });
 
+		// BARU: baca jumlah yang dipilih pelanggan di modal (default 1 kalau tidak dikirim,
+		// supaya tidak merusak pemanggilan lama yang belum kirim field ini)
+		const jumlahRaw = data.get('jumlah')?.toString();
+		const jumlahTambah = Math.max(1, parseInt(jumlahRaw ?? '1', 10) || 1);
+
 		const [produkAsli] = await db.select().from(produk).where(eq(produk.id, produkId));
 		if (!produkAsli || !produkAsli.aktif) {
 			return fail(400, { error: 'Produk tidak tersedia.' });
@@ -151,13 +156,22 @@ export const actions: Actions = {
 			.where(and(eq(keranjangItem.pelangganId, locals.user.id), eq(keranjangItem.produkId, produkId)));
 
 		if (itemLama) {
-			await db.update(keranjangItem).set({ jumlah: itemLama.jumlah + 1 }).where(eq(keranjangItem.id, itemLama.id));
+			await db
+				.update(keranjangItem)
+				.set({ jumlah: itemLama.jumlah + jumlahTambah })
+				.where(eq(keranjangItem.id, itemLama.id));
 		} else {
-			await db.insert(keranjangItem).values({ id: randomUUID(), pelangganId: locals.user.id, produkId, jumlah: 1 });
+			await db
+				.insert(keranjangItem)
+				.values({ id: randomUUID(), pelangganId: locals.user.id, produkId, jumlah: jumlahTambah });
 		}
 
 		// DIUBAH: tidak lagi redirect ke /keranjang — pelanggan tetap di katalog,
-		// cukup dikasih tahu lewat badge keranjang di navbar.
-		return { berhasilTambahKeranjang: true };
+		// dikasih tahu lewat toast ringkasan + badge keranjang di navbar.
+		return {
+			berhasilTambahKeranjang: true,
+			namaProdukDitambah: produkAsli.nama,
+			jumlahDitambah: jumlahTambah
+		};
 	}
 };

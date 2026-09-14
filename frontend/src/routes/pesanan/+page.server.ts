@@ -65,5 +65,33 @@ export const actions: Actions = {
 			.where(eq(pesanan.id, id));
 
 		return { success: true };
+	},
+
+	// BARU: action untuk hapus riwayat pesanan (dipanggil dari tombol tong sampah
+	// di daftar "Riwayat" pada +page.svelte)
+	hapusRiwayat: async ({ request, locals }) => {
+		if (!locals.user) throw redirect(303, '/publik/masuk');
+
+		const data = await request.formData();
+		const id = data.get('id')?.toString();
+		if (!id) return fail(400, { error: 'ID pesanan tidak ditemukan.' });
+
+		// pastikan pesanan itu milik pelanggan yang sedang login
+		const [row] = await db
+			.select({ id: pesanan.id, status: pesanan.status })
+			.from(pesanan)
+			.where(and(eq(pesanan.id, id), eq(pesanan.pelangganId, locals.user.id)));
+
+		if (!row) return fail(404, { error: 'Pesanan tidak ditemukan.' });
+
+		// hanya pesanan yang sudah final (selesai/dibatalkan) yang boleh dihapus dari riwayat —
+		// pesanan yang masih berjalan tidak boleh dihapus lewat sini
+		if (row.status !== 'selesai' && row.status !== 'dibatalkan') {
+			return fail(400, { error: 'Pesanan yang masih berjalan tidak bisa dihapus dari riwayat.' });
+		}
+
+		await db.delete(pesanan).where(eq(pesanan.id, id));
+
+		return { success: true };
 	}
 };
