@@ -4,6 +4,7 @@
   let { data } = $props();
 
   // Nama yang ditampilkan (bisa override dari localStorage)
+  // svelte-ignore state_referenced_locally
   let displayNama = $state(data.user?.nama ?? '');
 
   const kartuStatistik = $derived([
@@ -39,7 +40,7 @@
   <title>Dashboard — Nitip</title>
 </svelte:head>
 
-<div class="w-full max-w-[1140px] mx-auto px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
+<div class="w-full max-w-285 mx-auto px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
   <!-- HEADER -->
   <div class="mb-8 sm:mb-10 pb-6 border-b border-ink/10">
     <div class="flex items-center gap-2.5">
@@ -81,7 +82,7 @@
 
         <a
           href="/jastiper/pengaturan"
-          class="shrink-0 inline-flex items-center justify-center rounded-xl bg-ink text-bg font-bold text-[13px] px-4 py-3 min-h-[44px] hover:-translate-y-0.5 hover:shadow-md transition"
+          class="shrink-0 inline-flex items-center justify-center rounded-xl bg-ink text-bg font-bold text-[13px] px-4 py-3 min-h-11 hover:-translate-y-0.5 hover:shadow-md transition"
         >
           Lengkapi sekarang
         </a>
@@ -204,7 +205,7 @@
 
         <div class="font-bold text-[15px] text-ink">Belum ada pesanan masuk</div>
 
-        <div class="text-[13.5px] text-ink-soft mt-1.5 max-w-[300px] mx-auto leading-relaxed">
+        <div class="text-[13.5px] text-ink-soft mt-1.5 max-w-75 mx-auto leading-relaxed">
           Pesanan dari pelanggan bakal muncul di sini begitu ada yang order.
         </div>
       </div>
@@ -213,7 +214,7 @@
         {#each data.pesananTerbaru as pesanan, index}
           <div
             class:border-b={index !== data.pesananTerbaru.length - 1}
-            class="min-h-[68px] px-4 py-3.5 sm:px-5 flex items-center justify-between gap-4 border-ink/10 hover:bg-bg/40 transition"
+            class="min-h-17 px-4 py-3.5 sm:px-5 flex items-center justify-between gap-4 border-ink/10 hover:bg-bg/40 transition"
           >
             <div class="min-w-0">
               <div class="font-semibold text-sm truncate">

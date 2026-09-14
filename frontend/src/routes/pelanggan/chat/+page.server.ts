@@ -1,7 +1,8 @@
 import { db } from '$lib/server/db';
 import { pengajuanHarga, produk, jasa, users, pesanChat } from '$lib/server/db/schema';
-import { eq, desc, inArray } from 'drizzle-orm';
-import type { PageServerLoad } from './$types';
+import { eq, desc, inArray, and } from 'drizzle-orm';
+import { fail } from '@sveltejs/kit';
+import type { PageServerLoad, Actions } from './$types';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const pelangganId = locals.user!.id;
@@ -49,4 +50,31 @@ export const load: PageServerLoad = async ({ locals }) => {
 	}));
 
 	return { daftarPercakapan: hasil };
+};
+
+export const actions: Actions = {
+	hapus: async ({ request, locals }) => {
+		const pelangganId = locals.user!.id;
+		const formData = await request.formData();
+		const id = formData.get('id') as string;
+
+		if (!id) {
+			return fail(400, { message: 'ID tidak valid' });
+		}
+
+		// hapus dulu pesan chat yang terkait, baru pengajuan hargaanya
+		// (skip baris ini kalau skema kamu sudah pakai onDelete: 'cascade')
+		await db.delete(pesanChat).where(eq(pesanChat.pengajuanHargaId, id));
+
+		const hasil = await db
+			.delete(pengajuanHarga)
+			.where(and(eq(pengajuanHarga.id, id), eq(pengajuanHarga.pelangganId, pelangganId)))
+			.returning({ id: pengajuanHarga.id });
+
+		if (hasil.length === 0) {
+			return fail(404, { message: 'Percakapan tidak ditemukan' });
+		}
+
+		return { success: true };
+	}
 };
