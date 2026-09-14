@@ -6,7 +6,6 @@
   
 import { heroThemeState } from '$lib/stores/heroTheme.svelte.js';
 
-  let { active = '' } = $props();
   let jumlahKeranjang = $derived($page.data.jumlahKeranjang ?? 0);
   let path = $derived($page.url.pathname);
   let user = $derived($page.data.user);

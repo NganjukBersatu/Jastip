@@ -24,7 +24,7 @@
   href="/produk/{produk.id}"
   class="block bg-white rounded-card overflow-hidden shadow-[0_10px_30px_rgba(42,26,14,0.06)] border border-ink/10 transition hover:-translate-y-1.5"
 >
-  <div class="relative h-[140px] sm:h-[170px] bg-bg-alt">
+  <div class="relative h-35 sm:h-42.5 bg-bg-alt">
     <span class="absolute top-3.5 left-3.5 bg-white/90 text-ink text-[11px] font-extrabold px-3 py-1.5 rounded-pill z-10">
       {badgeLabel}
     </span>
