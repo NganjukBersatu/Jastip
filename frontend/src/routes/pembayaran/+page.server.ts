@@ -20,19 +20,49 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	if (!locals.user) throw redirect(303, '/publik/masuk');
 	if (locals.user.role !== 'pelanggan') throw redirect(303, '/publik/katalog');
 
-	const items = await db
-		.select({
-			produkId: keranjangItem.produkId,
-			jumlah: keranjangItem.jumlah,
-			namaProduk: produk.nama,
-			hargaSatuan: produk.harga,
-			jastiperId: produk.jastiperId
-		})
-		.from(keranjangItem)
-		.innerJoin(produk, eq(keranjangItem.produkId, produk.id))
-		.where(eq(keranjangItem.pelangganId, locals.user.id));
+	// BARU: dua mode — 'keranjang' (default, perilaku lama) atau 'langsung' (dari tombol Beli, tanpa cart)
+	const mode = url.searchParams.get('mode') === 'langsung' ? 'langsung' : 'keranjang';
 
-	if (items.length === 0) throw redirect(303, '/keranjang');
+	let items: { produkId: string; jumlah: number; namaProduk: string; hargaSatuan: number; jastiperId: string }[];
+	let produkIdLangsung = '';
+	let jumlahLangsung = 1;
+
+	if (mode === 'langsung') {
+		produkIdLangsung = url.searchParams.get('produkId') ?? '';
+		const jumlahRaw = url.searchParams.get('jumlah');
+		jumlahLangsung = jumlahRaw ? parseInt(jumlahRaw, 10) : 1;
+
+		if (!produkIdLangsung || Number.isNaN(jumlahLangsung) || jumlahLangsung < 1) {
+			throw redirect(303, '/publik/katalog');
+		}
+
+		const [produkAsli] = await db.select().from(produk).where(eq(produk.id, produkIdLangsung));
+		if (!produkAsli || !produkAsli.aktif) throw redirect(303, '/publik/katalog');
+
+		items = [
+			{
+				produkId: produkAsli.id,
+				jumlah: jumlahLangsung,
+				namaProduk: produkAsli.nama,
+				hargaSatuan: produkAsli.harga,
+				jastiperId: produkAsli.jastiperId
+			}
+		];
+	} else {
+		items = await db
+			.select({
+				produkId: keranjangItem.produkId,
+				jumlah: keranjangItem.jumlah,
+				namaProduk: produk.nama,
+				hargaSatuan: produk.harga,
+				jastiperId: produk.jastiperId
+			})
+			.from(keranjangItem)
+			.innerJoin(produk, eq(keranjangItem.produkId, produk.id))
+			.where(eq(keranjangItem.pelangganId, locals.user.id));
+
+		if (items.length === 0) throw redirect(303, '/keranjang');
+	}
 
 	const ongkirRaw = url.searchParams.get('ongkir');
 	const pilihanWilayah = uraikanPilihanOngkir(ongkirRaw);
@@ -44,7 +74,6 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 
 	const jastiperIdUnik = [...new Set(items.map((i) => i.jastiperId))];
 
-	// Kelompokkan per jastiper — supaya di halaman keliatan mana ongkirnya buat siapa
 	const kelompokJastiper = jastiperIdUnik.map((jastiperId) => {
 		const itemKelompok = items.filter((i) => i.jastiperId === jastiperId);
 		const wilayahId = pilihanWilayah[jastiperId];
@@ -69,7 +98,10 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		totalBarang,
 		totalOngkir,
 		totalBayar: totalBarang + totalOngkir,
-		ongkirRaw: ongkirRaw ?? ''
+		ongkirRaw: ongkirRaw ?? '',
+		mode,
+		produkIdLangsung,
+		jumlahLangsung
 	};
 };
 
@@ -81,22 +113,49 @@ export const actions: Actions = {
 		const alamat = data.get('alamat')?.toString().trim();
 		const metodePembayaran = data.get('metodePembayaran')?.toString();
 		const ongkirRaw = data.get('ongkirRaw')?.toString() ?? '';
+		const mode = data.get('mode')?.toString() === 'langsung' ? 'langsung' : 'keranjang';
 
 		if (!alamat) return fail(400, { error: 'Alamat pengiriman wajib diisi.' });
 		if (!metodePembayaran) return fail(400, { error: 'Pilih metode pembayaran dulu.' });
 
-		const items = await db
-			.select({
-				produkId: keranjangItem.produkId,
-				jumlah: keranjangItem.jumlah,
-				hargaSatuan: produk.harga,
-				jastiperId: produk.jastiperId
-			})
-			.from(keranjangItem)
-			.innerJoin(produk, eq(keranjangItem.produkId, produk.id))
-			.where(eq(keranjangItem.pelangganId, locals.user.id));
+		let items: { produkId: string; jumlah: number; hargaSatuan: number; jastiperId: string }[];
 
-		if (items.length === 0) return fail(400, { error: 'Keranjang kamu kosong.' });
+		if (mode === 'langsung') {
+			const produkId = data.get('produkId')?.toString();
+			const jumlahRaw = data.get('jumlah')?.toString();
+			const jumlah = jumlahRaw ? parseInt(jumlahRaw, 10) : NaN;
+
+			if (!produkId || Number.isNaN(jumlah) || jumlah < 1) {
+				return fail(400, { error: 'Data produk tidak valid.' });
+			}
+
+			const [produkAsli] = await db.select().from(produk).where(eq(produk.id, produkId));
+			if (!produkAsli || !produkAsli.aktif) {
+				return fail(400, { error: 'Produk tidak tersedia.' });
+			}
+
+			items = [
+				{
+					produkId: produkAsli.id,
+					jumlah,
+					hargaSatuan: produkAsli.harga,
+					jastiperId: produkAsli.jastiperId
+				}
+			];
+		} else {
+			items = await db
+				.select({
+					produkId: keranjangItem.produkId,
+					jumlah: keranjangItem.jumlah,
+					hargaSatuan: produk.harga,
+					jastiperId: produk.jastiperId
+				})
+				.from(keranjangItem)
+				.innerJoin(produk, eq(keranjangItem.produkId, produk.id))
+				.where(eq(keranjangItem.pelangganId, locals.user.id));
+
+			if (items.length === 0) return fail(400, { error: 'Keranjang kamu kosong.' });
+		}
 
 		const pilihanWilayah = uraikanPilihanOngkir(ongkirRaw);
 		const wilayahIdList = Object.values(pilihanWilayah);
@@ -117,7 +176,6 @@ export const actions: Actions = {
 
 			for (let i = 0; i < itemKelompok.length; i++) {
 				const item = itemKelompok[i];
-				// ongkir cuma ditaruh di baris pertama tiap jastiper, biar tidak dobel kehitung
 				const ongkirBarisIni = i === 0 ? ongkirKelompok : 0;
 				const totalHarga = item.hargaSatuan * item.jumlah + ongkirBarisIni;
 				const idBaru = randomUUID();
@@ -141,11 +199,12 @@ export const actions: Actions = {
 			}
 		}
 
-		await db.delete(keranjangItem).where(eq(keranjangItem.pelangganId, locals.user.id));
+		// DIUBAH: keranjang cuma dikosongkan kalau mode = 'keranjang'.
+		// Mode 'langsung' memang tidak pernah menyentuh tabel keranjang_item.
+		if (mode === 'keranjang') {
+			await db.delete(keranjangItem).where(eq(keranjangItem.pelangganId, locals.user.id));
+		}
 
-		// ID pesanan yang baru dibuat dikirim lewat query string supaya halaman
-		// selesai bisa menampilkan ringkasan + tombol WA per jastiper tanpa
-		// perlu tabel/state tambahan, dan tetap aman dibuka ulang dari riwayat browser.
 		throw redirect(303, `/pembayaran/selesai?ids=${idPesananBaru.join(',')}`);
 	}
 };

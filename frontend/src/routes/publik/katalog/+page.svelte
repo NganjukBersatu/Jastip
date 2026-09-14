@@ -1,5 +1,5 @@
 <script>
-		import { goto } from '$app/navigation';
+		import { goto, invalidateAll } from '$app/navigation';
 	import { enhance } from '$app/forms';
 	import { onMount } from 'svelte';
 
@@ -525,15 +525,39 @@
 							Hubungi Jastiper
 						</button>
 					{:else}
-						<form method="POST" action="?/tambahKeranjang" use:enhance>
-							<input type="hidden" name="produkId" value={item.id} />
-							<button
-								type="submit"
-								class="w-full py-3.5 rounded-full font-bold text-[15px] bg-ink text-bg transition-transform hover:-translate-y-0.5"
+						<div class="flex gap-3">
+							<form
+								method="POST"
+								action="?/tambahKeranjang"
+								use:enhance={() => {
+									return async ({ result, update }) => {
+										await update({ reset: false });
+										if (result.type === 'success') {
+											await invalidateAll();
+										}
+									};
+								}}
+							>
+								<input type="hidden" name="produkId" value={item.id} />
+								<button
+									type="submit"
+									aria-label="Tambah ke keranjang"
+									class="w-13.5 h-13.5 rounded-full border-2 border-ink text-ink flex items-center justify-center transition-transform hover:-translate-y-0.5 hover:bg-bg-alt shrink-0"
+								>
+									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-5 h-5">
+										<circle cx="9" cy="21" r="1" />
+										<circle cx="20" cy="21" r="1" />
+										<path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6" />
+									</svg>
+								</button>
+							</form>
+							<a
+								href={`/pembayaran?mode=langsung&produkId=${item.id}&jumlah=1`}
+								class="flex-1 text-center py-3.5 rounded-full font-bold text-[15px] bg-ink text-bg transition-transform hover:-translate-y-0.5"
 							>
 								Beli
-							</button>
-						</form>
+							</a>
+						</div>
 					{/if}
 				</div>
 			</div>

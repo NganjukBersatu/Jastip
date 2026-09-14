@@ -3,8 +3,11 @@
   import { fly, fade } from 'svelte/transition';
   import { onMount } from 'svelte';
   import { notifikasiState } from '$lib/stores/notifikasi.svelte';
-  import { heroThemeState } from '$lib/stores/heroTheme.svelte.js';
+  
+import { heroThemeState } from '$lib/stores/heroTheme.svelte.js';
 
+  let { active = '' } = $props();
+  let jumlahKeranjang = $derived($page.data.jumlahKeranjang ?? 0);
   let path = $derived($page.url.pathname);
   let user = $derived($page.data.user);
 
@@ -234,6 +237,13 @@
               <circle cx="20" cy="21" r="1" />
               <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
             </svg>
+            {#if jumlahKeranjang > 0}
+              <span
+                class="absolute -top-1 -right-1 bg-primary text-white text-[10px] font-bold rounded-full min-w-4 h-4 px-1 flex items-center justify-center"
+              >
+                {jumlahKeranjang > 9 ? '9+' : jumlahKeranjang}
+              </span>
+            {/if}
           </a>
         {/if}
 

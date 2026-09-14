@@ -45,7 +45,12 @@
 
   <form method="POST" action="?/bayar" use:enhance class="space-y-8">
     <input type="hidden" name="ongkirRaw" value={data.ongkirRaw} />
-
+    <input type="hidden" name="mode" value={data.mode} />
+    {#if data.mode === 'langsung'}
+      <input type="hidden" name="produkId" value={data.produkIdLangsung} />
+      <input type="hidden" name="jumlah" value={data.jumlahLangsung} />
+    {/if}
+    
     <!-- Ringkasan pesanan, dikelompokkan per jastiper (ongkir beda-beda tiap jastiper) -->
     <div>
       <h2 class="font-bold text-[15px] text-ink mb-3">Ringkasan pesanan</h2>
