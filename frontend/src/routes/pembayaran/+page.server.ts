@@ -1,11 +1,11 @@
 import { redirect, fail } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
-import { keranjangItem, produk, pesanan, ongkirWilayah } from '$lib/server/db/schema';
+import { keranjangItem, produk, pesanan, pesananItem, ongkirWilayah } from '$lib/server/db/schema';
 import { eq, inArray } from 'drizzle-orm';
 import { randomUUID } from 'node:crypto';
 import type { Actions, PageServerLoad } from './$types';
 
-/** Ubah "jastiperId1:wilayahId1,jastiperId2:wilayahId2" jadi { jastiperId: wilayahId } */
+
 function uraikanPilihanOngkir(raw: string | null): Record<string, string> {
 	const hasil: Record<string, string> = {};
 	if (!raw) return hasil;
@@ -20,10 +20,15 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	if (!locals.user) throw redirect(303, '/publik/masuk');
 	if (locals.user.role !== 'pelanggan') throw redirect(303, '/publik/katalog');
 
-	// BARU: dua mode — 'keranjang' (default, perilaku lama) atau 'langsung' (dari tombol Beli, tanpa cart)
 	const mode = url.searchParams.get('mode') === 'langsung' ? 'langsung' : 'keranjang';
 
-	let items: { produkId: string; jumlah: number; namaProduk: string; hargaSatuan: number; jastiperId: string }[];
+	let items: {
+		produkId: string;
+		jumlah: number;
+		namaProduk: string;
+		hargaSatuan: number;
+		jastiperId: string;
+	}[];
 	let produkIdLangsung = '';
 	let jumlahLangsung = 1;
 
@@ -74,6 +79,13 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 
 	const jastiperIdUnik = [...new Set(items.map((i) => i.jastiperId))];
 
+	const semuaOngkirTersedia = jastiperIdUnik.length
+		? await db
+				.select()
+				.from(ongkirWilayah)
+				.where(inArray(ongkirWilayah.jastiperId, jastiperIdUnik))
+		: [];
+
 	const kelompokJastiper = jastiperIdUnik.map((jastiperId) => {
 		const itemKelompok = items.filter((i) => i.jastiperId === jastiperId);
 		const wilayahId = pilihanWilayah[jastiperId];
@@ -86,12 +98,15 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 			items: itemKelompok,
 			wilayah: ongkirRow?.wilayah ?? null,
 			ongkir: ongkirRow?.biaya ?? 0,
-			subtotal: itemKelompok.reduce((jumlah, i) => jumlah + i.hargaSatuan * i.jumlah, 0)
+			wilayahIdTerpilih: ongkirRow?.id ?? null,
+			daftarWilayah: semuaOngkirTersedia.filter((o) => o.jastiperId === jastiperId),
+			subtotal: itemKelompok.reduce((s, i) => s + i.hargaSatuan * i.jumlah, 0)
 		};
 	});
 
-	const totalBarang = kelompokJastiper.reduce((jumlah, k) => jumlah + k.subtotal, 0);
-	const totalOngkir = kelompokJastiper.reduce((jumlah, k) => jumlah + k.ongkir, 0);
+	const totalBarang = kelompokJastiper.reduce((s, k) => s + k.subtotal, 0);
+	const totalOngkir = kelompokJastiper.reduce((s, k) => s + k.ongkir, 0);
+	const semuaWilayahSudahDipilih = kelompokJastiper.every((k) => k.wilayahIdTerpilih !== null);
 
 	return {
 		kelompokJastiper,
@@ -101,7 +116,8 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		ongkirRaw: ongkirRaw ?? '',
 		mode,
 		produkIdLangsung,
-		jumlahLangsung
+		jumlahLangsung,
+		semuaWilayahSudahDipilih
 	};
 };
 
@@ -164,6 +180,20 @@ export const actions: Actions = {
 			: [];
 
 		const jastiperIdUnik = [...new Set(items.map((i) => i.jastiperId))];
+
+		for (const jastiperId of jastiperIdUnik) {
+			const wilayahId = pilihanWilayah[jastiperId];
+			const ongkirRow = daftarOngkirDipilih.find(
+				(o) => o.id === wilayahId && o.jastiperId === jastiperId
+			);
+			if (!ongkirRow) {
+				return fail(400, { error: 'Pilih wilayah pengiriman untuk semua jastiper dulu.' });
+			}
+		}
+
+		// DIUBAH: sekarang 1 jastiper = 1 baris pesanan (header transaksi),
+		// item-itemnya masuk ke pesananItem — bukan 1 baris pesanan per produk
+		// seperti sebelumnya. Ongkir cukup ditulis sekali di header.
 		const idPesananBaru: string[] = [];
 
 		for (const jastiperId of jastiperIdUnik) {
@@ -171,36 +201,36 @@ export const actions: Actions = {
 			const wilayahId = pilihanWilayah[jastiperId];
 			const ongkirRow = daftarOngkirDipilih.find(
 				(o) => o.id === wilayahId && o.jastiperId === jastiperId
-			);
-			const ongkirKelompok = ongkirRow?.biaya ?? 0;
+			)!;
 
-			for (let i = 0; i < itemKelompok.length; i++) {
-				const item = itemKelompok[i];
-				const ongkirBarisIni = i === 0 ? ongkirKelompok : 0;
-				const totalHarga = item.hargaSatuan * item.jumlah + ongkirBarisIni;
-				const idBaru = randomUUID();
+			const subtotal = itemKelompok.reduce((s, i) => s + i.hargaSatuan * i.jumlah, 0);
+			const idBaru = randomUUID();
 
-				await db.insert(pesanan).values({
-					id: idBaru,
+			await db.insert(pesanan).values({
+				id: idBaru,
+				pelangganId: locals.user.id,
+				jastiperId,
+				ongkir: ongkirRow.biaya,
+				totalHarga: subtotal + ongkirRow.biaya,
+				alamatKirim: alamat,
+				wilayahId: ongkirRow.id,
+				metodePembayaran,
+				status: 'menunggu_konfirmasi'
+			});
+
+			await db.insert(pesananItem).values(
+				itemKelompok.map((item) => ({
+					id: randomUUID(),
+					pesananId: idBaru,
 					produkId: item.produkId,
-					pelangganId: locals.user.id,
-					jastiperId: item.jastiperId,
-					pengajuanHargaId: null,
 					jumlah: item.jumlah,
-					hargaSatuan: item.hargaSatuan,
-					ongkir: ongkirBarisIni,
-					totalHarga,
-					alamatKirim: alamat,
-					metodePembayaran,
-					status: 'menunggu_konfirmasi'
-				});
+					hargaSatuan: item.hargaSatuan
+				}))
+			);
 
-				idPesananBaru.push(idBaru);
-			}
+			idPesananBaru.push(idBaru);
 		}
 
-		// DIUBAH: keranjang cuma dikosongkan kalau mode = 'keranjang'.
-		// Mode 'langsung' memang tidak pernah menyentuh tabel keranjang_item.
 		if (mode === 'keranjang') {
 			await db.delete(keranjangItem).where(eq(keranjangItem.pelangganId, locals.user.id));
 		}

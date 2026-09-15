@@ -1,7 +1,9 @@
 <script>
   let { data } = $props();
 
-  const p = data.pesanan;
+let p = $derived(data.pesanan);
+let items = $derived(data.items);
+
 
   /** @param {number} angka */
   function formatRupiah(angka) {
@@ -23,8 +25,9 @@
     });
   }
 
-  const nomorInvoice = `INV-${p.id.slice(0, 8).toUpperCase()}`;
-  const subtotal = p.hargaSatuan * p.jumlah;
+let nomorInvoice = $derived(`INV-${p.id.slice(0, 8).toUpperCase()}`);
+// BARU: subtotal dijumlah dari semua item, bukan 1 produk seperti dulu
+let subtotal = $derived(items.reduce((s, it) => s + it.hargaSatuan * it.jumlah, 0));
 
   function kembali() {
     if (window.history.length > 1) {
@@ -40,7 +43,6 @@
 </svelte:head>
 
 <div class="w-full max-w-140 mx-auto px-4 py-8 sm:px-6 sm:py-10">
-  <!-- TOMBOL KEMBALI -->
   <button
     type="button"
     onclick={kembali}
@@ -53,7 +55,6 @@
   </button>
 
   {#if !p.pembayaranDikonfirmasi}
-    <!-- BELUM LUNAS -->
     <div class="bg-white rounded-2xl border border-dashed border-ink/15 px-6 py-16 text-center">
       <div class="w-14 h-14 mx-auto mb-4 rounded-full bg-yellow-50 flex items-center justify-center">
         <svg class="w-6 h-6 text-yellow-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
@@ -67,9 +68,7 @@
       </p>
     </div>
   {:else}
-    <!-- STRUK -->
     <div class="bg-white rounded-2xl border border-ink/10 shadow-[0_2px_12px_rgba(0,0,0,0.025)] overflow-hidden">
-      <!-- HEADER -->
       <div class="px-6 py-6 sm:px-7 sm:py-7 border-b border-dashed border-ink/15 text-center">
         <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-green-50 flex items-center justify-center">
           <svg class="w-6 h-6 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -80,7 +79,6 @@
         <p class="text-[12.5px] text-ink-soft mt-1">{nomorInvoice}</p>
       </div>
 
-      <!-- DETAIL -->
       <div class="px-6 py-6 sm:px-7 sm:py-7 space-y-2.5 text-[13.5px]">
         <div class="flex justify-between gap-4">
           <span class="text-ink-soft">Tanggal pesan</span>
@@ -98,20 +96,21 @@
         </div>
       </div>
 
-      <!-- ITEM -->
+      <!-- ITEM: BARU, sekarang bisa lebih dari satu -->
       <div class="px-6 sm:px-7 pb-2">
-        <div class="border-t border-dashed border-ink/15 pt-4">
-          <div class="flex justify-between items-start gap-4 text-[13.5px]">
-            <div>
-              <div class="font-semibold text-ink">{p.produkNama}</div>
-              <div class="text-ink-soft text-xs mt-0.5">{p.jumlah} x {formatRupiah(p.hargaSatuan)}</div>
+        <div class="border-t border-dashed border-ink/15 pt-4 space-y-3">
+          {#each items as it (it.id)}
+            <div class="flex justify-between items-start gap-4 text-[13.5px]">
+              <div>
+                <div class="font-semibold text-ink">{it.nama}</div>
+                <div class="text-ink-soft text-xs mt-0.5">{it.jumlah} x {formatRupiah(it.hargaSatuan)}</div>
+              </div>
+              <div class="font-semibold shrink-0">{formatRupiah(it.hargaSatuan * it.jumlah)}</div>
             </div>
-            <div class="font-semibold shrink-0">{formatRupiah(subtotal)}</div>
-          </div>
+          {/each}
         </div>
       </div>
 
-      <!-- TOTAL -->
       <div class="px-6 py-6 sm:px-7 sm:py-7 border-t border-dashed border-ink/15 space-y-2 text-[13.5px]">
         <div class="flex justify-between gap-4">
           <span class="text-ink-soft">Subtotal</span>

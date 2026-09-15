@@ -1,6 +1,6 @@
 import { error, fail, redirect } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
-import { jasa, users, pengajuanHarga, pesanan } from '$lib/server/db/schema';
+import { jasa, users, pengajuanHarga, pesanan, pesananItem } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
 import { randomUUID } from 'node:crypto';
 import { hitungJarakKm } from '$lib/server/jarak';
@@ -81,23 +81,29 @@ export const actions: Actions = {
 			status: 'diterima'
 		});
 
-		const pesananId = randomUUID();
-		await db.insert(pesanan).values({
-			id: pesananId,
-			jasaId: jasaData.id,
-			pelangganId: locals.user.id,
-			jastiperId: jasaData.jastiperId,
-			pengajuanHargaId: pengajuanId,
-			jumlah: 1,
-			hargaSatuan: jasaData.harga,
-			ongkir: 0,
-			totalHarga,
-			titikJemput: titikJemputLengkap, // sudah termasuk kota
-			alamatKirim: titikTujuanLengkap, // sudah termasuk kota
-			jarakKm,
-			metodePembayaran,
-			status: 'menunggu_konfirmasi'
-		});
+const pesananId = randomUUID();
+
+await db.insert(pesanan).values({
+	id: pesananId,
+	pelangganId: locals.user.id,
+	jastiperId: jasaData.jastiperId,
+	ongkir: 0,
+	totalHarga,
+	alamatKirim: titikTujuanLengkap,
+	metodePembayaran,
+	status: 'menunggu_konfirmasi'
+});
+
+await db.insert(pesananItem).values({
+	id: randomUUID(),
+	pesananId,
+	jasaId: jasaData.id,
+	pengajuanHargaId: pengajuanId,
+	jumlah: 1,
+	hargaSatuan: jasaData.harga,
+	titikJemput: titikJemputLengkap,
+	jarakKm
+});
 
 		throw redirect(303, '/pesanan');
 	}

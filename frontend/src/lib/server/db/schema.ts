@@ -51,12 +51,11 @@ export const produk = pgTable('produk', {
 	kategori: text('kategori'),
 	hargaTipe: hargaTipeEnum('harga_tipe').notNull().default('tetap'),
 	harga: integer('harga').notNull(),
-	gambarUrl: text('gambar_url').notNull(), // wajib — url eksternal atau path hasil upload
+	gambarUrl: text('gambar_url').notNull(),
 	aktif: boolean('aktif').notNull().default(true),
 	createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
 });
 
-// BARU: tabel jasa, struktur sengaja mirip produk supaya query/join-nya konsisten
 export const jasa = pgTable('jasa', {
 	id: text('id').primaryKey(),
 	jastiperId: text('jastiper_id')
@@ -64,10 +63,10 @@ export const jasa = pgTable('jasa', {
 		.references(() => users.id, { onDelete: 'cascade' }),
 	nama: text('nama').notNull(),
 	deskripsi: text('deskripsi'),
-	kategori: text('kategori'), // Jemputan, Antar Barang, Titip Antre, dll
+	kategori: text('kategori'),
 	hargaTipe: hargaTipeEnum('harga_tipe').notNull().default('tetap'),
 	harga: integer('harga').notNull(),
-	satuan: text('satuan'), // opsional: "per trip", "per jam", "per km" — beda dari produk
+	satuan: text('satuan'),
 	gambarUrl: text('gambar_url').notNull(),
 	aktif: boolean('aktif').notNull().default(true),
 	createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
@@ -82,9 +81,6 @@ export const ongkirWilayah = pgTable('ongkir_wilayah', {
 	biaya: integer('biaya').notNull()
 });
 
-// DIUBAH: produkId & jasaId sama-sama nullable, tapi hanya salah satu yang boleh terisi
-// per baris (produk ATAU jasa, tidak dua-duanya, tidak kosong dua-duanya).
-// namaProduk dihapus — nama sekarang selalu bisa di-join dari produk/jasa asli.
 export const pengajuanHarga = pgTable('pengajuan_harga', {
 	id: text('id').primaryKey(),
 	produkId: text('produk_id').references(() => produk.id, { onDelete: 'cascade' }),
@@ -114,31 +110,43 @@ export const pesanChat = pgTable('pesan_chat', {
 	isi: text('isi').notNull(),
 	jenis: jenisPesanEnum('jenis').notNull().default('teks'),
 	nominal: integer('nominal'),
-	dibaca: boolean('dibaca').notNull().default(false), // BARU: buat badge/toast notifikasi
+	dibaca: boolean('dibaca').notNull().default(false),
 	createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
 });
 
-// DIUBAH: tambah jasaId, sama-sama nullable dengan produkId (satu pesanan = satu produk ATAU satu jasa)
+// DIUBAH: pesanan sekarang HEADER transaksi (1 checkout = 1 baris).
+// produkId/jasaId/jumlah/hargaSatuan/titikJemput/jarakKm/pengajuanHargaId
+// pindah ke pesananItem di bawah, karena satu transaksi bisa berisi
+// lebih dari satu produk sekaligus.
 export const pesanan = pgTable('pesanan', {
 	id: text('id').primaryKey(),
-	produkId: text('produk_id').references(() => produk.id),
-	jasaId: text('jasa_id').references(() => jasa.id),
 	pelangganId: text('pelanggan_id').notNull().references(() => users.id),
 	jastiperId: text('jastiper_id').notNull().references(() => users.id),
-	pengajuanHargaId: text('pengajuan_harga_id').references(() => pengajuanHarga.id),
-	jumlah: integer('jumlah').notNull().default(1),
-	hargaSatuan: integer('harga_satuan').notNull(),
 	ongkir: integer('ongkir').notNull().default(0),
-	totalHarga: integer('total_harga').notNull(),
+	totalHarga: integer('total_harga').notNull(), // jumlah semua item + ongkir
 	alamatKirim: text('alamat_kirim'),
-	titikJemput: text('titik_jemput'), // BARU — khusus pesanan jasa
-	jarakKm: doublePrecision('jarak_km'), // BARU — khusus pesanan jasa
+	wilayahId: text('wilayah_id').references(() => ongkirWilayah.id),
 	metodePembayaran: text('metode_pembayaran'),
 	pembayaranDikonfirmasi: boolean('pembayaran_dikonfirmasi').notNull().default(false),
 	dibayarPada: timestamp('dibayar_pada', { withTimezone: true }),
 	status: statusPesananEnum('status').notNull().default('menunggu_konfirmasi'),
 	createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 	updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow()
+});
+
+// BARU: item di dalam satu transaksi. Satu pesanan bisa punya banyak baris ini.
+export const pesananItem = pgTable('pesanan_item', {
+	id: text('id').primaryKey(),
+	pesananId: text('pesanan_id')
+		.notNull()
+		.references(() => pesanan.id, { onDelete: 'cascade' }),
+	produkId: text('produk_id').references(() => produk.id),
+	jasaId: text('jasa_id').references(() => jasa.id),
+	pengajuanHargaId: text('pengajuan_harga_id').references(() => pengajuanHarga.id),
+	jumlah: integer('jumlah').notNull().default(1),
+	hargaSatuan: integer('harga_satuan').notNull(),
+	titikJemput: text('titik_jemput'), // khusus item jasa
+	jarakKm: doublePrecision('jarak_km') // khusus item jasa
 });
 
 export const keranjangItem = pgTable('keranjang_item', {
@@ -159,6 +167,6 @@ export const tawaranHarga = pgTable('tawaran_harga', {
 	pengirimId: text('pengirim_id').notNull().references(() => users.id),
 	harga: integer('harga').notNull(),
 	jumlah: integer('jumlah').notNull(),
-	status: text('status').notNull().default('menunggu'), // menunggu | diterima | ditolak
+	status: text('status').notNull().default('menunggu'),
 	createdAt: timestamp('created_at').notNull().defaultNow()
 });
