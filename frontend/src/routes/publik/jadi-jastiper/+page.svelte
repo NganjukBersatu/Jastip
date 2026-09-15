@@ -24,7 +24,7 @@
 	];
 
 	const steps = [
-		{ n: 1, title: 'Daftar', desc: 'Isi profil & KTP' },
+		{ n: 1, title: 'Daftar', desc: 'Isi profil' },
 		{ n: 2, title: 'Buka trip', desc: 'Set rute & tanggal' },
 		{ n: 3, title: 'Terima titipan', desc: 'Pelanggan pesan' },
 		{ n: 4, title: 'Cair', desc: 'Saldo masuk rekening' }
@@ -259,7 +259,6 @@
 			</div>
 			<div class="flex flex-wrap gap-2">
 				<span class="rounded-full bg-white px-4 py-2 text-sm font-medium">HP aktif</span>
-				<span class="rounded-full bg-white px-4 py-2 text-sm font-medium">KTP</span>
 				<span class="rounded-full bg-white px-4 py-2 text-sm font-medium">Suka jalan</span>
 			</div>
 		</div>
