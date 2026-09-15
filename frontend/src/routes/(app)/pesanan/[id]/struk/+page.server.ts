@@ -1,7 +1,7 @@
 import { error } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
-import { pesanan, produk, users } from '$lib/server/db/schema';
-import { eq, and, or } from 'drizzle-orm';
+import { pesanan, pesananItem, produk, jasa } from '$lib/server/db/schema';
+import { eq } from 'drizzle-orm';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
@@ -10,20 +10,16 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	const [data] = await db
 		.select({
 			id: pesanan.id,
-			jumlah: pesanan.jumlah,
-			hargaSatuan: pesanan.hargaSatuan,
 			ongkir: pesanan.ongkir,
 			totalHarga: pesanan.totalHarga,
 			metodePembayaran: pesanan.metodePembayaran,
 			pembayaranDikonfirmasi: pesanan.pembayaranDikonfirmasi,
 			dibayarPada: pesanan.dibayarPada,
 			createdAt: pesanan.createdAt,
-			produkNama: produk.nama,
 			pelangganId: pesanan.pelangganId,
 			jastiperId: pesanan.jastiperId
 		})
 		.from(pesanan)
-		.innerJoin(produk, eq(pesanan.produkId, produk.id))
 		.where(eq(pesanan.id, params.id));
 
 	if (!data) throw error(404, 'Pesanan tidak ditemukan.');
@@ -31,5 +27,24 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		throw error(403);
 	}
 
-	return { pesanan: data };
+	// BARU: ambil semua item di dalam transaksi ini (dulu cuma 1 produk per pesanan)
+	const itemMentah = await db
+		.select({
+			id: pesananItem.id,
+			jumlah: pesananItem.jumlah,
+			hargaSatuan: pesananItem.hargaSatuan,
+			produkNama: produk.nama,
+			jasaNama: jasa.nama
+		})
+		.from(pesananItem)
+		.leftJoin(produk, eq(pesananItem.produkId, produk.id))
+		.leftJoin(jasa, eq(pesananItem.jasaId, jasa.id))
+		.where(eq(pesananItem.pesananId, params.id));
+
+	const items = itemMentah.map((it) => ({
+		...it,
+		nama: it.produkNama ?? it.jasaNama ?? 'Item'
+	}));
+
+	return { pesanan: data, items };
 };

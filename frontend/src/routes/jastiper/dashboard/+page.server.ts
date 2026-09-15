@@ -1,6 +1,6 @@
 import { db } from '$lib/server/db';
-import { jastiperProfiles, produk, pesanan } from '$lib/server/db/schema';
-import { eq, and, gte, lt, desc, count } from 'drizzle-orm';
+import { jastiperProfiles, produk, jasa, pesanan, pesananItem } from '$lib/server/db/schema';
+import { eq, and, gte, lt, desc, count, inArray } from 'drizzle-orm';
 import type { PageServerLoad } from './$types';
 
 const LABEL_STATUS: Record<string, string> = {
@@ -70,25 +70,46 @@ export const load: PageServerLoad = async ({ locals }) => {
 		produkAktif
 	};
 
-	const pesananTerbaruRaw = await db
+	const headerTerbaru = await db
 		.select({
 			id: pesanan.id,
 			status: pesanan.status,
-			createdAt: pesanan.createdAt,
-			produkNama: produk.nama
+			createdAt: pesanan.createdAt
 		})
 		.from(pesanan)
-		.leftJoin(produk, eq(pesanan.produkId, produk.id))
 		.where(eq(pesanan.jastiperId, jastiperId))
 		.orderBy(desc(pesanan.createdAt))
 		.limit(5);
 
-	const pesananTerbaru = pesananTerbaruRaw.map((p) => ({
-		id: p.id,
-		nama: p.produkNama ?? 'Produk',
-		status: LABEL_STATUS[p.status] ?? p.status
+	const idTerbaru = headerTerbaru.map((h) => h.id);
+
+	const itemTerbaru = idTerbaru.length
+		? await db
+				.select({
+					pesananId: pesananItem.pesananId,
+					produkNama: produk.nama,
+					jasaNama: jasa.nama
+				})
+				.from(pesananItem)
+				.leftJoin(produk, eq(pesananItem.produkId, produk.id))
+				.leftJoin(jasa, eq(pesananItem.jasaId, jasa.id))
+				.where(inArray(pesananItem.pesananId, idTerbaru))
+		: [];
+
+	const namaByPesanan: Record<string, string> = {};
+	for (const it of itemTerbaru) {
+		if (!namaByPesanan[it.pesananId]) {
+			namaByPesanan[it.pesananId] = it.produkNama ?? it.jasaNama ?? 'Produk';
+		}
+	}
+
+	const pesananTerbaru = headerTerbaru.map((h) => ({
+		id: h.id,
+		nama: namaByPesanan[h.id] ?? 'Produk',
+		status: LABEL_STATUS[h.status] ?? h.status
 	}));
 
+	
 	return {
 		profil,
 		statistik,

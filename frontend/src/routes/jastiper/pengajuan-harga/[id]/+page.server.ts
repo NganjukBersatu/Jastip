@@ -1,6 +1,15 @@
 import { error, fail, redirect } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
-import { pengajuanHarga, users, pesanChat, tawaranHarga, pesanan, produk, ongkirWilayah } from '$lib/server/db/schema';
+import {
+	pengajuanHarga,
+	produk,
+	users,
+	pesanan,
+	pesananItem,
+	pesanChat,
+	tawaranHarga,
+	ongkirWilayah
+} from '$lib/server/db/schema';
 import { eq, and, asc } from 'drizzle-orm';
 import { randomUUID } from 'node:crypto';
 import type { Actions, PageServerLoad } from './$types';
@@ -82,7 +91,7 @@ export const actions: Actions = {
 		if (!row) return fail(404, { error: 'Pengajuan tidak ditemukan.' });
 
 		await db.insert(pesanChat).values({
-			id: crypto.randomUUID(),
+			id: randomUUID(),
 			pengajuanHargaId: params.id,
 			pengirimId: locals.user!.id,
 			isi
@@ -91,10 +100,10 @@ export const actions: Actions = {
 		return { success: true };
 	},
 
-tandaiDibaca: async ({ params, locals }) => {
-	await tandaiSudahDibaca(params.id, locals.user!.id);
-	return { success: true };
-},
+	tandaiDibaca: async ({ params, locals }) => {
+		await tandaiSudahDibaca(params.id, locals.user!.id);
+		return { success: true };
+	},
 
 	terima: async ({ params, locals }) => {
 		const jastiperId = locals.user!.id;
@@ -137,17 +146,26 @@ tandaiDibaca: async ({ params, locals }) => {
 			.set({ status: 'diterima' })
 			.where(eq(pengajuanHarga.id, params.id));
 
+		// BARU: pesanan sekarang header transaksi (tanpa produkId/jumlah/hargaSatuan),
+		// detail produknya masuk ke pesananItem terpisah
+		const pesananId = randomUUID();
+
 		await db.insert(pesanan).values({
-			id: randomUUID(),
-			produkId: row.produkId,
+			id: pesananId,
 			pelangganId: row.pelangganId,
 			jastiperId,
-			pengajuanHargaId: row.id,
-			jumlah: row.jumlah,
-			hargaSatuan: row.hargaDiajukan,
 			ongkir: ongkirBiaya,
 			totalHarga: row.hargaDiajukan * row.jumlah + ongkirBiaya,
 			status: 'menunggu_konfirmasi'
+		});
+
+		await db.insert(pesananItem).values({
+			id: randomUUID(),
+			pesananId,
+			produkId: row.produkId,
+			pengajuanHargaId: row.id,
+			jumlah: row.jumlah,
+			hargaSatuan: row.hargaDiajukan
 		});
 
 		throw redirect(303, '/jastiper/pengajuan-harga');

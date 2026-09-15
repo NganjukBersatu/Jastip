@@ -1,22 +1,22 @@
-<script lang="ts">
+<script>
   import { enhance } from '$app/forms';
-  import { slide } from 'svelte/transition';
-  import type { PageData } from './$types';
 
-  let { data }: { data: PageData } = $props();
+  let { data, form } = $props();
 
-  type Pesanan = (typeof data.daftarPesanan)[number];
-
-  function formatRupiah(angka: number) {
+  /** @param {number} angka */
+  function formatRupiah(angka) {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
   }
 
-  function formatTanggal(tanggal: string | Date) {
+  /** @param {string | Date} tanggal */
+  function formatTanggal(tanggal) {
     return new Date(tanggal).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
   }
 
-  function labelStatus(status: string) {
-    const peta: Record<string, { teks: string; kelas: string }> = {
+  /** @param {string} status */
+  function labelStatus(status) {
+    /** @type {Record<string, { teks: string, kelas: string }>} */
+    const peta = {
       menunggu_konfirmasi: { teks: 'Menunggu konfirmasi', kelas: 'bg-yellow-100 text-yellow-700' },
       dibelanjakan: { teks: 'Sedang dibelanjakan', kelas: 'bg-blue-100 text-blue-700' },
       dikirim: { teks: 'Sedang diantar', kelas: 'bg-purple-100 text-purple-700' },
@@ -30,40 +30,19 @@
   let pesananAktif = $derived(data.daftarPesanan.filter((p) => STATUS_AKTIF.includes(p.status)));
   let riwayat = $derived(data.daftarPesanan.filter((p) => !STATUS_AKTIF.includes(p.status)));
 
-  // Pesanan jasa (jemput, antar, dll) dihitung per km, bukan per pcs seperti produk —
-  // dibedakan dari ada/tidaknya jarakKm.
-  function isPesananJasa(p: Pesanan) {
-    return p.jarakKm != null;
-  }
-
-  // BARU: urutan tahapan status, dipakai untuk stepper di kartu "Sedang berjalan".
   const STATUS_URUTAN = ['menunggu_konfirmasi', 'dibelanjakan', 'dikirim', 'selesai'];
   const LABEL_TAHAP_PRODUK = ['Dipesan', 'Dibelanjakan', 'Diantar', 'Selesai'];
   const LABEL_TAHAP_JASA = ['Dipesan', 'Diproses', 'Diantar', 'Selesai'];
 
-  function tahapAktif(status: string) {
+  /** @param {string} status */
+  function tahapAktif(status) {
     const i = STATUS_URUTAN.indexOf(status);
     return i === -1 ? 0 : i;
   }
 
-  // BARU: kode pesanan ringkas untuk tampilan kartu — diambil dari id pesanan,
-  // bukan nomor urut resmi dari database (skema belum punya field itu).
-  function kodePesanan(id: string) {
+  /** @param {string} id */
+  function kodePesanan(id) {
     return `#NTP-${id.slice(0, 8).toUpperCase()}`;
-  }
-
-  // BARU: melacak kartu riwayat mana yang sedang dibuka detailnya.
-  // Hanya dipakai untuk daftar "Riwayat" — kartu "Sedang berjalan" selalu tampil penuh.
-  let expandedIds = $state(new Set<string>());
-
-  function toggleExpand(id: string) {
-    const salinan = new Set(expandedIds);
-    if (salinan.has(id)) {
-      salinan.delete(id);
-    } else {
-      salinan.add(id);
-    }
-    expandedIds = salinan;
   }
 </script>
 
@@ -71,8 +50,7 @@
   <title>Pesanan saya — Nitip</title>
 </svelte:head>
 
-<!-- Kotak ikon item: beda ikon untuk produk (paket) vs jasa (truk antar) -->
-{#snippet kotakIkon(jasa: boolean)}
+{#snippet kotakIkon(jasa)}
   <div class="w-13 h-13 rounded-2xl bg-bg-alt flex items-center justify-center shrink-0">
     {#if jasa}
       <svg class="w-5.5 h-5.5 text-primary-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
@@ -90,15 +68,13 @@
   </div>
 {/snippet}
 
-<!-- Avatar bulat kecil berisi inisial nama jastiper -->
-{#snippet avatarInisial(nama: string)}
+{#snippet avatarInisial(nama)}
   <div class="w-4 h-4 rounded-full bg-accent flex items-center justify-center text-[9px] font-bold text-primary-deep shrink-0">
     {(nama || '?').charAt(0).toUpperCase()}
   </div>
 {/snippet}
 
-<!-- Info rute jemput/tujuan, khusus pesanan jasa -->
-{#snippet infoRute(p: Pesanan)}
+{#snippet infoRute(p)}
   <div class="mt-3 bg-bg rounded-xl px-4 py-3 text-[13px] flex flex-col gap-1.5">
     <div class="flex justify-between gap-3">
       <span class="text-ink-soft shrink-0">Titik jemput</span>
@@ -115,19 +91,21 @@
   </div>
 {/snippet}
 
-<!-- Rincian harga (beda rumus untuk produk vs jasa), garis putus-putus sebelum total -->
-{#snippet rincianHarga(p: Pesanan, jasa: boolean)}
+<!-- BARU: sekarang loop p.items (bisa lebih dari 1 produk per transaksi) -->
+{#snippet rincianHarga(p, jasa)}
   <div class="mt-3 bg-bg rounded-xl px-4 py-3 text-[13.5px] flex flex-col gap-1.5">
     {#if jasa}
       <div class="flex justify-between">
-        <span class="text-ink-soft">{formatRupiah(p.hargaSatuan)}/km × {p.jarakKm ?? 0} km</span>
-        <span>{formatRupiah(p.hargaSatuan * (p.jarakKm ?? 0))}</span>
+        <span class="text-ink-soft">{formatRupiah(p.items[0]?.hargaSatuan ?? 0)}/km × {p.jarakKm ?? 0} km</span>
+        <span>{formatRupiah((p.items[0]?.hargaSatuan ?? 0) * (p.jarakKm ?? 0))}</span>
       </div>
     {:else}
-      <div class="flex justify-between">
-        <span class="text-ink-soft">{formatRupiah(p.hargaSatuan)} × {p.jumlah} pcs</span>
-        <span>{formatRupiah(p.hargaSatuan * p.jumlah)}</span>
-      </div>
+      {#each p.items as it (it.id)}
+        <div class="flex justify-between">
+          <span class="text-ink-soft">{it.nama} — {formatRupiah(it.hargaSatuan)} × {it.jumlah} pcs</span>
+          <span>{formatRupiah(it.hargaSatuan * it.jumlah)}</span>
+        </div>
+      {/each}
       <div class="flex justify-between">
         <span class="text-ink-soft">Ongkir</span>
         <span>{formatRupiah(p.ongkir)}</span>
@@ -141,7 +119,6 @@
 {/snippet}
 
 <div class="w-full max-w-310 mx-auto px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
-  <!-- HEADER -->
   <div class="mb-8 sm:mb-10 pb-6 border-b border-ink/10">
     <h1 class="text-2xl sm:text-[30px] font-extrabold tracking-tight text-ink">Pesanan saya</h1>
     <p class="text-ink-soft mt-2 text-sm sm:text-[15px] leading-relaxed">
@@ -157,12 +134,10 @@
           <path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11Z" />
         </svg>
       </div>
-
       <div class="font-bold text-[15px] text-ink">Belum ada pesanan</div>
       <div class="text-[13.5px] text-ink-soft mt-1.5 max-w-75 mx-auto leading-relaxed">
         Yuk cari titipan pertamamu di katalog.
       </div>
-
       <a
         href="/publik/katalog"
         class="inline-block mt-6 px-6 py-3 rounded-full bg-ink text-bg font-bold text-sm hover:-translate-y-0.5 hover:shadow-md transition"
@@ -181,13 +156,12 @@
       <div class="flex flex-col gap-4 mb-10">
         {#each pesananAktif as p (p.id)}
           {@const st = labelStatus(p.status)}
-          {@const jasaFlag = isPesananJasa(p)}
-          {@const labelTahap = jasaFlag ? LABEL_TAHAP_JASA : LABEL_TAHAP_PRODUK}
+          {@const labelTahap = p.isJasa ? LABEL_TAHAP_JASA : LABEL_TAHAP_PRODUK}
           {@const tahap = tahapAktif(p.status)}
           <div class="bg-white rounded-card border border-ink/10 shadow-[0_2px_12px_rgba(0,0,0,0.025)] p-5 sm:p-6">
             <div class="flex justify-between items-start gap-3 mb-4">
               <div class="flex gap-3 min-w-0">
-                {@render kotakIkon(jasaFlag)}
+                {@render kotakIkon(p.isJasa)}
                 <div class="min-w-0">
                   <div class="font-bold text-sm text-ink truncate">{p.namaItem}</div>
                   <div class="flex items-center gap-1.5 text-[12px] text-ink-soft mt-0.5">
@@ -200,7 +174,6 @@
               <span class="text-[11px] font-extrabold px-2.5 py-1 rounded-full {st.kelas} shrink-0 whitespace-nowrap">{st.teks}</span>
             </div>
 
-            <!-- Stepper tahapan status -->
             <div class="flex justify-between px-0.5 mb-1">
               {#each labelTahap as label, i}
                 <div class="text-center flex-1">
@@ -223,10 +196,10 @@
               {/each}
             </div>
 
-            {#if jasaFlag}
+            {#if p.isJasa}
               {@render infoRute(p)}
             {/if}
-            {@render rincianHarga(p, jasaFlag)}
+            {@render rincianHarga(p, p.isJasa)}
 
             <div class="flex gap-2 mt-3">
               {#if p.pengajuanHargaId}
@@ -270,17 +243,10 @@
       <div class="flex flex-col gap-4">
         {#each riwayat as p (p.id)}
           {@const st = labelStatus(p.status)}
-          {@const jasaFlag = isPesananJasa(p)}
-          {@const terbuka = expandedIds.has(p.id)}
-          <div class="bg-white rounded-card border border-ink/10 shadow-[0_2px_12px_rgba(0,0,0,0.025)] overflow-hidden">
-            <button
-              type="button"
-              onclick={() => toggleExpand(p.id)}
-              class="w-full flex justify-between items-start gap-3 p-5 sm:p-6 text-left"
-              aria-expanded={terbuka}
-            >
+          <div class="bg-white rounded-card border border-ink/10 shadow-[0_2px_12px_rgba(0,0,0,0.025)] p-5 sm:p-6">
+            <div class="flex justify-between items-start gap-3 mb-1">
               <div class="flex gap-3 min-w-0">
-                {@render kotakIkon(jasaFlag)}
+                {@render kotakIkon(p.isJasa)}
                 <div class="min-w-0">
                   <div class="font-bold text-sm text-ink truncate">{p.namaItem}</div>
                   <div class="flex items-center gap-1.5 text-[12px] text-ink-soft mt-0.5">
@@ -290,62 +256,50 @@
                   <div class="text-[11px] text-ink-soft mt-1">No. pesanan {kodePesanan(p.id)}</div>
                 </div>
               </div>
-              <div class="flex items-center gap-2 shrink-0">
-                <span class="text-[11px] font-extrabold px-2.5 py-1 rounded-full {st.kelas} whitespace-nowrap">{st.teks}</span>
-                <svg
-                  class="w-4 h-4 text-ink-soft transition-transform duration-200 {terbuka ? 'rotate-180' : ''}"
-                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                >
-                  <polyline points="6 9 12 15 18 9" />
-                </svg>
-              </div>
-            </button>
+              <span class="text-[11px] font-extrabold px-2.5 py-1 rounded-full {st.kelas} shrink-0 whitespace-nowrap">{st.teks}</span>
+            </div>
 
-            {#if terbuka}
-              <div class="px-5 pb-5 sm:px-6 sm:pb-6" transition:slide={{ duration: 200 }}>
-                {#if jasaFlag}
-                  {@render infoRute(p)}
-                {/if}
-                {@render rincianHarga(p, jasaFlag)}
-
-                <div class="flex gap-2 mt-3">
-                  {#if p.pembayaranDikonfirmasi}
-                    <a
-                      href="/pesanan/{p.id}/struk"
-                      class="flex-1 flex items-center justify-center gap-1.5 text-center rounded-full border-2 border-ink/15 text-ink font-bold text-[13px] py-2.5 hover:border-green-300 hover:text-green-600 transition"
-                    >
-                      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M4 3h16v18l-3-2-2.5 2-2.5-2-2.5 2L7 19l-3 2V3Z" />
-                        <path d="M8 8h8M8 12h8M8 16h4" />
-                      </svg>
-                      Lihat struk
-                    </a>
-                  {/if}
-
-                  <form
-                    method="POST"
-                    action="?/hapusRiwayat"
-                    use:enhance={() => {
-                      if (!confirm('Hapus riwayat pesanan ini?')) return () => {};
-                    }}
-                    class="flex-1"
-                  >
-                    <input type="hidden" name="id" value={p.id} />
-                    <button
-                      type="submit"
-                      class="w-full flex items-center justify-center gap-1.5 rounded-full border-2 border-ink/15 text-ink-soft font-bold text-[13px] py-2.5 hover:border-red-300 hover:text-red-500 transition"
-                    >
-                      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M3 6h18" />
-                        <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
-                        <path d="M10 11v6M14 11v6" />
-                      </svg>
-                      Hapus riwayat
-                    </button>
-                  </form>
-                </div>
-              </div>
+            {#if p.isJasa}
+              {@render infoRute(p)}
             {/if}
+            {@render rincianHarga(p, p.isJasa)}
+
+            <div class="flex gap-2 mt-3">
+              {#if p.pembayaranDikonfirmasi}
+                <a
+                  href="/pesanan/{p.id}/struk"
+                  class="flex-1 flex items-center justify-center gap-1.5 text-center rounded-full border-2 border-ink/15 text-ink font-bold text-[13px] py-2.5 hover:border-green-300 hover:text-green-600 transition"
+                >
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 3h16v18l-3-2-2.5 2-2.5-2-2.5 2L7 19l-3 2V3Z" />
+                    <path d="M8 8h8M8 12h8M8 16h4" />
+                  </svg>
+                  Lihat struk
+                </a>
+              {/if}
+
+              <form
+                method="POST"
+                action="?/hapusRiwayat"
+                use:enhance={() => {
+                  if (!confirm('Hapus riwayat pesanan ini?')) return () => {};
+                }}
+                class="flex-1"
+              >
+                <input type="hidden" name="id" value={p.id} />
+                <button
+                  type="submit"
+                  class="w-full flex items-center justify-center gap-1.5 rounded-full border-2 border-ink/15 text-ink-soft font-bold text-[13px] py-2.5 hover:border-red-300 hover:text-red-500 transition"
+                >
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 6h18" />
+                    <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                    <path d="M10 11v6M14 11v6" />
+                  </svg>
+                  Hapus riwayat
+                </button>
+              </form>
+            </div>
           </div>
         {/each}
       </div>

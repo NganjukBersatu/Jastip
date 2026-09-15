@@ -110,8 +110,8 @@
 	<title>Chat — {data.item.produkNama} — Nitip</title>
 </svelte:head>
 
-<div class="p-8 max-w-[720px] flex flex-col h-[calc(100vh-4rem)]">
-	<!-- Header -->
+<div class="w-full max-w-285 mx-auto p-8 flex flex-col h-[calc(100vh-4rem)]">
+		<!-- Header -->
 	<div class="flex justify-between items-start gap-4">
 		<div>
 			<h1 class="text-[24px]">{data.item.produkNama}</h1>

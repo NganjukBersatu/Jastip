@@ -1,6 +1,6 @@
 import { db } from '$lib/server/db';
-import { pesanan, produk, jasa } from '$lib/server/db/schema';
-import { eq, and, gte, lt, desc, sql } from 'drizzle-orm';
+import { pesanan, pesananItem, produk, jasa } from '$lib/server/db/schema';
+import { eq, and, gte, lt, desc, sql, inArray } from 'drizzle-orm';
 import type { PageServerLoad } from './$types';
 
 const UKURAN_HALAMAN = 10;
@@ -94,16 +94,17 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	// Produk/jasa terlaris — mengikuti periode yang dipilih
 	const produkTerlarisMentah = await db
 		.select({
-			produkId: pesanan.produkId,
-			jasaId: pesanan.jasaId,
+			produkId: pesananItem.produkId,
+			jasaId: pesananItem.jasaId,
 			namaProduk: produk.nama,
 			namaJasa: jasa.nama,
-			totalTerjual: sql<number>`coalesce(sum(${pesanan.jumlah}), 0)`,
-			totalPendapatan: sql<number>`coalesce(sum(${pesanan.totalHarga}), 0)`
+			totalTerjual: sql<number>`coalesce(sum(${pesananItem.jumlah}), 0)`,
+			totalPendapatan: sql<number>`coalesce(sum(${pesananItem.hargaSatuan} * ${pesananItem.jumlah}), 0)`
 		})
-		.from(pesanan)
-		.leftJoin(produk, eq(pesanan.produkId, produk.id))
-		.leftJoin(jasa, eq(pesanan.jasaId, jasa.id))
+		.from(pesananItem)
+		.innerJoin(pesanan, eq(pesananItem.pesananId, pesanan.id))
+		.leftJoin(produk, eq(pesananItem.produkId, produk.id))
+		.leftJoin(jasa, eq(pesananItem.jasaId, jasa.id))
 		.where(
 			and(
 				eq(pesanan.jastiperId, jastiperId),
@@ -112,8 +113,8 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 				lt(pesanan.createdAt, akhirPeriode)
 			)
 		)
-		.groupBy(pesanan.produkId, pesanan.jasaId, produk.nama, jasa.nama)
-		.orderBy(desc(sql`coalesce(sum(${pesanan.jumlah}), 0)`))
+		.groupBy(pesananItem.produkId, pesananItem.jasaId, produk.nama, jasa.nama)
+		.orderBy(desc(sql`coalesce(sum(${pesananItem.jumlah}), 0)`))
 		.limit(5);
 
 	const produkTerlaris = produkTerlarisMentah.map((p) => ({
@@ -133,30 +134,51 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		.from(pesanan)
 		.where(filterRiwayat);
 
-	const riwayatMentah = await db
+	const headerRiwayat = await db
 		.select({
 			id: pesanan.id,
-			namaProduk: produk.nama,
-			namaJasa: jasa.nama,
-			jumlah: pesanan.jumlah,
 			totalHarga: pesanan.totalHarga,
 			status: pesanan.status,
 			metodePembayaran: pesanan.metodePembayaran,
 			createdAt: pesanan.createdAt
 		})
 		.from(pesanan)
-		.leftJoin(produk, eq(pesanan.produkId, produk.id))
-		.leftJoin(jasa, eq(pesanan.jasaId, jasa.id))
 		.where(filterRiwayat)
 		.orderBy(desc(pesanan.createdAt))
 		.limit(UKURAN_HALAMAN)
 		.offset((halaman - 1) * UKURAN_HALAMAN);
 
-	const riwayatPesanan = riwayatMentah.map((p) => ({
-		...p,
-		nama: p.namaProduk ?? p.namaJasa ?? 'Produk/jasa sudah dihapus'
-	}));
+	// BARU: ambil item untuk halaman riwayat ini saja, lalu gabungkan jadi
+	// ringkasan nama + total pcs per transaksi
+	const idHalamanIni = headerRiwayat.map((h) => h.id);
 
+	const itemRiwayat = idHalamanIni.length
+		? await db
+				.select({
+					pesananId: pesananItem.pesananId,
+					jumlah: pesananItem.jumlah,
+					produkNama: produk.nama,
+					jasaNama: jasa.nama
+				})
+				.from(pesananItem)
+				.leftJoin(produk, eq(pesananItem.produkId, produk.id))
+				.leftJoin(jasa, eq(pesananItem.jasaId, jasa.id))
+				.where(inArray(pesananItem.pesananId, idHalamanIni))
+		: [];
+
+	const itemByPesanan: Record<string, typeof itemRiwayat> = {};
+	for (const it of itemRiwayat) {
+		(itemByPesanan[it.pesananId] ??= []).push(it);
+	}
+
+	const riwayatPesanan = headerRiwayat.map((h) => {
+		const items = itemByPesanan[h.id] ?? [];
+		const namaPertama = items[0]?.produkNama ?? items[0]?.jasaNama ?? 'Item';
+		const nama = items.length > 1 ? `${namaPertama} & ${items.length - 1} lainnya` : namaPertama;
+		const jumlah = items.reduce((s, it) => s + it.jumlah, 0);
+		return { ...h, nama, jumlah };
+	});
+	
 	const rentangAkhirTampil = new Date(akhirPeriode);
 	rentangAkhirTampil.setDate(rentangAkhirTampil.getDate() - 1);
 
