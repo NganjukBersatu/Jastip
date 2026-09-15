@@ -12,7 +12,13 @@
 		{ value: 'kustom', label: 'Rentang kustom' }
 	];
 
-  let riwayatTerbuka = $state(false);
+let riwayatTerbuka = $state(false);
+let periodeTerbuka = $state(false);
+
+function pilihPeriode(nilai: string) {
+	periodeDipilih = nilai;
+	periodeTerbuka = false;
+}
 
 // svelte-ignore state_referenced_locally
 let periodeDipilih = $state(data.periode);
@@ -118,17 +124,45 @@ let sampaiDipilih = $state(data.sampai ?? '');
 	<div class="bg-white border border-ink/10 rounded-2xl p-4 sm:p-5 mb-6 flex flex-col gap-3">
 		<div class="flex flex-col sm:flex-row sm:items-end gap-3">
 			<div class="flex-1">
-				<label for="periode" class="block text-xs font-bold text-ink-soft mb-1.5">Periode</label>
-				<select
-					id="periode"
-					bind:value={periodeDipilih}
-					class="w-full rounded-xl border border-ink/15 px-3 py-2.5 text-sm font-semibold bg-white"
-				>
-					{#each opsiPeriode as opsi}
-						<option value={opsi.value}>{opsi.label}</option>
-					{/each}
-				</select>
+	<label for="periode" class="block text-xs font-bold text-ink-soft mb-1.5">Periode</label>
+	<div class="relative">
+		<button
+			type="button"
+			id="periode"
+			onclick={() => (periodeTerbuka = !periodeTerbuka)}
+			class="w-full flex items-center justify-between rounded-xl border border-ink/15 bg-white px-3 py-2.5 text-sm font-semibold text-left"
+		>
+			<span>{opsiPeriode.find((o) => o.value === periodeDipilih)?.label}</span>
+			<svg
+				viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+				stroke-linecap="round" stroke-linejoin="round"
+				class="w-4 h-4 shrink-0 text-ink-soft transition-transform {periodeTerbuka ? 'rotate-180' : ''}"
+			>
+				<polyline points="6 9 12 15 18 9" />
+			</svg>
+		</button>
+
+		{#if periodeTerbuka}
+			<div class="absolute z-10 mt-1.5 w-full rounded-xl border border-ink/10 bg-white shadow-lg overflow-hidden">
+				{#each opsiPeriode as opsi}
+					<button
+						type="button"
+						onclick={() => pilihPeriode(opsi.value)}
+						class="w-full flex items-center justify-between px-3.5 py-2.5 text-sm font-semibold text-left hover:bg-bg-alt/60 {periodeDipilih === opsi.value ? 'text-primary-dark' : 'text-ink'}"
+					>
+						{opsi.label}
+						{#if periodeDipilih === opsi.value}
+							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+								stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 shrink-0">
+								<polyline points="20 6 9 17 4 12" />
+							</svg>
+						{/if}
+					</button>
+				{/each}
 			</div>
+		{/if}
+	</div>
+</div>
 
 			{#if periodeDipilih === 'kustom'}
 				<div class="flex-1">

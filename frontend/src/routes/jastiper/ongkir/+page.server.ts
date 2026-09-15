@@ -38,7 +38,7 @@ export const actions: Actions = {
 		});
 	},
 
-	hapus: async ({ request, locals }) => {
+		hapus: async ({ request, locals }) => {
 		const data = await request.formData();
 		const id = data.get('id')?.toString();
 		if (!id) return fail(400, { error: 'ID tidak ditemukan.' });
@@ -46,6 +46,29 @@ export const actions: Actions = {
 		// pastikan cuma bisa hapus milik sendiri
 		await db
 			.delete(ongkirWilayah)
+			.where(and(eq(ongkirWilayah.id, id), eq(ongkirWilayah.jastiperId, locals.user!.id)));
+	},
+
+	ubah: async ({ request, locals }) => {
+		const data = await request.formData();
+		const id = data.get('id')?.toString();
+		const wilayah = data.get('wilayah')?.toString().trim();
+		const biayaRaw = data.get('biaya')?.toString();
+
+		if (!id) return fail(400, { error: 'ID tidak ditemukan.' });
+		if (!wilayah || !biayaRaw) {
+			return fail(400, { error: 'Nama wilayah dan biaya wajib diisi.' });
+		}
+
+		const biaya = parseInt(biayaRaw, 10);
+		if (isNaN(biaya) || biaya < 0) {
+			return fail(400, { error: 'Biaya harus berupa angka yang valid.' });
+		}
+
+		// pastikan cuma bisa ubah milik sendiri
+		await db
+			.update(ongkirWilayah)
+			.set({ wilayah, biaya })
 			.where(and(eq(ongkirWilayah.id, id), eq(ongkirWilayah.jastiperId, locals.user!.id)));
 	}
 };
