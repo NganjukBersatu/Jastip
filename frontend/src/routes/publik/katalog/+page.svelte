@@ -223,10 +223,9 @@
 	<div class="pointer-events-none absolute left-1/3 top-1/2 w-64 h-64 bg-amber-100/50 rounded-full blur-3xl"></div>
 	<!-- Search bar: full width, mepet kiri-kanan, terpisah dari container max-w -->
 	<div class="px-4 md:px-6 -mt-6 relative z-20">
-				<div
-			class="flex flex-col sm:flex-row gap-3 sm:items-center bg-white rounded-2xl shadow-[0_10px_30px_rgba(42,26,14,0.08)] p-1.5 w-full"
-		>
-			<div class="flex-1 sm:min-w-55 flex items-center gap-2 px-3">
+				<div class="flex flex-col sm:flex-row gap-3 sm:items-center w-full"
+				>
+		<div class="flex-1 sm:min-w-55 flex items-center gap-2 bg-white rounded-xl shadow-[0_10px_30px_rgba(42,26,14,0.08)] px-3 py-2">
 				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4 text-ink-soft shrink-0">
 					<circle cx="11" cy="11" r="7" />
 					<line x1="21" y1="21" x2="16.65" y2="16.65" />
@@ -239,15 +238,16 @@
 				/>
 			</div>
 
-									<div class="flex gap-3 sm:shrink-0">
+			<div class="flex gap-3 sm:shrink-0">
+
 			<!-- Dropdown Area -->
 			<div class="relative flex-1 sm:flex-initial">
 				<button
 					type="button"
 					onclick={() => { areaOpen = !areaOpen; urutanOpen = false; }}
-									class="w-full sm:w-auto justify-center rounded-full px-3 py-1.5 bg-bg-alt text-ink text-xs sm:text-sm font-semibold outline-none focus:ring-2 focus:ring-accent flex items-center gap-1.5 sm:gap-2 hover:bg-accent/30 transition-colors whitespace-nowrap"
-				>
-					{areaAktif}
+									class="w-full sm:w-auto justify-center rounded-full px-4 py-2.5 bg-primary text-white text-sm sm:text-base font-semibold outline-none focus:ring-2 focus:ring-primary-dark flex items-center gap-1.5 sm:gap-2 hover:bg-primary-dark transition-colors whitespace-nowrap"
+									>
+									{areaAktif}
 					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-3.5 h-3.5 transition-transform {areaOpen ? 'rotate-180' : ''}">
 						<polyline points="6 9 12 15 18 9" />
 					</svg>
@@ -279,8 +279,8 @@
 				<button
 					type="button"
 					onclick={() => { urutanOpen = !urutanOpen; areaOpen = false; }}
-										class="w-full sm:w-auto justify-center rounded-full px-3 py-1.5 bg-bg-alt text-ink text-xs sm:text-sm font-semibold outline-none focus:ring-2 focus:ring-accent flex items-center gap-1.5 sm:gap-2 hover:bg-accent/30 transition-colors whitespace-nowrap"
-				>
+										class="w-full sm:w-auto justify-center rounded-full px-4 py-2.5 bg-primary text-white text-sm sm:text-base font-semibold outline-none focus:ring-2 focus:ring-primary-dark flex items-center gap-1.5 sm:gap-2 hover:bg-primary-dark transition-colors whitespace-nowrap"
+										>
 					Urutan: {urutanList.find((u) => u.value === urutan)?.label}
 					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-3.5 h-3.5 transition-transform {urutanOpen ? 'rotate-180' : ''}">
 						<polyline points="6 9 12 15 18 9" />
@@ -312,34 +312,34 @@
 </div>
 
 	<div class="max-w-295 mx-auto px-4 md:px-6 relative z-10">
-				<div class="flex gap-2.5 overflow-x-auto no-scrollbar mt-8 mb-8 -mx-4 px-4 sm:mx-0 sm:px-0">
+				<div class="flex gap-2.5 overflow-x-auto overflow-y-visible no-scrollbar mt-8 mb-8 py-2 -mx-4 px-4 sm:mx-0 sm:px-0">
 			{#each kategoriList as kategori}
 								<button
-					onclick={(e) => {
-						kategoriAktif = kategori;
-						const tombol = e.currentTarget;
-						const kontainer = tombol.parentElement;
-						if (kontainer) {
-							const target =
-								tombol.offsetLeft -
-								kontainer.clientWidth / 2 +
-								tombol.clientWidth / 2;
-							kontainer.scrollTo({ left: target, behavior: 'smooth' });
-						}
-					}}
-					class="shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-colors
-					{kategoriAktif === kategori ? 'bg-primary text-white shadow-[0_6px_16px_rgba(234,88,12,0.45)] ring-2 ring-white/80' : 'bg-white text-ink-soft shadow-sm hover:bg-accent/40'}"
-				>
-					{kategori}
-				</button>
+	onclick={(e) => {
+		kategoriAktif = kategori;
+		const tombol = e.currentTarget;
+		const kontainer = tombol.parentElement;
+		if (kontainer) {
+			const target =
+				tombol.offsetLeft -
+				kontainer.clientWidth / 2 +
+				tombol.clientWidth / 2;
+			kontainer.scrollTo({ left: target, behavior: 'smooth' });
+		}
+	}}
+	class="shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-colors
+	{kategoriAktif === kategori ? 'bg-primary text-white' : 'bg-white text-ink-soft shadow-sm hover:bg-accent/40'}"
+>
+	{kategori}
+</button>
 			{/each}
 		</div>
 
 		<p class="text-ink-soft text-sm mb-6">
-			Menampilkan {hasilFilter.length}
-			{tampilan === 'produk' ? 'produk' : 'jasa'}
-			{#if areaAktif !== 'Semua Area'}di {areaAktif}{/if}
-		</p>
+	Menampilkan {hasilFilter.length}
+	{tampilan === 'produk' ? 'produk' : 'jasa'}
+	{#if areaAktif !== 'Semua Area'}di {areaAktif}{/if}
+</p>
 
 		{#if hasilFilter.length > 0}
 						<div class="grid gap-2 sm:gap-6 grid-cols-3 sm:grid-cols-[repeat(auto-fill,minmax(200px,1fr))]">
