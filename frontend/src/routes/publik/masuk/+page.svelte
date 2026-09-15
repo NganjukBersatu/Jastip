@@ -152,13 +152,53 @@
               placeholder="Masukkan kata sandi kamu"
               required
             />
+
+            <!-- SATU tombol saja, ikonnya berganti sesuai state -->
             <button
               type="button"
               class="password-toggle"
-              onclick={() => showPassword = !showPassword}
-              aria-label="Tampilkan kata sandi"
+              onclick={() => (showPassword = !showPassword)}
+              aria-label={showPassword ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi'}
             >
-              {showPassword ? '◉' : '◌'}
+              {#if showPassword}
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M3 3l18 18"
+                    stroke="currentColor"
+                    stroke-width="1.7"
+                    stroke-linecap="round"
+                  />
+                  <path
+                    d="M10.58 10.58a2 2 0 0 0 2.83 2.83"
+                    stroke="currentColor"
+                    stroke-width="1.7"
+                    stroke-linecap="round"
+                  />
+                  <path
+                    d="M9.36 5.36A10.4 10.4 0 0 1 12 5c5 0 9 4 10 7-.5 1.4-1.4 2.9-2.6 4.1M6.6 6.6C4.5 8 3 10 2 12c1 3 5 7 10 7 1.2 0 2.4-.24 3.5-.66"
+                    stroke="currentColor"
+                    stroke-width="1.7"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              {:else}
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7Z"
+                    stroke="currentColor"
+                    stroke-width="1.7"
+                    stroke-linejoin="round"
+                  />
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="3"
+                    stroke="currentColor"
+                    stroke-width="1.7"
+                  />
+                </svg>
+              {/if}
             </button>
           </div>
         </div>
@@ -294,7 +334,6 @@
     margin-top: 5px;
   }
 
-  /* Tanaman dibuat lebih besar & proporsional, tanpa teks yang menabrak daun */
   .plant {
     position: absolute;
     left: 15px;
@@ -586,11 +625,18 @@
     right: 8px;
     width: 32px;
     height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border: 0;
     background: transparent;
     color: #888;
     cursor: pointer;
-    font-size: 16px;
+  }
+
+  .password-toggle svg {
+    width: 19px;
+    height: 19px;
   }
 
   .forgot {

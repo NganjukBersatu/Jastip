@@ -8,6 +8,7 @@
   const notifikasi = notifikasiState();
 
   // Nama & avatar yang ditampilkan (bisa override dari localStorage)
+  // svelte-ignore state_referenced_locally
   let displayNama = $state(data.user?.nama ?? '');
   let avatarUrl = $state<string | null>(null);
 
