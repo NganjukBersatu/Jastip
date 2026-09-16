@@ -29,6 +29,13 @@
       "when": 1788936796912,
       "tag": "0003_rich_fantastic_four",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1789517835257,
+      "tag": "0004_old_wallow",
+      "breakpoints": true
     }
   ]
 }
