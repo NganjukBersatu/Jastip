@@ -44,9 +44,22 @@ export const GET: RequestHandler = async ({ url, cookies, fetch }) => {
 
 	const email = profil.email.toLowerCase();
 
-	let [user] = await db.select().from(users).where(eq(users.email, email));
+		let [user] = await db.select().from(users).where(eq(users.email, email));
+
+	const roleCookie = cookies.get('google_pending_role');
+	const roleBaru = roleCookie === 'jastiper' ? 'jastiper' : 'pelanggan';
+	const intentCookie = cookies.get('google_pending_intent');
+	cookies.delete('google_pending_role', { path: '/' });
+	cookies.delete('google_pending_intent', { path: '/' });
 
 	if (!user) {
+		// TAMBAHAN: kalau belum terdaftar dan bukan datang dari alur Daftar, tolak & arahkan ke Daftar
+		if (intentCookie !== 'daftar') {
+			cookies.delete('google_oauth_state', { path: '/' });
+			cookies.delete('google_code_verifier', { path: '/' });
+			throw redirect(303, '/publik/daftar?belum_terdaftar=1');
+		}
+
 		const passwordAcak = crypto.randomBytes(32).toString('hex');
 		const passwordHash = await bcrypt.hash(passwordAcak, 10);
 
@@ -57,7 +70,7 @@ export const GET: RequestHandler = async ({ url, cookies, fetch }) => {
 				nama: profil.name ?? email,
 				email,
 				passwordHash,
-				role: 'pelanggan'
+				role: roleBaru
 			})
 			.returning();
 	}
