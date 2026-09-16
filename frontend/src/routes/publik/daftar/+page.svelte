@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { page } from '$app/stores';
+
 	let role: 'pelanggan' | 'jastiper' = $state('pelanggan');
 	let showPassword = $state(false);
 	function pilihRole(r: 'pelanggan' | 'jastiper') {
@@ -136,6 +138,12 @@
 					Pilih jenis akun yang ingin kamu buat
 				</p>
 			</div>
+
+			{#if $page.url.searchParams.get('belum_terdaftar')}
+				<div class="notice">
+					Akun kamu belum terdaftar. Silakan daftar dulu sebagai Pelanggan atau Jastiper di bawah ini.
+				</div>
+			{/if}
 
 			<!-- =================================================
 			     FORM

@@ -41,6 +41,17 @@ export const sessions = pgTable('sessions', {
 	expiresAt: timestamp('expires_at', { withTimezone: true }).notNull()
 });
 
+export const passwordResetTokens = pgTable('password_reset_tokens', {
+	id: text('id').primaryKey(),
+	userId: text('user_id')
+		.notNull()
+		.references(() => users.id, { onDelete: 'cascade' }),
+	token: text('token').notNull(),
+	expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+	digunakan: boolean('digunakan').notNull().default(false),
+	createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
+});
+
 export const produk = pgTable('produk', {
 	id: text('id').primaryKey(),
 	jastiperId: text('jastiper_id')
