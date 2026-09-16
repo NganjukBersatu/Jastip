@@ -12,10 +12,12 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			id: pesanan.id,
 			ongkir: pesanan.ongkir,
 			totalHarga: pesanan.totalHarga,
+			status: pesanan.status,
 			metodePembayaran: pesanan.metodePembayaran,
 			pembayaranDikonfirmasi: pesanan.pembayaranDikonfirmasi,
 			dibayarPada: pesanan.dibayarPada,
 			createdAt: pesanan.createdAt,
+			alamatKirim: pesanan.alamatKirim,
 			pelangganId: pesanan.pelangganId,
 			jastiperId: pesanan.jastiperId
 		})
@@ -27,12 +29,16 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		throw error(403);
 	}
 
-	// BARU: ambil semua item di dalam transaksi ini (dulu cuma 1 produk per pesanan)
+	// BARU: ambil juga titikJemput/jarakKm/jasaId supaya struk jasa bisa
+	// menampilkan rute & rincian per-km, bukan cuma nama x jumlah seperti produk
 	const itemMentah = await db
 		.select({
 			id: pesananItem.id,
 			jumlah: pesananItem.jumlah,
 			hargaSatuan: pesananItem.hargaSatuan,
+			titikJemput: pesananItem.titikJemput,
+			jarakKm: pesananItem.jarakKm,
+			jasaId: pesananItem.jasaId,
 			produkNama: produk.nama,
 			jasaNama: jasa.nama
 		})
@@ -46,5 +52,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		nama: it.produkNama ?? it.jasaNama ?? 'Item'
 	}));
 
-	return { pesanan: data, items };
+	const isJasa = items.some((it) => it.jasaId != null);
+
+	return { pesanan: data, items, isJasa };
 };

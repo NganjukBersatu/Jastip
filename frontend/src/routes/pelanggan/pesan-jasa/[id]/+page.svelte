@@ -1,7 +1,18 @@
 <script>
 	import { enhance } from '$app/forms';
+	import { MapPin } from 'lucide-svelte';
 	let { data, form } = $props();
 	let mengirim = $state(false);
+
+	// kontrol mode titik jemput
+	let modeJemput = $state('pilih'); // 'pilih' | 'gps' | 'manual'
+	let lokasiLoading = $state(false);
+	let lokasiError = $state('');
+	/** @type {number | null} */
+	let titikJemputLat = $state(null);
+	/** @type {number | null} */
+	let titikJemputLng = $state(null);
+	let konfirmasiLokasi = $state('');
 
 	/** @param {number} angka */
 	function formatRupiah(angka) {
@@ -52,6 +63,44 @@
 		'Kabupaten Pamekasan',
 		'Kabupaten Sumenep'
 	];
+
+	function gunakanLokasiSaya() {
+		lokasiLoading = true;
+		lokasiError = '';
+
+		if (!('geolocation' in navigator)) {
+			lokasiError = 'Browser tidak mendukung fitur lokasi. Silakan isi alamat manual.';
+			lokasiLoading = false;
+			modeJemput = 'manual';
+			return;
+		}
+
+		navigator.geolocation.getCurrentPosition(
+			(position) => {
+				titikJemputLat = position.coords.latitude;
+				titikJemputLng = position.coords.longitude;
+				konfirmasiLokasi = `Lokasi terdeteksi (${titikJemputLat.toFixed(5)}, ${titikJemputLng.toFixed(5)})`;
+				modeJemput = 'gps';
+				lokasiLoading = false;
+			},
+			(err) => {
+				lokasiError =
+					err.code === 1
+						? 'Izin lokasi ditolak. Silakan isi alamat manual di bawah.'
+						: 'Gagal mengambil lokasi. Silakan isi alamat manual.';
+				modeJemput = 'manual';
+				lokasiLoading = false;
+			},
+			{ enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+		);
+	}
+
+	function batalkanLokasi() {
+		modeJemput = 'pilih';
+		titikJemputLat = null;
+		titikJemputLng = null;
+		konfirmasiLokasi = '';
+	}
 </script>
 
 <svelte:head>
@@ -101,32 +150,75 @@
 		<div class="space-y-3">
 			<p class="text-sm font-bold">Titik jemput</p>
 
-			<div>
-				<label for="kotaJemput" class="block text-xs text-ink-soft mb-1">Kabupaten / Kota</label>
-				<select
-					id="kotaJemput"
-					name="kotaJemput"
-					required
-					class="w-full rounded-xl px-4 py-2.5 border border-ink/10 text-sm outline-none focus:ring-2 focus:ring-accent"
+			{#if modeJemput === 'pilih'}
+				<button
+					type="button"
+					onclick={gunakanLokasiSaya}
+					disabled={lokasiLoading}
+					class="w-full py-2.5 rounded-xl border border-accent text-sm font-semibold text-accent flex items-center justify-center gap-2"
 				>
-					<option value="">Pilih kabupaten/kota</option>
-					{#each daftarKota as kota}
-						<option value={kota}>{kota}</option>
-					{/each}
-				</select>
-			</div>
+					<MapPin size={16} />
+					{lokasiLoading ? 'Mengambil lokasi...' : 'Gunakan lokasi saya'}
+				</button>
+				<button
+					type="button"
+					onclick={() => (modeJemput = 'manual')}
+					class="w-full py-2 text-xs text-ink-soft underline"
+				>
+					Isi alamat manual saja
+				</button>
+			{/if}
 
-			<div>
-				<label for="titikJemput" class="block text-xs text-ink-soft mb-1">Alamat detail</label>
-				<input
-					id="titikJemput"
-					name="titikJemput"
-					type="text"
-					required
-					placeholder="Misal: Stasiun Kertosono / Jl. Ahmad Yani No. 15"
-					class="w-full rounded-xl px-4 py-2.5 border border-ink/10 text-sm outline-none focus:ring-2 focus:ring-accent"
-				/>
-			</div>
+			{#if lokasiError}
+				<p class="text-red-600 text-xs">{lokasiError}</p>
+			{/if}
+
+			{#if modeJemput === 'gps'}
+				<div class="bg-accent/10 rounded-xl px-4 py-3 text-sm flex items-center justify-between">
+					<span class="flex items-center gap-1.5">
+						<MapPin size={14} class="text-accent shrink-0" />
+						{konfirmasiLokasi}
+					</span>
+					<button type="button" onclick={batalkanLokasi} class="text-xs text-ink-soft underline ml-3">
+						Ganti
+					</button>
+				</div>
+				<input type="hidden" name="titikJemputLat" value={titikJemputLat} />
+				<input type="hidden" name="titikJemputLng" value={titikJemputLng} />
+			{/if}
+
+			{#if modeJemput === 'manual'}
+				<div>
+					<label for="kotaJemput" class="block text-xs text-ink-soft mb-1">Kabupaten / Kota</label>
+					<select
+						id="kotaJemput"
+						name="kotaJemput"
+						required
+						class="w-full rounded-xl px-4 py-2.5 border border-ink/10 text-sm outline-none focus:ring-2 focus:ring-accent"
+					>
+						<option value="">Pilih kabupaten/kota</option>
+						{#each daftarKota as kota}
+							<option value={kota}>{kota}</option>
+						{/each}
+					</select>
+				</div>
+
+				<div>
+					<label for="titikJemput" class="block text-xs text-ink-soft mb-1">Alamat detail</label>
+					<input
+						id="titikJemput"
+						name="titikJemput"
+						type="text"
+						required
+						placeholder="Misal: Stasiun Kertosono / Jl. Ahmad Yani No. 15"
+						class="w-full rounded-xl px-4 py-2.5 border border-ink/10 text-sm outline-none focus:ring-2 focus:ring-accent"
+					/>
+				</div>
+
+				<button type="button" onclick={batalkanLokasi} class="text-xs text-ink-soft underline">
+					← Pakai lokasi HP saja
+				</button>
+			{/if}
 		</div>
 
 		<!-- ========== TITIK TUJUAN ========== -->

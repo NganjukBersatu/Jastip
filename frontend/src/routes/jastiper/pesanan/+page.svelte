@@ -33,16 +33,30 @@
     });
   }
 
-  /** @param {string} status */
-  function labelStatus(status) {
+  /**
+   * @param {string} status
+   * @param {boolean} [isJasa]
+   */
+  function labelStatus(status, isJasa = false) {
     /** @type {Record<string, { teks: string, kelas: string }>} */
-    const peta = {
+    const petaProduk = {
       menunggu_konfirmasi: { teks: 'Menunggu konfirmasi', kelas: 'bg-yellow-100 text-yellow-700' },
       dibelanjakan: { teks: 'Sedang dibelanjakan', kelas: 'bg-blue-100 text-blue-700' },
-      dikirim: { teks: 'Sedang diantar', kelas: 'bg-purple-100 text-purple-700' },
+      dikirim: { teks: 'Sedang dikirim', kelas: 'bg-purple-100 text-purple-700' },
       selesai: { teks: 'Selesai', kelas: 'bg-green-100 text-green-700' },
       dibatalkan: { teks: 'Dibatalkan', kelas: 'bg-red-100 text-red-700' }
     };
+
+    /** @type {Record<string, { teks: string, kelas: string }>} */
+    const petaJasa = {
+      menunggu_konfirmasi: { teks: 'Menunggu konfirmasi', kelas: 'bg-yellow-100 text-yellow-700' },
+      dibelanjakan: { teks: 'Menuju titik jemput', kelas: 'bg-blue-100 text-blue-700' },
+      dikirim: { teks: 'Sedang mengantar', kelas: 'bg-purple-100 text-purple-700' },
+      selesai: { teks: 'Selesai', kelas: 'bg-green-100 text-green-700' },
+      dibatalkan: { teks: 'Dibatalkan', kelas: 'bg-red-100 text-red-700' }
+    };
+
+    const peta = isJasa ? petaJasa : petaProduk;
     return peta[status] ?? { teks: status, kelas: 'bg-gray-100 text-gray-700' };
   }
 
@@ -393,7 +407,7 @@
     {:else}
       <div class="flex flex-col gap-3 sm:gap-4">
         {#each pesananAktifTampil as p (p.id)}
-          {@const st = labelStatus(p.status)}
+          {@const st = labelStatus(p.status, p.isJasa)}
 
           <div class="bg-white rounded-2xl border border-ink/10 overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.025)] transition hover:shadow-md hover:border-ink/15">
             <button type="button" class="w-full text-left p-4 sm:p-5" onclick={() => togglePesanan(p.id)}>
@@ -544,7 +558,7 @@
       {#if riwayatTerbuka}
       <div class="flex flex-col gap-2">
         {#each riwayatTampil as p (p.id)}
-          {@const st = labelStatus(p.status)}
+          {@const st = labelStatus(p.status, p.isJasa)}
           <div class="bg-white rounded-xl border border-ink/10 px-4 py-3.5 flex items-center justify-between gap-4 transition hover:border-ink/15">
             <div class="min-w-0">
               <div class="font-semibold text-[13.5px] truncate">{p.namaItem}</div>
