@@ -122,29 +122,33 @@ import { heroThemeState } from '$lib/stores/heroTheme.svelte.js';
 
       <!-- Menu desktop -->
       <div class="hidden md:flex gap-9 font-semibold text-sm shrink-0">
-        <a
-          href="/"
-          class="opacity-80 hover:opacity-100 transition {active === 'home'
-            ? blendWithHero
-              ? 'opacity-100'
-              : 'opacity-100 text-primary-dark'
-            : ''}"
-        >
-          Home
-        </a>
-
-        <a
-          href="/publik/katalog"
-          class="opacity-80 hover:opacity-100 transition {active === 'katalog'
-            ? blendWithHero
-              ? 'opacity-100'
-              : 'opacity-100 text-primary-dark'
-            : ''}"
-        >
-          Katalog
-        </a>
+        {#if !user}
+          <a
+            href="/"
+            class="opacity-80 hover:opacity-100 transition {active === 'home'
+              ? blendWithHero
+                ? 'opacity-100'
+                : 'opacity-100 text-primary-dark'
+              : ''}"
+          >
+            Home
+          </a>
+        {/if}
 
         {#if user?.role !== 'jastiper'}
+          <a
+            href="/publik/katalog"
+            class="opacity-80 hover:opacity-100 transition {active === 'katalog'
+              ? blendWithHero
+                ? 'opacity-100'
+                : 'opacity-100 text-primary-dark'
+              : ''}"
+          >
+            Katalog
+          </a>
+        {/if}
+
+        {#if !user}
           <a
             href="/publik/jadi-jastiper"
             class="opacity-80 hover:opacity-100 transition {active === 'jastiper'
@@ -153,20 +157,20 @@ import { heroThemeState } from '$lib/stores/heroTheme.svelte.js';
                 : 'opacity-100 text-primary-dark'
               : ''}"
           >
-            Jadi jastiper
+            Gabung
+          </a>
+
+          <a
+            href="/publik/cara-kerja"
+            class="opacity-80 hover:opacity-100 transition {active === 'cara-kerja'
+              ? blendWithHero
+                ? 'opacity-100'
+                : 'opacity-100 text-primary-dark'
+              : ''}"
+          >
+            Cara kerja
           </a>
         {/if}
-
-        <a
-          href="/publik/cara-kerja"
-          class="opacity-80 hover:opacity-100 transition {active === 'cara-kerja'
-            ? blendWithHero
-              ? 'opacity-100'
-              : 'opacity-100 text-primary-dark'
-            : ''}"
-        >
-          Cara kerja
-        </a>
 
         {#if user?.role === 'pelanggan'}
           <a
@@ -338,39 +342,43 @@ import { heroThemeState } from '$lib/stores/heroTheme.svelte.js';
         </p>
 
         <div class="flex flex-col gap-1 py-1 px-2.5">
-          <a
-            href="/"
-            onclick={tutupMenu}
-            class="flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition {active === 'home'
-              ? 'text-primary-dark bg-primary/10'
-              : 'opacity-80 hover:bg-ink/5'}"
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4.5 h-4.5 shrink-0">
-              <path d="M3 11l9-8 9 8" />
-              <path d="M5 10v10h14V10" />
-            </svg>
-            Home
-          </a>
-
-          <a
-            href="/publik/katalog"
-            onclick={tutupMenu}
-            class="flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition {active === 'katalog'
-              ? 'text-primary-dark bg-primary/10'
-              : 'opacity-80 hover:bg-ink/5'}"
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4.5 h-4.5 shrink-0">
-             <path d="M4 5h16" />
-              <path d="M4 12h16" />
-                <path d="M4 19h16" />
-              <circle cx="8" cy="5" r="1.2" fill="currentColor" stroke="none" />
-           <circle cx="8" cy="12" r="1.2" fill="currentColor" stroke="none" />
-         <circle cx="8" cy="19" r="1.2" fill="currentColor" stroke="none" />
-      </svg>
-            Katalog
-          </a>
+          {#if !user}
+            <a
+              href="/"
+              onclick={tutupMenu}
+              class="flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition {active === 'home'
+                ? 'text-primary-dark bg-primary/10'
+                : 'opacity-80 hover:bg-ink/5'}"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4.5 h-4.5 shrink-0">
+                <path d="M3 11l9-8 9 8" />
+                <path d="M5 10v10h14V10" />
+              </svg>
+              Home
+            </a>
+          {/if}
 
           {#if user?.role !== 'jastiper'}
+            <a
+              href="/publik/katalog"
+              onclick={tutupMenu}
+              class="flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition {active === 'katalog'
+                ? 'text-primary-dark bg-primary/10'
+                : 'opacity-80 hover:bg-ink/5'}"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4.5 h-4.5 shrink-0">
+               <path d="M4 5h16" />
+                <path d="M4 12h16" />
+                  <path d="M4 19h16" />
+                <circle cx="8" cy="5" r="1.2" fill="currentColor" stroke="none" />
+             <circle cx="8" cy="12" r="1.2" fill="currentColor" stroke="none" />
+           <circle cx="8" cy="19" r="1.2" fill="currentColor" stroke="none" />
+        </svg>
+              Katalog
+            </a>
+          {/if}
+
+          {#if !user}
             <a
               href="/publik/jadi-jastiper"
               onclick={tutupMenu}
@@ -383,24 +391,24 @@ import { heroThemeState } from '$lib/stores/heroTheme.svelte.js';
                 <path d="M9 11a4 4 0 100-8 4 4 0 000 8z" />
                 <path d="M1 21v-2a4 4 0 014-4h4a4 4 0 014 4v2" />
               </svg>
-              Jadi jastiper
+              Gabung
+            </a>
+
+            <a
+              href="/publik/cara-kerja"
+              onclick={tutupMenu}
+              class="flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition {active === 'cara-kerja'
+                ? 'text-primary-dark bg-primary/10'
+                : 'opacity-80 hover:bg-ink/5'}"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4.5 h-4.5 shrink-0">
+                <circle cx="12" cy="12" r="9" />
+                <path d="M9.5 9.5a2.5 2.5 0 115 .5c0 1.5-2.5 2-2.5 3.5" />
+                <line x1="12" y1="17" x2="12" y2="17.5" />
+              </svg>
+              Cara kerja
             </a>
           {/if}
-
-          <a
-            href="/publik/cara-kerja"
-            onclick={tutupMenu}
-            class="flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition {active === 'cara-kerja'
-              ? 'text-primary-dark bg-primary/10'
-              : 'opacity-80 hover:bg-ink/5'}"
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4.5 h-4.5 shrink-0">
-              <circle cx="12" cy="12" r="9" />
-              <path d="M9.5 9.5a2.5 2.5 0 115 .5c0 1.5-2.5 2-2.5 3.5" />
-              <line x1="12" y1="17" x2="12" y2="17.5" />
-            </svg>
-            Cara kerja
-          </a>
 
           {#if user?.role === 'pelanggan'}
             <a

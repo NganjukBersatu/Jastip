@@ -1,22 +1,28 @@
 <script lang="ts">
+// Gabung data posisi, ikon, dan teks tiap langkah jadi satu array
+// biar label pasti nempel tepat di bawah ikonnya (x sama persis)
 const langkah = [
   {
-    no: '01',
+    x: 80, y: 84, tip: 100, klas: 'text-primary',
+    icon: 'M6 19a2 2 0 1 0 0 4 2 2 0 0 0 0-4ZM17 19a2 2 0 1 0 0 4 2 2 0 0 0 0-4ZM3 3h2l2.68 13.39a2 2 0 0 0 2 1.61h7.72a2 2 0 0 0 2-1.61L21 8H5.12',
     judul: 'Titip pesanan',
     teks: 'Pilih barang di katalog, kasih alamatmu.'
   },
   {
-    no: '02',
+    x: 240, y: 24, tip: 40, klas: 'text-primary-dark',
+    icon: 'M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4H6ZM3 6h18M16 10a4 4 0 0 1-8 0',
     judul: 'Dibelanjain',
     teks: 'Jastiper langsung belanjain pesananmu.'
   },
   {
-    no: '03',
+    x: 400, y: 104, tip: 120, klas: 'text-primary',
+    icon: 'M3 17h1a2 2 0 0 0 4 0h7a2 2 0 0 0 4 0h1a1 1 0 0 0 1-1v-3a3 3 0 0 0-3-3h-1V7a1 1 0 0 0-1-1H6a1 1 0 0 0-1 1v9M8 17a2 2 0 1 1-4 0 2 2 0 0 1 4 0ZM19 17a2 2 0 1 1-4 0 2 2 0 0 1 4 0ZM15 6v5h4.5',
     judul: 'Otw kirim',
     teks: 'Barang meluncur ke alamatmu.'
   },
   {
-    no: '04',
+    x: 560, y: 44, tip: 60, klas: 'text-primary-dark',
+    icon: 'M5 13l4 4L19 7',
     judul: 'Nyampe',
     teks: 'Cek barang, beres.'
   }
@@ -65,37 +71,51 @@ const sesudah = [
     </p>
   </section>
 
-  <!-- Rute + Deskripsi langkah (satu container, lebar sama) -->
+  <!-- Rute + Deskripsi langkah (label persis di bawah ikonnya) -->
   <section class="max-w-350 mx-auto px-8 pb-4">
-    <svg viewBox="0 0 640 160" class="w-full block">
-      <path
-        d="M80,100 C140,20 180,20 240,40 C300,70 340,150 400,120 C460,90 500,10 560,60"
-        fill="none" stroke="currentColor" class="text-ink/10" stroke-width="10" stroke-linecap="round"
-      />
-      <path
-        d="M80,100 C140,20 180,20 240,40 C300,70 340,150 400,120 C460,90 500,10 560,60"
-        fill="none" stroke="currentColor" class="text-primary" stroke-width="2.5"
-        stroke-dasharray="1 10" stroke-linecap="round"
-      />
+    <div class="relative">
+      <svg viewBox="0 0 640 160" class="w-full block">
+        <path
+          d="M80,100 C140,20 180,20 240,40 C300,70 340,150 400,120 C460,90 500,10 560,60"
+          fill="none" stroke="currentColor" class="text-ink/10" stroke-width="10" stroke-linecap="round"
+        />
+        <path
+          d="M80,100 C140,20 180,20 240,40 C300,70 340,150 400,120 C460,90 500,10 560,60"
+          fill="none" stroke="currentColor" class="text-primary" stroke-width="2.5"
+          stroke-dasharray="1 10" stroke-linecap="round"
+        />
 
-      {#each [{ x: 80, y: 84, tip: 100, no: '01', klas: 'text-primary' }, { x: 240, y: 24, tip: 40, no: '02', klas: 'text-primary-dark' }, { x: 400, y: 104, tip: 120, no: '03', klas: 'text-primary' }, { x: 560, y: 44, tip: 60, no: '04', klas: 'text-primary-dark' }] as p}
-        <g class={p.klas} fill="currentColor">
-          <circle cx={p.x} cy={p.y} r="16" />
-          <path d="M{p.x - 9},{p.tip - 16} L{p.x},{p.tip} L{p.x + 9},{p.tip - 16} Z" />
-        </g>
-        <text x={p.x} y={p.y + 5} text-anchor="middle" class="fill-bg font-bold" style="font-size:13px">
-          {p.no}
-        </text>
-      {/each}
-    </svg>
+        {#each langkah as l}
+          <g class={l.klas} fill="currentColor">
+            <circle cx={l.x} cy={l.y} r="16" />
+            <path d="M{l.x - 9},{l.tip - 16} L{l.x},{l.tip} L{l.x + 9},{l.tip - 16} Z" />
+          </g>
+          <g
+            transform={`translate(${l.x - 9}, ${l.y - 9})`}
+            class="text-bg"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d={l.icon} transform="scale(0.75)" />
+          </g>
+        {/each}
+      </svg>
 
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-4 text-center mt-2">
-      {#each langkah as l}
-        <div>
-          <h3 class="font-bold text-sm text-ink mb-2">{l.judul}</h3>
-          <p class="text-xs text-ink/65 leading-relaxed">{l.teks}</p>
-        </div>
-      {/each}
+      <!-- Label diposisikan pakai left:% yang sama persis sama koordinat x ikonnya -->
+      <div class="relative h-24 sm:h-16">
+        {#each langkah as l}
+          <div
+            class="absolute top-2 -translate-x-1/2 text-center w-24 sm:w-32"
+            style={`left:${(l.x / 640) * 100}%`}
+          >
+            <h3 class="font-bold text-sm text-ink mb-2">{l.judul}</h3>
+            <p class="text-xs text-ink/65 leading-relaxed">{l.teks}</p>
+          </div>
+        {/each}
+      </div>
     </div>
   </section>
 

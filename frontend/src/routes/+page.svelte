@@ -4,6 +4,7 @@
   import Features from '$lib/components/Features.svelte';
   import CatalogTeaser from '$lib/components/CatalogTeaser.svelte';
   import JastiperCta from '$lib/components/JastiperCta.svelte';
+  import Testimoni from '$lib/components/Testimoni.svelte';
   import type { PageData } from './$types';
 
   let { data }: { data: PageData } = $props();
@@ -17,4 +18,5 @@
 <Features />
 <CatalogTeaser produkPilihan={data.produkPilihan} />
 <JastiperCta />
+<Testimoni />
 <Footer />
