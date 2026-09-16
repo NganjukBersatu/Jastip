@@ -89,7 +89,7 @@
     <!-- Header sidebar -->
     <div class="px-5 py-6 border-b border-ink/10">
       <a
-        href="/"
+        href="/profile"
         class="inline-flex items-center gap-2.5 text-[13px] font-bold
                text-ink-soft hover:text-primary-dark transition"
       >
@@ -190,7 +190,7 @@
            backdrop-blur border-b border-ink/10"
   >
     <div class="px-4 py-3 flex items-center justify-between gap-3">
-      <a href="/" class="flex items-center gap-2.5 min-w-0">
+      <a href="/profile" class="flex items-center gap-2.5 min-w-0">
         {#if avatarUrl}
           <img
             src={avatarUrl}

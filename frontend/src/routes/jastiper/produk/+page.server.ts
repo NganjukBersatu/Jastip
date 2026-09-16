@@ -39,16 +39,18 @@ export const actions: Actions = {
 			return fail(404, { error: 'Produk tidak ditemukan' });
 		}
 
-		// Hapus produk
-		await db
-			.delete(produk)
-			.where(
-				and(
-					eq(produk.id, id),                    // ← tanpa Number()
-					eq(produk.jastiperId, locals.user!.id)
-				)
-			);
+		// Nonaktifkan produk (bukan hapus permanen), supaya riwayat pesanan lama tetap aman
+await db
+	.update(produk)
+	.set({ aktif: false })
+	.where(
+		and(
+			eq(produk.id, id),
+			eq(produk.jastiperId, locals.user!.id)
+		)
+	);
 
-		return { success: true };
+return { success: true };
+
 	}
 };

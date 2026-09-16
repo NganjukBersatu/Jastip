@@ -3,6 +3,7 @@
 
 let p = $derived(data.pesanan);
 let items = $derived(data.items);
+let isJasa = $derived(data.isJasa);
 
 
   /** @param {number} angka */
@@ -29,6 +30,9 @@ let nomorInvoice = $derived(`INV-${p.id.slice(0, 8).toUpperCase()}`);
 // BARU: subtotal dijumlah dari semua item, bukan 1 produk seperti dulu
 let subtotal = $derived(items.reduce((s, it) => s + it.hargaSatuan * it.jumlah, 0));
 
+// BARU: untuk jasa, tampilkan rute + rincian per-km, bukan daftar item biasa
+let itemJasa = $derived(items[0]);
+
   function kembali() {
     if (window.history.length > 1) {
       window.history.back();
@@ -54,7 +58,7 @@ let subtotal = $derived(items.reduce((s, it) => s + it.hargaSatuan * it.jumlah, 
     Kembali
   </button>
 
-  {#if !p.pembayaranDikonfirmasi}
+  {#if !p.pembayaranDikonfirmasi && !(isJasa && p.status === 'selesai')}
     <div class="bg-white rounded-2xl border border-dashed border-ink/15 px-6 py-16 text-center">
       <div class="w-14 h-14 mx-auto mb-4 rounded-full bg-yellow-50 flex items-center justify-center">
         <svg class="w-6 h-6 text-yellow-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
@@ -96,35 +100,69 @@ let subtotal = $derived(items.reduce((s, it) => s + it.hargaSatuan * it.jumlah, 
         </div>
       </div>
 
-      <!-- ITEM: BARU, sekarang bisa lebih dari satu -->
-      <div class="px-6 sm:px-7 pb-2">
-        <div class="border-t border-dashed border-ink/15 pt-4 space-y-3">
-          {#each items as it (it.id)}
-            <div class="flex justify-between items-start gap-4 text-[13.5px]">
-              <div>
-                <div class="font-semibold text-ink">{it.nama}</div>
-                <div class="text-ink-soft text-xs mt-0.5">{it.jumlah} x {formatRupiah(it.hargaSatuan)}</div>
+      {#if isJasa && itemJasa}
+        <!-- BARU: rute & jarak khusus jasa -->
+        <div class="px-6 sm:px-7 pb-2">
+          <div class="border-t border-dashed border-ink/15 pt-4">
+            <div class="font-semibold text-ink text-[13.5px] mb-2">{itemJasa.nama}</div>
+            <div class="bg-bg rounded-xl px-4 py-3 text-[13px] flex flex-col gap-1.5">
+              <div class="flex justify-between gap-3">
+                <span class="text-ink-soft shrink-0">Titik jemput</span>
+                <span class="font-medium text-right">{itemJasa.titikJemput}</span>
               </div>
-              <div class="font-semibold shrink-0">{formatRupiah(it.hargaSatuan * it.jumlah)}</div>
+              <div class="flex justify-between gap-3">
+                <span class="text-ink-soft shrink-0">Titik tujuan</span>
+                <span class="font-medium text-right">{p.alamatKirim}</span>
+              </div>
+              <div class="flex justify-between pt-1 border-t border-ink/10 mt-0.5">
+                <span class="text-ink-soft">Jarak</span>
+                <span>{itemJasa.jarakKm ?? 0} km</span>
+              </div>
             </div>
-          {/each}
+          </div>
         </div>
-      </div>
 
-      <div class="px-6 py-6 sm:px-7 sm:py-7 border-t border-dashed border-ink/15 space-y-2 text-[13.5px]">
-        <div class="flex justify-between gap-4">
-          <span class="text-ink-soft">Subtotal</span>
-          <span>{formatRupiah(subtotal)}</span>
+        <div class="px-6 py-6 sm:px-7 sm:py-7 border-t border-dashed border-ink/15 space-y-2 text-[13.5px]">
+          <div class="flex justify-between gap-4">
+            <span class="text-ink-soft">{formatRupiah(itemJasa.hargaSatuan)}/km × {itemJasa.jarakKm ?? 0} km</span>
+            <span>{formatRupiah(itemJasa.hargaSatuan * (itemJasa.jarakKm ?? 0))}</span>
+          </div>
+          <div class="flex justify-between items-center gap-4 pt-3 mt-1 border-t border-ink/10">
+            <span class="font-bold text-ink">Total</span>
+            <span class="font-display font-bold text-lg text-primary-dark">{formatRupiah(p.totalHarga)}</span>
+          </div>
         </div>
-        <div class="flex justify-between gap-4">
-          <span class="text-ink-soft">Ongkir</span>
-          <span>{formatRupiah(p.ongkir)}</span>
+      {:else}
+        <!-- ITEM: sama seperti sebelumnya, untuk produk -->
+        <div class="px-6 sm:px-7 pb-2">
+          <div class="border-t border-dashed border-ink/15 pt-4 space-y-3">
+            {#each items as it (it.id)}
+              <div class="flex justify-between items-start gap-4 text-[13.5px]">
+                <div>
+                  <div class="font-semibold text-ink">{it.nama}</div>
+                  <div class="text-ink-soft text-xs mt-0.5">{it.jumlah} x {formatRupiah(it.hargaSatuan)}</div>
+                </div>
+                <div class="font-semibold shrink-0">{formatRupiah(it.hargaSatuan * it.jumlah)}</div>
+              </div>
+            {/each}
+          </div>
         </div>
-        <div class="flex justify-between items-center gap-4 pt-3 mt-1 border-t border-ink/10">
-          <span class="font-bold text-ink">Total</span>
-          <span class="font-display font-bold text-lg text-primary-dark">{formatRupiah(p.totalHarga)}</span>
+
+        <div class="px-6 py-6 sm:px-7 sm:py-7 border-t border-dashed border-ink/15 space-y-2 text-[13.5px]">
+          <div class="flex justify-between gap-4">
+            <span class="text-ink-soft">Subtotal</span>
+            <span>{formatRupiah(subtotal)}</span>
+          </div>
+          <div class="flex justify-between gap-4">
+            <span class="text-ink-soft">Ongkir</span>
+            <span>{formatRupiah(p.ongkir)}</span>
+          </div>
+          <div class="flex justify-between items-center gap-4 pt-3 mt-1 border-t border-ink/10">
+            <span class="font-bold text-ink">Total</span>
+            <span class="font-display font-bold text-lg text-primary-dark">{formatRupiah(p.totalHarga)}</span>
+          </div>
         </div>
-      </div>
+      {/if}
     </div>
 
     <p class="text-center text-[11.5px] text-ink-soft mt-5">

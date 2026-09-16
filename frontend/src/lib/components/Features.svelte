@@ -56,20 +56,20 @@
 </script>
 
 <section class="py-24 px-6">
-  <div class="max-w-[1180px] mx-auto">
+  <div class="max-w-295 mx-auto">
 
     <!-- EYEBROW -->
-    <div class="flex items-center gap-[8px] text-primary-dark text-xs font-bold tracking-[0.1em] mb-4">
+    <div class="flex items-center gap-2 text-primary-dark text-xs font-bold tracking-widest mb-4">
       <span class="w-2 h-2 rounded-full bg-primary"></span>
       BUKAN JASTIP BIASA
     </div>
 
     <!-- HEADING -->
     <div class="flex justify-between items-end gap-10 flex-wrap mb-12">
-      <h2 class="font-display font-semibold text-[clamp(34px,4.2vw,52px)] leading-[1.05] max-w-[560px]">
+      <h2 class="font-display font-semibold text-[clamp(34px,4.2vw,52px)] leading-[1.05] max-w-140">
         Nitip itu, harusnya <span class="text-primary">secepat chat aja.</span>
       </h2>
-      <div class="max-w-[340px] text-ink-soft leading-relaxed text-[15px]">
+      <div class="max-w-85 text-ink-soft leading-relaxed text-[15px]">
         Capek scroll chat lama buat nego ulang harga? Di Nitip, semua ngumpul
         di satu tempat — nggak ada yang kelewat.
         <div class="mt-3 font-bold text-ink text-sm">
@@ -82,7 +82,7 @@
     {#each rows as row, i}
       <div class="grid grid-cols-1 {row.cols} gap-4 {i === 0 ? 'mb-4' : ''}">
         {#each row.items as f}
-          <div class="{f.card} rounded-card p-8 flex flex-col justify-between min-h-[230px]">
+          <div class="{f.card} rounded-card p-8 flex flex-col justify-between min-h-57.5">
             <div class="flex justify-between items-center text-xs {f.eyebrow}">
               <span>{f.nomor}</span>
               <span class="border {f.pill} rounded-pill px-3 py-1.5 tracking-[0.06em] text-[11px]">

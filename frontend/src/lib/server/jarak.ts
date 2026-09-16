@@ -1,12 +1,7 @@
 import { LOCATIONIQ_API_KEY } from '$env/static/private';
 
-// Ganti 'us1' jadi 'eu1' kalau dashboard LocationIQ kamu menunjukkan server EU
 const BASE_URL = 'https://us1.locationiq.com/v1';
-
-// Kotak batas kasar wilayah Jawa Timur (termasuk Madura)
 const VIEWBOX_JATIM = '110.9,-8.8,114.6,-6.7';
-
-// Kalau hasil hitungan lebih jauh dari ini, kemungkinan besar geocoding salah
 const BATAS_WAJAR_KM = 300;
 
 interface Koordinat {
@@ -14,11 +9,8 @@ interface Koordinat {
 	lon: number;
 }
 
-/**
- * Geocode alamat dengan konteks kota/kabupaten yang dipilih user.
- * Contoh query yang dihasilkan: "Jl. Diponegoro No.12, Nganjuk, Jawa Timur, Indonesia"
- */
 async function geocode(alamatDetail: string, kotaKabupaten: string): Promise<Koordinat> {
+	// ... isi fungsi ini TIDAK berubah, tetap sama seperti sebelumnya
 	const query = `${alamatDetail}, ${kotaKabupaten}, Jawa Timur, Indonesia`;
 
 	const url =
@@ -54,20 +46,41 @@ async function geocode(alamatDetail: string, kotaKabupaten: string): Promise<Koo
 }
 
 /**
- * Hitung jarak (km) antara dua titik.
- * Sekarang menerima kota/kabupaten terpisah agar geocoding lebih akurat.
+ * BARU: ubah koordinat GPS jadi teks alamat yang bisa dibaca jastiper.
+ * Dipakai khusus untuk titik jemput hasil lokasi HP.
+ */
+export async function reverseGeocode(lat: number, lon: number): Promise<string> {
+	const url = `${BASE_URL}/reverse?key=${LOCATIONIQ_API_KEY}&lat=${lat}&lon=${lon}&format=json`;
+
+	const res = await fetch(url);
+	if (!res.ok) {
+		throw new Error('Gagal mengubah koordinat jadi alamat.');
+	}
+
+	const data = await res.json();
+	if (!data?.display_name) {
+		throw new Error('Alamat untuk lokasi ini tidak ditemukan.');
+	}
+
+	return data.display_name;
+}
+
+/**
+ * DIUBAH: parameter pertama sekarang bisa berupa koordinat GPS langsung
+ * (dari titik jemput), atau tetap alamat teks (kalau pelanggan isi manual).
+ * Titik tujuan tidak berubah — tetap selalu alamat teks.
  */
 export async function hitungJarakKm(
-	alamatAsal: string,
-	kotaAsal: string,
+	asal: Koordinat | { alamat: string; kota: string },
 	alamatTujuan: string,
 	kotaTujuan: string
 ): Promise<number> {
-	const asal = await geocode(alamatAsal, kotaAsal);
-	const tujuan = await geocode(alamatTujuan, kotaTujuan);
+	// Kalau asal sudah berupa koordinat GPS, langsung pakai — tidak perlu geocode lagi
+	const titikAsal: Koordinat = 'lat' in asal ? asal : await geocode(asal.alamat, asal.kota);
+	const titikTujuan = await geocode(alamatTujuan, kotaTujuan);
 
 	const url =
-		`${BASE_URL}/directions/driving/${asal.lon},${asal.lat};${tujuan.lon},${tujuan.lat}` +
+		`${BASE_URL}/directions/driving/${titikAsal.lon},${titikAsal.lat};${titikTujuan.lon},${titikTujuan.lat}` +
 		`?key=${LOCATIONIQ_API_KEY}&overview=false&annotations=false`;
 
 	const res = await fetch(url);

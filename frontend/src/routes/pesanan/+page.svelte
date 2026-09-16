@@ -265,7 +265,7 @@
             {@render rincianHarga(p, p.isJasa)}
 
             <div class="flex gap-2 mt-3">
-              {#if p.pembayaranDikonfirmasi}
+              {#if p.pembayaranDikonfirmasi || (p.isJasa && p.status === 'selesai')}
                 <a
                   href="/pesanan/{p.id}/struk"
                   class="flex-1 flex items-center justify-center gap-1.5 text-center rounded-full border-2 border-ink/15 text-ink font-bold text-[13px] py-2.5 hover:border-green-300 hover:text-green-600 transition"

@@ -156,7 +156,9 @@ export const pesananItem = pgTable('pesanan_item', {
 	pengajuanHargaId: text('pengajuan_harga_id').references(() => pengajuanHarga.id),
 	jumlah: integer('jumlah').notNull().default(1),
 	hargaSatuan: integer('harga_satuan').notNull(),
-	titikJemput: text('titik_jemput'), // khusus item jasa
+	titikJemput: text('titik_jemput'), // khusus item jasa — alamat teks
+	titikJemputLat: doublePrecision('titik_jemput_lat'), // BARU
+	titikJemputLng: doublePrecision('titik_jemput_lng'), // BARU
 	jarakKm: doublePrecision('jarak_km') // khusus item jasa
 });
 
