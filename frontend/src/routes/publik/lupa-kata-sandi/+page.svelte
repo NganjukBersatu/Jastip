@@ -28,12 +28,14 @@
 					<label for="password">Kata Sandi Baru</label>
 					<div class="input-box">
 						<input
-							id="password"
-							name="password"
-							type={lihatPassword ? 'text' : 'password'}
-							minlength="8"
-							required
-						/>
+                         id="password"
+                          name="password"
+                           type={lihatPassword ? 'text' : 'password'}
+                         placeholder="Masukkan sandi baru"
+                        minlength="8"
+                    required
+                />
+
 						<button
 							type="button"
 							class="password-toggle"
@@ -61,12 +63,13 @@
 					<label for="konfirmasi">Konfirmasi Kata Sandi Baru</label>
 					<div class="input-box">
 						<input
-							id="konfirmasi"
-							name="konfirmasi"
-							type={lihatKonfirmasi ? 'text' : 'password'}
-							minlength="8"
-							required
-						/>
+                          id="konfirmasi"
+                          name="konfirmasi"
+                          type={lihatKonfirmasi ? 'text' : 'password'}
+                         placeholder="Konfirmasi sandi baru"
+                         minlength="8"
+                        required
+                    />
 						<button
 							type="button"
 							class="password-toggle"
@@ -98,7 +101,10 @@
 				<button type="submit" class="reset-button">Simpan Kata Sandi Baru</button>
 			</form>
 
-			<a href="/publik/lupa-kata-sandi" class="back-link">← Kirim ulang kode</a>
+			<div class="link-row">
+    <a href="/publik/masuk" class="back-link">← Kembali</a>
+    <a href="/publik/lupa-kata-sandi" class="back-link">Kirim ulang kode </a>
+</div>
 		{:else}
 			<h2>Lupa Kata Sandi?</h2>
 			<p>Masukkan email kamu, kami akan kirim kode OTP untuk atur ulang kata sandi.</p>
@@ -221,13 +227,21 @@
 	}
 
 	.back-link {
-		display: inline-block;
-		margin-top: 18px;
-		color: #ff641d;
-		font-weight: 600;
-		font-size: 13px;
-		text-decoration: none;
-	}
+    display: inline-block;
+    margin-top: 0;
+    color: #ff641d;
+    font-weight: 600;
+    font-size: 13px;
+    text-decoration: none;
+}
+
+	.link-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 18px;
+}
+
 	.error {
 		color: #d33;
 		font-size: 13px;
