@@ -5,11 +5,14 @@
 	let total = $derived(Number($page.url.searchParams.get('total') ?? 0));
 	let nama = $derived($page.url.searchParams.get('nama') ?? '');
 	let metode = $derived($page.url.searchParams.get('metode') ?? '');
-	let waLink = $derived($page.url.searchParams.get('wa') ?? '#');
+	// DIUBAH: tidak lagi fallback ke '#', supaya bisa dicek kosong/tidaknya di bawah
+	let waLink = $derived($page.url.searchParams.get('wa'));
 	let jarak = $derived(Number($page.url.searchParams.get('jarak') ?? 0));
 	let hargaKm = $derived(Number($page.url.searchParams.get('hargaKm') ?? 0));
 
-	let labelMetode = $derived(metode === 'transfer' ? 'Transfer bank' : 'E-wallet');
+	let labelMetode = $derived(
+		metode === 'transfer' ? 'Transfer bank' : metode === 'e-wallet' ? 'E-wallet' : 'Tunai (bayar di tempat)'
+	);
 
 	/** @param {number} angka */
 	function formatRupiah(angka) {
@@ -62,19 +65,32 @@
 			</div>
 		</div>
 
-		<p class="text-xs text-ink-soft">
-			Pastikan totalnya sudah sesuai. Untuk pembayaran {labelMetode.toLowerCase()}, konfirmasi
-			dilakukan langsung lewat WhatsApp jastiper.
-		</p>
+		{#if waLink}
+			<p class="text-xs text-ink-soft">
+				Pastikan totalnya sudah sesuai. Untuk pembayaran {labelMetode.toLowerCase()}, konfirmasi
+				dilakukan langsung lewat WhatsApp jastiper.
+			</p>
 
-		<a
-			href={waLink}
-			target="_blank"
-			rel="noopener noreferrer"
-			class="block w-full py-3.5 rounded-full font-bold text-[15px] bg-accent text-ink transition-transform hover:-translate-y-0.5"
-		>
-			Lanjut ke WhatsApp jastiper
-		</a>
+			<a
+				href={waLink}
+				target="_blank"
+				rel="noopener noreferrer"
+				class="block w-full py-3.5 rounded-full font-bold text-[15px] bg-accent text-ink transition-transform hover:-translate-y-0.5"
+			>
+				Lanjut ke WhatsApp jastiper
+			</a>
+		{:else}
+			<p class="text-xs text-ink-soft">
+				Pastikan totalnya sudah sesuai. Pembayaran dilakukan tunai saat jastiper tiba.
+			</p>
+
+			<a
+				href="/pesanan"
+				class="block w-full py-3.5 rounded-full font-bold text-[15px] bg-accent text-ink transition-transform hover:-translate-y-0.5"
+			>
+				Selesai
+			</a>
+		{/if}
 
 		<a href="/pesanan" class="block text-sm text-ink-soft underline">
 			Lihat pesanan saya nanti saja

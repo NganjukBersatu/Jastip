@@ -141,9 +141,18 @@ export const actions: Actions = {
 			jarakKm
 		});
 
-		// DIUBAH: kalau bayar non-tunai, JANGAN langsung redirect ke WA.
-		// Arahkan dulu ke halaman konfirmasi supaya pelanggan lihat totalnya,
-		// baru dari sana pelanggan klik tombol untuk lanjut ke WA jastiper.
+		// DIUBAH: sekarang SEMUA metode pembayaran mampir ke halaman konfirmasi
+		// (dulu cuma transfer/e-wallet). Param "wa" cuma disisipkan kalau memang
+		// non-tunai dan jastiper punya noWa — halaman konfirmasi yang menentukan
+		// tombolnya jadi "Lanjut ke WhatsApp" atau "Selesai" berdasarkan ada/tidaknya param ini.
+		const paramsKonfirmasi = new URLSearchParams({
+			total: String(totalHarga),
+			nama: jasaData.nama,
+			metode: metodePembayaran,
+			jarak: jarakKm.toFixed(1),
+			hargaKm: String(jasaData.harga)
+		});
+
 		if (metodePembayaran === 'transfer' || metodePembayaran === 'e-wallet') {
 			const [profil] = await db
 				.select({ noWa: jastiperProfiles.noWa })
@@ -157,24 +166,13 @@ export const actions: Actions = {
 						metodePembayaran === 'transfer' ? 'transfer bank' : 'e-wallet'
 					}.`
 				);
-				const waLink = `https://wa.me/${nomorWa}?text=${teksWa}`;
-
-				const paramsKonfirmasi = new URLSearchParams({
-					total: String(totalHarga),
-					nama: jasaData.nama,
-					metode: metodePembayaran,
-					jarak: jarakKm.toFixed(1),
-					hargaKm: String(jasaData.harga),
-					wa: waLink
-				});
-
-				throw redirect(
-					303,
-					`/pelanggan/pesan-jasa/${params.id}/konfirmasi?${paramsKonfirmasi.toString()}`
-				);
+				paramsKonfirmasi.set('wa', `https://wa.me/${nomorWa}?text=${teksWa}`);
 			}
 		}
 
-		throw redirect(303, '/pesanan');
+		throw redirect(
+			303,
+			`/pelanggan/pesan-jasa/${params.id}/konfirmasi?${paramsKonfirmasi.toString()}`
+		);
 	}
 };
