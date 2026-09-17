@@ -2,6 +2,7 @@
   /**
    * Testimoni.svelte
    * Menampilkan testimoni campuran: jastiper dan pelanggan.
+   * Layout: grid 3 kolom rapi (ukuran seragam per baris), kartu berwarna selang-seling.
    * Taruh file ini di: src/lib/components/Testimoni.svelte
    *
    * Cara pakai di Home (+page.svelte):
@@ -99,7 +100,7 @@
         role: 'pelanggan',
         text: 'Harga barang plus ongkir keliatan dari awal, nggak ada kejutan pas total belanjaan.',
         rating: 5
-      },
+      }
     ]
   }: Props = $props();
 
@@ -109,23 +110,79 @@
     return { full, half, empty: 5 - full - (half ? 1 : 0) };
   }
 
-  // Warna badge beda tiap role, biar kebaca cepat tanpa baca teksnya
-  const roleStyle = {
-    jastiper: {
-      label: 'Jastiper',
-      badgeBg: 'bg-accent/40',
-      badgeText: 'text-primary-deep',
-      avatarBg: 'bg-accent',
-      avatarText: 'text-primary-deep'
-    },
-    pelanggan: {
-      label: 'Pelanggan',
+  // Skema warna kartu, diputar berdasarkan urutan (bukan berdasarkan role)
+  // supaya polanya konsisten dan tidak bergantung role mana yang lebih banyak.
+  type CardScheme = {
+    cardBg: string;
+    border: string;
+    textMain: string;
+    textSoft: string;
+    starFill: string;
+    starEmpty: string;
+    badgeBg: string;
+    badgeText: string;
+    avatarBg: string;
+    avatarText: string;
+  };
+
+  const schemes: CardScheme[] = [
+    {
+      // Putih polos
+      cardBg: 'bg-white',
+      border: 'border border-[#F0E4CC]',
+      textMain: 'text-ink',
+      textSoft: 'text-ink-soft',
+      starFill: 'text-accent',
+      starEmpty: 'text-[#EADFC8]',
       badgeBg: 'bg-primary/15',
       badgeText: 'text-primary-dark',
       avatarBg: 'bg-primary',
       avatarText: 'text-white'
+    },
+    {
+      // Primary solid
+      cardBg: 'bg-primary',
+      border: 'border border-primary',
+      textMain: 'text-white',
+      textSoft: 'text-[#FFE9C7]',
+      starFill: 'text-accent',
+      starEmpty: 'text-[#FF8F52]',
+      badgeBg: 'bg-white/20',
+      badgeText: 'text-white',
+      avatarBg: 'bg-white',
+      avatarText: 'text-primary-dark'
+    },
+    {
+      // Primary-deep solid
+      cardBg: 'bg-primary-deep',
+      border: 'border border-primary-deep',
+      textMain: 'text-white',
+      textSoft: 'text-[#FFE9C7]',
+      starFill: 'text-accent',
+      starEmpty: 'text-[#B5673A]',
+      badgeBg: 'bg-white/15',
+      badgeText: 'text-white',
+      avatarBg: 'bg-accent',
+      avatarText: 'text-primary-deep'
     }
+  ];
+
+  const roleLabel = {
+    jastiper: 'Jastiper',
+    pelanggan: 'Pelanggan'
   } as const;
+
+  // Rotasi diagonal, BUKAN i % 3 biasa.
+  // Kalau cuma i % 3, di grid 3 kolom tiap kolom bakal SELALU dapet warna
+  // yang sama di setiap baris (kolom 1 selalu putih, kolom 2 selalu oranye, dst)
+  // -- itu yang bikin polanya kebaca terlalu rapi/mekanis.
+  // Dengan menambahkan offset dari nomor baris (Math.floor(i / 3)), warnanya
+  // jadi geser diagonal tiap baris, jadi tetap merata tapi tidak menempel
+  // di kolom yang sama terus-menerus.
+  function schemeFor(i: number) {
+    const row = Math.floor(i / 3);
+    return schemes[(i + row) % schemes.length];
+  }
 </script>
 
 <section class="py-14 sm:py-24">
@@ -139,41 +196,50 @@
       </h2>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
-      {#each testimonials as t}
-        {@const style = roleStyle[t.role]}
-        <div class="relative bg-white border border-[#F0E4CC] rounded-card p-5 sm:p-6">
+    <!--
+      Grid biasa 3 kolom (bukan masonry). Semua kartu di satu baris
+      punya tinggi sama (default perilaku grid), jadi ukurannya rapi dan
+      seragam kayak referensi ukuran kamu -- tapi tetap pakai warna
+      selang-seling putih / primary / primary-deep dan urutan
+      rating -> teks -> profil dari versi berwarna.
+    -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-5">
+      {#each testimonials as t, i}
+        {@const scheme = schemeFor(i)}
+        <div
+          class="relative {scheme.cardBg} {scheme.border} rounded-card p-5 sm:p-6 flex flex-col"
+        >
           <span
-            class="absolute top-5 right-5 sm:top-6 sm:right-6 {style.badgeBg} {style.badgeText} text-[10px] font-bold px-2.5 py-1 rounded-pill"
+            class="absolute top-5 right-5 sm:top-6 sm:right-6 {scheme.badgeBg} {scheme.badgeText} text-[10px] font-bold px-2.5 py-1 rounded-pill"
           >
-            {style.label}
+            {roleLabel[t.role]}
           </span>
 
-          <div class="flex items-center gap-3 mb-3">
+          <div class="flex items-center gap-3 mb-3 pr-16 sm:pr-20">
             <div
-              class="w-9 h-9 rounded-full {style.avatarBg} {style.avatarText} flex items-center justify-center text-sm font-bold shrink-0"
+              class="w-9 h-9 rounded-full {scheme.avatarBg} {scheme.avatarText} flex items-center justify-center text-sm font-bold shrink-0"
             >
               {t.initial}
             </div>
             <div>
-              <div class="text-sm font-bold text-ink">{t.name}</div>
-              <div class="text-xs text-ink-soft">{t.area}</div>
+              <div class="text-sm font-bold {scheme.textMain}">{t.name}</div>
+              <div class="text-xs {scheme.textSoft}">{t.area}</div>
             </div>
           </div>
 
-          <p class="text-[13.5px] text-ink-soft leading-relaxed mb-3">
+          <p class="text-[13.5px] sm:text-sm {scheme.textMain} leading-relaxed mb-4 flex-1">
             {t.text}
           </p>
 
-          <div class="text-accent text-xs flex gap-0.5" aria-label={`Rating ${t.rating} dari 5`}>
+          <div class="text-xs flex gap-0.5" aria-label={`Rating ${t.rating} dari 5`}>
             {#each Array(starsFor(t.rating).full) as _}
-              <span>★</span>
+              <span class={scheme.starFill}>★</span>
             {/each}
             {#if starsFor(t.rating).half}
-              <span>⯨</span>
+              <span class={scheme.starFill}>⯨</span>
             {/if}
             {#each Array(starsFor(t.rating).empty) as _}
-              <span class="text-[#EADFC8]">★</span>
+              <span class={scheme.starEmpty}>★</span>
             {/each}
           </div>
         </div>
