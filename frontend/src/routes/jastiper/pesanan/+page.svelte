@@ -1,5 +1,6 @@
 <script>
   import { enhance } from '$app/forms';
+  import { JASA_AKTIF } from '$lib/config';
 
   let { data, form } = $props();
 
@@ -173,17 +174,19 @@
       Produk
     </button>
 
-    <button
-      type="button"
-      onclick={() => (tab = 'jasa')}
-      class="px-6 py-3 rounded-full text-sm font-bold transition-colors flex items-center gap-2
-      {tab === 'jasa' ? 'bg-primary text-white shadow-md' : 'bg-white text-ink-soft border border-ink/10 hover:bg-bg-alt'}"
-    >
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4">
-        <path d="M14.7 6.3a4 4 0 10-5.4 5.4L3 18v3h3l6.3-6.3a4 4 0 005.4-5.4z" />
-      </svg>
-      Jasa
-    </button>
+{#if JASA_AKTIF}
+<button
+  type="button"
+  onclick={() => (tab = 'jasa')}
+  class="px-6 py-3 rounded-full text-sm font-bold transition-colors flex items-center gap-2
+  {tab === 'jasa' ? 'bg-primary text-white shadow-md' : 'bg-white text-ink-soft border border-ink/10 hover:bg-bg-alt'}"
+>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4">
+    <path d="M14.7 6.3a4 4 0 10-5.4 5.4L3 18v3h3l6.3-6.3a4 4 0 005.4-5.4z" />
+  </svg>
+  Jasa
+</button>
+{/if}
   </div>
 
   {#if form?.error}

@@ -4,10 +4,13 @@ import { jasa, users, pengajuanHarga, pesanan, pesananItem, jastiperProfiles } f
 import { eq } from 'drizzle-orm';
 import { randomUUID } from 'node:crypto';
 import { hitungJarakKm, reverseGeocode } from '$lib/server/jarak';
+import { JASA_AKTIF } from '$lib/config';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
-	// tidak berubah, tetap sama
+	// BARU: 404 kalau fitur jasa sedang dimatikan, sebelum query apa pun
+	if (!JASA_AKTIF) throw error(404, 'Fitur jasa sedang tidak tersedia.');
+
 	if (!locals.user) throw redirect(303, '/publik/masuk');
 	if (locals.user.role !== 'pelanggan') throw redirect(303, '/');
 
@@ -34,6 +37,9 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 export const actions: Actions = {
 	buatPesanan: async ({ request, params, locals }) => {
+		// BARU: tolak submit kalau fitur jasa sedang dimatikan
+		if (!JASA_AKTIF) return fail(400, { error: 'Fitur jasa sedang tidak tersedia.' });
+
 		if (!locals.user) throw redirect(303, '/publik/masuk');
 		if (locals.user.role !== 'pelanggan') {
 			return fail(403, { error: 'Hanya pelanggan yang bisa memesan jasa.' });
@@ -41,7 +47,6 @@ export const actions: Actions = {
 
 		const data = await request.formData();
 
-		// hasil GPS, ada isinya kalau pelanggan pakai tombol "gunakan lokasi saya"
 		const latMentah = data.get('titikJemputLat')?.toString().trim();
 		const lngMentah = data.get('titikJemputLng')?.toString().trim();
 		const titikJemputLat = latMentah ? parseFloat(latMentah) : null;
@@ -52,47 +57,53 @@ export const actions: Actions = {
 			!isNaN(titikJemputLat) &&
 			!isNaN(titikJemputLng);
 
-		// Fallback manual (dipakai kalau pelanggan tidak pakai/gagal pakai GPS)
 		const titikJemputManual = data.get('titikJemput')?.toString().trim();
+		const kecamatanJemputManual = data.get('kecamatanJemput')?.toString().trim();
 		const kotaJemputManual = data.get('kotaJemput')?.toString().trim();
 
 		const titikTujuan = data.get('titikTujuan')?.toString().trim();
+		const kecamatanTujuan = data.get('kecamatanTujuan')?.toString().trim();
 		const kotaTujuan = data.get('kotaTujuan')?.toString().trim();
 		const metodePembayaran = data.get('metodePembayaran')?.toString();
 
-		// Titik jemput wajib salah satu: GPS ATAU manual lengkap
-		if (!pakaiGps && (!kotaJemputManual || !titikJemputManual)) {
+		if (!pakaiGps && (!kotaJemputManual || !titikJemputManual || !kecamatanJemputManual)) {
 			return fail(400, {
-				error: 'Pakai lokasi HP, atau isi kabupaten/kota + alamat jemput manual.'
+				error: 'Pakai lokasi HP, atau isi kabupaten/kota + kecamatan + alamat jemput manual.'
 			});
 		}
 
 		if (!kotaTujuan) return fail(400, { error: 'Pilih kabupaten/kota tujuan.' });
+		if (!kecamatanTujuan) return fail(400, { error: 'Kecamatan tujuan wajib diisi.' });
 		if (!titikTujuan) return fail(400, { error: 'Alamat detail tujuan wajib diisi.' });
 		if (!metodePembayaran) return fail(400, { error: 'Pilih metode pembayaran.' });
 
 		const [jasaData] = await db.select().from(jasa).where(eq(jasa.id, params.id));
 		if (!jasaData || !jasaData.aktif) return fail(400, { error: 'Jasa tidak tersedia.' });
 
-		const titikTujuanLengkap = `${titikTujuan}, ${kotaTujuan}`;
+		const titikTujuanLengkap = `${titikTujuan}, ${kecamatanTujuan}, ${kotaTujuan}`;
 
 		let jarakKm: number;
 		let titikJemputTeks: string;
 
 		try {
 			if (pakaiGps) {
-				// Koordinat langsung dari HP, tidak perlu ditebak dari teks lagi
 				titikJemputTeks = await reverseGeocode(titikJemputLat!, titikJemputLng!);
 				jarakKm = await hitungJarakKm(
 					{ lat: titikJemputLat!, lon: titikJemputLng! },
 					titikTujuan,
+					kecamatanTujuan,
 					kotaTujuan
 				);
 			} else {
-				titikJemputTeks = `${titikJemputManual}, ${kotaJemputManual}`;
+				titikJemputTeks = `${titikJemputManual}, ${kecamatanJemputManual}, ${kotaJemputManual}`;
 				jarakKm = await hitungJarakKm(
-					{ alamat: titikJemputManual as string, kota: kotaJemputManual as string },
+					{
+						alamat: titikJemputManual as string,
+						kecamatan: kecamatanJemputManual as string,
+						kota: kotaJemputManual as string
+					},
 					titikTujuan,
+					kecamatanTujuan,
 					kotaTujuan
 				);
 			}
@@ -141,10 +152,6 @@ export const actions: Actions = {
 			jarakKm
 		});
 
-		// DIUBAH: sekarang SEMUA metode pembayaran mampir ke halaman konfirmasi
-		// (dulu cuma transfer/e-wallet). Param "wa" cuma disisipkan kalau memang
-		// non-tunai dan jastiper punya noWa — halaman konfirmasi yang menentukan
-		// tombolnya jadi "Lanjut ke WhatsApp" atau "Selesai" berdasarkan ada/tidaknya param ini.
 		const paramsKonfirmasi = new URLSearchParams({
 			total: String(totalHarga),
 			nama: jasaData.nama,

@@ -1,16 +1,20 @@
-import { fail, redirect } from '@sveltejs/kit';
+import { error, fail, redirect } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
 import { jasa } from '$lib/server/db/schema';
 import { eq, and, desc } from 'drizzle-orm';
 import { randomUUID } from 'node:crypto';
 import { writeFile, mkdir } from 'node:fs/promises';
 import path from 'node:path';
+import { JASA_AKTIF } from '$lib/config';
 import type { Actions, PageServerLoad } from './$types';
 
 const KATEGORI_VALID = ['Jemputan', 'Antar Barang', 'Titip Antre', 'Belanja Kebutuhan', 'Jasa Lainnya'];
 const UPLOAD_DIR = path.join(process.cwd(), 'static', 'uploads', 'jasa');
 
 export const load: PageServerLoad = async ({ locals }) => {
+	// BARU: halaman ini 404 kalau fitur jasa sedang dimatikan
+	if (!JASA_AKTIF) throw error(404, 'Fitur jasa sedang tidak tersedia.');
+
 	if (!locals.user) throw redirect(303, '/publik/masuk');
 	if (locals.user.role !== 'jastiper') throw redirect(303, '/');
 
@@ -25,6 +29,9 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 export const actions: Actions = {
 	tambah: async ({ request, locals }) => {
+		// BARU: tolak kalau fitur jasa sedang dimatikan
+		if (!JASA_AKTIF) return fail(400, { error: 'Fitur jasa sedang tidak tersedia.' });
+
 		if (!locals.user) throw redirect(303, '/publik/masuk');
 		if (locals.user.role !== 'jastiper') {
 			return fail(403, { error: 'Hanya jastiper yang bisa menambahkan jasa.' });
@@ -40,7 +47,6 @@ export const actions: Actions = {
 		const gambarUrlInput = data.get('gambarUrl')?.toString().trim();
 		const gambarFile = data.get('gambarFile');
 
-		// Validasi dasar
 		if (!nama) return fail(400, { error: 'Nama jasa wajib diisi.' });
 		if (!kategori || !KATEGORI_VALID.includes(kategori)) {
 			return fail(400, { error: 'Kategori tidak valid.' });
@@ -53,7 +59,6 @@ export const actions: Actions = {
 			return fail(400, { error: 'Harga harus berupa angka lebih dari 0.' });
 		}
 
-		// Gambar: wajib salah satu — URL atau file upload
 		let gambarUrl: string;
 
 		if (gambarFile instanceof File && gambarFile.size > 0) {
@@ -99,6 +104,7 @@ export const actions: Actions = {
 	},
 
 	toggleAktif: async ({ request, locals }) => {
+		if (!JASA_AKTIF) return fail(400, { error: 'Fitur jasa sedang tidak tersedia.' });
 		if (!locals.user) throw redirect(303, '/publik/masuk');
 		if (locals.user.role !== 'jastiper') return fail(403, { error: 'Tidak diizinkan.' });
 
@@ -122,6 +128,7 @@ export const actions: Actions = {
 	},
 
 	hapus: async ({ request, locals }) => {
+		if (!JASA_AKTIF) return fail(400, { error: 'Fitur jasa sedang tidak tersedia.' });
 		if (!locals.user) throw redirect(303, '/publik/masuk');
 		if (locals.user.role !== 'jastiper') return fail(403, { error: 'Tidak diizinkan.' });
 

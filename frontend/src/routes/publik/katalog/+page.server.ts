@@ -3,6 +3,7 @@ import { db } from '$lib/server/db';
 import { produk, jasa, users, jastiperProfiles, pengajuanHarga, keranjangItem } from '$lib/server/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { randomUUID } from 'node:crypto';
+import { JASA_AKTIF } from '$lib/config';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async () => {
@@ -24,32 +25,35 @@ export const load: PageServerLoad = async () => {
 		.where(
 			and(
 				eq(produk.aktif, true),
-				eq(jastiperProfiles.statusAktif, true) // BARU: sembunyikan produk dari jastiper nonaktif
+				eq(jastiperProfiles.statusAktif, true)
 			)
 		);
 
-	const daftarJasa = await db
-		.select({
-			id: jasa.id,
-			nama: jasa.nama,
-			deskripsi: jasa.deskripsi,
-			kategori: jasa.kategori,
-			hargaTipe: jasa.hargaTipe,
-			harga: jasa.harga,
-			satuan: jasa.satuan,
-			gambarUrl: jasa.gambarUrl,
-			jastiperNama: users.nama,
-			area: jastiperProfiles.area
-		})
-		.from(jasa)
-		.innerJoin(users, eq(jasa.jastiperId, users.id))
-		.leftJoin(jastiperProfiles, eq(jasa.jastiperId, jastiperProfiles.userId))
-		.where(
-			and(
-				eq(jasa.aktif, true),
-				eq(jastiperProfiles.statusAktif, true) // BARU
-			)
-		);
+	// DIUBAH: kalau JASA_AKTIF mati, skip query jasa sama sekali (bukan cuma disembunyikan di UI)
+	const daftarJasa = JASA_AKTIF
+		? await db
+				.select({
+					id: jasa.id,
+					nama: jasa.nama,
+					deskripsi: jasa.deskripsi,
+					kategori: jasa.kategori,
+					hargaTipe: jasa.hargaTipe,
+					harga: jasa.harga,
+					satuan: jasa.satuan,
+					gambarUrl: jasa.gambarUrl,
+					jastiperNama: users.nama,
+					area: jastiperProfiles.area
+				})
+				.from(jasa)
+				.innerJoin(users, eq(jasa.jastiperId, users.id))
+				.leftJoin(jastiperProfiles, eq(jasa.jastiperId, jastiperProfiles.userId))
+				.where(
+					and(
+						eq(jasa.aktif, true),
+						eq(jastiperProfiles.statusAktif, true)
+					)
+				)
+		: [];
 
 	return { daftarProduk, daftarJasa };
 };
@@ -64,6 +68,12 @@ export const actions: Actions = {
 		const data = await request.formData();
 		const produkId = data.get('produkId')?.toString();
 		const jasaId = data.get('jasaId')?.toString();
+
+		// BARU: tolak jalur jasa kalau fitur sedang nonaktif
+		if (jasaId && !JASA_AKTIF) {
+			return fail(400, { error: 'Fitur jasa sedang tidak tersedia.' });
+		}
+
 		if (!produkId && !jasaId) return fail(400, { error: 'Item tidak ditemukan.' });
 
 		let jastiperId: string;
@@ -81,7 +91,6 @@ export const actions: Actions = {
 			harga = jasaAsli.harga;
 		}
 
-		// BARU: pastikan jastiper masih aktif sebelum mengizinkan chat/pengajuan harga
 		const [profilJastiper] = await db
 			.select({ statusAktif: jastiperProfiles.statusAktif })
 			.from(jastiperProfiles)
@@ -131,8 +140,6 @@ export const actions: Actions = {
 		const produkId = data.get('produkId')?.toString();
 		if (!produkId) return fail(400, { error: 'Produk tidak ditemukan.' });
 
-		// BARU: baca jumlah yang dipilih pelanggan di modal (default 1 kalau tidak dikirim,
-		// supaya tidak merusak pemanggilan lama yang belum kirim field ini)
 		const jumlahRaw = data.get('jumlah')?.toString();
 		const jumlahTambah = Math.max(1, parseInt(jumlahRaw ?? '1', 10) || 1);
 
@@ -166,8 +173,6 @@ export const actions: Actions = {
 				.values({ id: randomUUID(), pelangganId: locals.user.id, produkId, jumlah: jumlahTambah });
 		}
 
-		// DIUBAH: tidak lagi redirect ke /keranjang — pelanggan tetap di katalog,
-		// dikasih tahu lewat toast ringkasan + badge keranjang di navbar.
 		return {
 			berhasilTambahKeranjang: true,
 			namaProdukDitambah: produkAsli.nama,

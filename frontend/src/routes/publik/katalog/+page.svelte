@@ -1,8 +1,9 @@
 <script>
-		import { goto, invalidateAll } from '$app/navigation';
+	import { goto, invalidateAll } from '$app/navigation';
 	import { enhance } from '$app/forms';
 	import { onMount } from 'svelte';
 	import { fly, fade } from 'svelte/transition';
+	import { JASA_AKTIF } from '$lib/config';
 
 		onMount(() => {
 		if (window.location.hash === '#produk') {
@@ -227,20 +228,22 @@
 					Produk
 				</button>
 
-				<button
-					onclick={() => gantiTampilan('jasa')}
-					class="px-7 py-3.5 rounded-full text-base font-bold transition-colors flex items-center gap-2
-					{tampilan === 'jasa'
-						? 'bg-primary text-white shadow-md'
-						: 'bg-white text-ink-soft hover:bg-orange-50'}"
-				>
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4">
-						<path d="M14.7 6.3a4 4 0 10-5.4 5.4L3 18v3h3l6.3-6.3a4 4 0 005.4-5.4z" />
-					</svg>
-					Jasa
-					<span class="ml-0.5">→</span>
-				</button>
-			</div>
+{#if JASA_AKTIF}
+<button
+  onclick={() => gantiTampilan('jasa')}
+  class="px-7 py-3.5 rounded-full text-base font-bold transition-colors flex items-center gap-2
+  {tampilan === 'jasa'
+    ? 'bg-primary text-white shadow-md'
+    : 'bg-white text-ink-soft hover:bg-orange-50'}"
+>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4">
+    <path d="M14.7 6.3a4 4 0 10-5.4 5.4L3 18v3h3l6.3-6.3a4 4 0 005.4-5.4z" />
+  </svg>
+  Jasa
+  <span class="ml-0.5">→</span>
+</button>
+{/if}
+</div>
 		</div>
 
 						<img

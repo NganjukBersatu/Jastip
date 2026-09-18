@@ -1,0 +1,1 @@
+export const JASA_AKTIF = false;
