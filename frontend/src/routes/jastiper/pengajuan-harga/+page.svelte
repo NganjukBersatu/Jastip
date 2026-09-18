@@ -165,41 +165,6 @@
 					{/if}
 
 					<div class="flex gap-2 mt-4">
-						{#if p.status === 'menunggu'}
-							<form
-								method="POST"
-								action="?/tolak"
-								class="flex-1"
-								use:enhance={({ cancel }) => {
-									const konfirmasi = confirm('Yakin ingin menolak pengajuan ini?');
-									if (!konfirmasi) {
-										cancel();
-										return;
-									}
-									sedangProses = p.id;
-
-									return async ({ result, update }) => {
-										if (result.type === 'success') {
-											daftarPengajuan = daftarPengajuan.map((item) =>
-												item.id === p.id ? { ...item, status: 'ditolak' } : item
-											);
-										} else {
-											alert('Gagal menolak pengajuan, coba lagi.');
-										}
-										sedangProses = null;
-									};
-								}}
-							>
-								<input type="hidden" name="id" value={p.id} />
-								<button
-									type="submit"
-									class="w-full min-h-[42px] inline-flex items-center justify-center gap-1.5 rounded-full bg-white border border-bg-alt text-primary-dark font-bold text-[13px] hover:bg-bg transition"
-								>
-									<i class="ti ti-x" aria-hidden="true"></i> Tolak
-								</button>
-							</form>
-						{/if}
-
 						<a href="/jastiper/pengajuan-harga/{p.id}" class="flex-1">
 							<button
 								type="button"
@@ -210,33 +175,14 @@
 						</a>
 
 						{#if p.status === 'menunggu'}
-							<form
-								method="POST"
-								action="?/terima"
-								class="flex-1"
-								use:enhance={() => {
-									sedangProses = p.id;
-
-									return async ({ result }) => {
-										if (result.type === 'success') {
-											daftarPengajuan = daftarPengajuan.map((item) =>
-												item.id === p.id ? { ...item, status: 'diterima' } : item
-											);
-										} else {
-											alert('Gagal menerima pengajuan, coba lagi.');
-										}
-										sedangProses = null;
-									};
-								}}
-							>
-								<input type="hidden" name="id" value={p.id} />
+							<a href="/jastiper/pengajuan-harga/{p.id}" class="flex-1">
 								<button
-									type="submit"
+									type="button"
 									class="w-full min-h-[42px] inline-flex items-center justify-center rounded-full bg-primary text-white font-bold text-[13px] hover:-translate-y-0.5 hover:shadow-md transition"
 								>
-									Terima
+									Terima / Tolak
 								</button>
-							</form>
+							</a>
 						{/if}
 					</div>
 				</div>

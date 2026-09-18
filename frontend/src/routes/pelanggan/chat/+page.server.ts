@@ -1,5 +1,5 @@
 import { db } from '$lib/server/db';
-import { pengajuanHarga, produk, jasa, users, pesanChat } from '$lib/server/db/schema';
+import { pengajuanHarga, produk, jasa, users, pesanChat, tawaranHarga, pesananItem } from '$lib/server/db/schema';
 import { eq, desc, inArray, and } from 'drizzle-orm';
 import { fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
@@ -62,17 +62,49 @@ export const actions: Actions = {
 			return fail(400, { message: 'ID tidak valid' });
 		}
 
-		// hapus dulu pesan chat yang terkait, baru pengajuan hargaanya
-		// (skip baris ini kalau skema kamu sudah pakai onDelete: 'cascade')
-		await db.delete(pesanChat).where(eq(pesanChat.pengajuanHargaId, id));
+		// pastikan pengajuan ini memang milik pelanggan yang sedang login
+		const [milik] = await db
+			.select({ id: pengajuanHarga.id })
+			.from(pengajuanHarga)
+			.where(and(eq(pengajuanHarga.id, id), eq(pengajuanHarga.pelangganId, pelangganId)));
 
-		const hasil = await db
-			.delete(pengajuanHarga)
-			.where(and(eq(pengajuanHarga.id, id), eq(pengajuanHarga.pelangganId, pelangganId)))
-			.returning({ id: pengajuanHarga.id });
-
-		if (hasil.length === 0) {
+		if (!milik) {
 			return fail(404, { message: 'Percakapan tidak ditemukan' });
+		}
+
+		// cek dulu apakah pengajuan ini sudah jadi pesanan sungguhan
+		// (artinya sudah pernah diterima jastiper) — kalau iya, jangan izinkan hapus,
+		// karena itu bukan lagi sekadar draft nego, tapi riwayat transaksi nyata
+		const [sudahJadiPesanan] = await db
+			.select({ id: pesananItem.id })
+			.from(pesananItem)
+			.where(eq(pesananItem.pengajuanHargaId, id));
+
+		if (sudahJadiPesanan) {
+			return fail(400, {
+				message: 'Percakapan ini sudah jadi pesanan, tidak bisa dihapus. Cek di halaman "Lihat pesanan".'
+			});
+		}
+
+		try {
+			await db.transaction(async (tx) => {
+				// hapus semua data anak yang mereferensikan pengajuanHargaId
+				await tx.delete(tawaranHarga).where(eq(tawaranHarga.pengajuanHargaId, id));
+				await tx.delete(pesanChat).where(eq(pesanChat.pengajuanHargaId, id));
+
+				const hasil = await tx
+					.delete(pengajuanHarga)
+					.where(and(eq(pengajuanHarga.id, id), eq(pengajuanHarga.pelangganId, pelangganId)))
+					.returning({ id: pengajuanHarga.id });
+
+				if (hasil.length === 0) {
+					throw new Error('Percakapan tidak ditemukan saat proses hapus');
+				}
+			});
+		} catch (err) {
+			// ini yang bikin error asli kelihatan di terminal
+			console.error('Gagal hapus percakapan:', err);
+			return fail(500, { message: 'Gagal menghapus percakapan, coba lagi' });
 		}
 
 		return { success: true };

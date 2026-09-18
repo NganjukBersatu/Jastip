@@ -105,71 +105,88 @@ export const actions: Actions = {
 		return { success: true };
 	},
 
-	terima: async ({ params, locals }) => {
-		const jastiperId = locals.user!.id;
+terima: async ({ params, locals }) => {
+	const jastiperId = locals.user!.id;
 
-		const [row] = await db
-			.select({
-				id: pengajuanHarga.id,
-				produkId: pengajuanHarga.produkId,
-				pelangganId: pengajuanHarga.pelangganId,
-				hargaDiajukan: pengajuanHarga.hargaDiajukan,
-				jumlah: pengajuanHarga.jumlah,
-				wilayahId: pengajuanHarga.wilayahId
-			})
-			.from(pengajuanHarga)
-			.where(
-				and(
-					eq(pengajuanHarga.id, params.id),
-					eq(pengajuanHarga.jastiperId, jastiperId)
-				)
-			);
+	const [row] = await db
+		.select({
+			id: pengajuanHarga.id,
+			status: pengajuanHarga.status,
+			produkId: pengajuanHarga.produkId,
+			pelangganId: pengajuanHarga.pelangganId,
+			hargaDiajukan: pengajuanHarga.hargaDiajukan,
+			jumlah: pengajuanHarga.jumlah,
+			wilayahId: pengajuanHarga.wilayahId
+		})
+		.from(pengajuanHarga)
+		.where(
+			and(
+				eq(pengajuanHarga.id, params.id),
+				eq(pengajuanHarga.jastiperId, jastiperId)
+			)
+		);
 
-		if (!row) return fail(404, { error: 'Pengajuan tidak ditemukan.' });
+	if (!row) return fail(404, { error: 'Pengajuan tidak ditemukan.' });
 
-		// wajib ada wilayah dulu, supaya ongkir tidak diam-diam jadi 0
-		if (!row.wilayahId) {
-			return fail(400, {
-				error: 'Pelanggan belum pilih wilayah pengiriman. Minta dia pilih dulu di kolom "Ongkos kirim" sebelum kamu terima.'
-			});
-		}
-
-		const [wilayah] = await db
-			.select({ biaya: ongkirWilayah.biaya })
-			.from(ongkirWilayah)
-			.where(eq(ongkirWilayah.id, row.wilayahId));
-
-		const ongkirBiaya = wilayah?.biaya ?? 0;
-
-		await db
-			.update(pengajuanHarga)
-			.set({ status: 'diterima' })
-			.where(eq(pengajuanHarga.id, params.id));
-
-		// BARU: pesanan sekarang header transaksi (tanpa produkId/jumlah/hargaSatuan),
-		// detail produknya masuk ke pesananItem terpisah
-		const pesananId = randomUUID();
-
-		await db.insert(pesanan).values({
-			id: pesananId,
-			pelangganId: row.pelangganId,
-			jastiperId,
-			ongkir: ongkirBiaya,
-			totalHarga: row.hargaDiajukan * row.jumlah + ongkirBiaya,
-			status: 'menunggu_konfirmasi'
-		});
-
-		await db.insert(pesananItem).values({
-			id: randomUUID(),
-			pesananId,
-			produkId: row.produkId,
-			pengajuanHargaId: row.id,
-			jumlah: row.jumlah,
-			hargaSatuan: row.hargaDiajukan
-		});
-
+	// BARU: kalau sudah bukan 'menunggu', berarti sudah pernah diproses —
+	// jangan insert pesanan lagi, langsung redirect saja
+	if (row.status !== 'menunggu') {
 		throw redirect(303, '/jastiper/pengajuan-harga');
-	},
+	}
+
+	if (!row.wilayahId) {
+		return fail(400, {
+			error: 'Pelanggan belum pilih wilayah pengiriman. Minta dia pilih dulu di kolom "Ongkos kirim" sebelum kamu terima.'
+		});
+	}
+
+	const [wilayah] = await db
+		.select({ biaya: ongkirWilayah.biaya })
+		.from(ongkirWilayah)
+		.where(eq(ongkirWilayah.id, row.wilayahId));
+
+	const ongkirBiaya = wilayah?.biaya ?? 0;
+
+	// BARU: update HANYA berhasil kalau status masih 'menunggu' saat ini juga —
+	// ini kunci utamanya, mencegah 2 request bersamaan sama-sama lolos
+	const hasilUpdate = await db
+		.update(pengajuanHarga)
+		.set({ status: 'diterima' })
+		.where(
+			and(
+				eq(pengajuanHarga.id, params.id),
+				eq(pengajuanHarga.status, 'menunggu')
+			)
+		)
+		.returning({ id: pengajuanHarga.id });
+
+	if (hasilUpdate.length === 0) {
+		// request lain sudah lebih dulu memproses ini — batalkan, jangan insert
+		throw redirect(303, '/jastiper/pengajuan-harga');
+	}
+
+	const pesananId = randomUUID();
+
+	await db.insert(pesanan).values({
+		id: pesananId,
+		pelangganId: row.pelangganId,
+		jastiperId,
+		ongkir: ongkirBiaya,
+		totalHarga: row.hargaDiajukan * row.jumlah + ongkirBiaya,
+		status: 'menunggu_konfirmasi'
+	});
+
+	await db.insert(pesananItem).values({
+		id: randomUUID(),
+		pesananId,
+		produkId: row.produkId,
+		pengajuanHargaId: row.id,
+		jumlah: row.jumlah,
+		hargaSatuan: row.hargaDiajukan
+	});
+
+	throw redirect(303, '/jastiper/pengajuan-harga');
+},
 
 	tolak: async ({ params, locals }) => {
 		const [row] = await db

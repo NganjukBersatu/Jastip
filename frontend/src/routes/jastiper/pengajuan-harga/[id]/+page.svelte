@@ -8,6 +8,10 @@
 	let daftarPesan = $state([]);
 	let isiPesan = $state('');
 
+	// BARU: state loading untuk tombol terima/tolak
+	let mengirimTerima = $state(false);
+	let mengirimTolak = $state(false);
+
 	/** @type {HTMLDivElement | null} */
 	let elemChat = $state(null);
 
@@ -203,28 +207,42 @@
 			<form
 				method="POST"
 				action="?/terima"
-				use:enhance
+				use:enhance={() => {
+					mengirimTerima = true;
+					return async ({ update }) => {
+						await update();
+						mengirimTerima = false;
+					};
+				}}
 				class="flex-1"
 			>
 				<button
 					type="submit"
-					class="w-full rounded-pill bg-ink text-bg font-bold text-[13.5px] py-2.5"
+					disabled={mengirimTerima || mengirimTolak}
+					class="w-full rounded-pill bg-ink text-bg font-bold text-[13.5px] py-2.5 disabled:opacity-50"
 				>
-					Terima harga ini ({formatRupiah(data.item.hargaDiajukan)})
+					{mengirimTerima ? 'Memproses...' : `Terima harga ini (${formatRupiah(data.item.hargaDiajukan)})`}
 				</button>
 			</form>
 
 			<form
 				method="POST"
 				action="?/tolak"
-				use:enhance
+				use:enhance={() => {
+					mengirimTolak = true;
+					return async ({ update }) => {
+						await update();
+						mengirimTolak = false;
+					};
+				}}
 				class="flex-1"
 			>
 				<button
 					type="submit"
-					class="w-full rounded-pill border-2 border-ink/15 text-ink-soft font-bold text-[13.5px] py-2.5 hover:border-red-300 hover:text-red-500"
+					disabled={mengirimTerima || mengirimTolak}
+					class="w-full rounded-pill border-2 border-ink/15 text-ink-soft font-bold text-[13.5px] py-2.5 hover:border-red-300 hover:text-red-500 disabled:opacity-50"
 				>
-					Tolak
+					{mengirimTolak ? 'Memproses...' : 'Tolak'}
 				</button>
 			</form>
 		</div>
