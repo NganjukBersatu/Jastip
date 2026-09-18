@@ -169,8 +169,13 @@
 								return async ({ result }) => {
 									if (result.type === 'success') {
 										daftarPercakapan = daftarPercakapan.filter((item) => item.id !== p.id);
+									} else if (result.type === 'failure') {
+										// tampilkan pesan spesifik dari server kalau ada,
+										// baru fallback ke pesan generik
+										alert(result.data?.message ?? 'Gagal menghapus percakapan, coba lagi.');
 									} else {
-										alert('Gagal menghapus percakapan, coba lagi.');
+										// result.type === 'error' → error tak terduga (500, dsb)
+										alert('Terjadi kesalahan pada server, coba lagi.');
 									}
 									sedangMenghapus = null;
 								};
@@ -205,8 +210,10 @@
 	{:else}
 		<div class="bg-white rounded-2xl border border-dashed border-bg-alt px-5 py-14 sm:p-16 text-center">
 			<div class="w-14 h-14 mx-auto mb-4 rounded-full bg-accent/20 flex items-center justify-center">
-				<span class="text-2xl">💬</span>
-			</div>
+	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary-deep">
+		<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+	</svg>
+</div>
 
 			<div class="font-bold text-[15px] text-ink">Belum ada percakapan</div>
 			<div class="text-[13.5px] text-ink-soft mt-1.5 max-w-75 mx-auto leading-relaxed">
