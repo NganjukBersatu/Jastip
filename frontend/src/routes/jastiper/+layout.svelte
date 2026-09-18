@@ -2,6 +2,7 @@
   import { page } from '$app/stores';
   import { onMount } from 'svelte';
   import { notifikasiState } from '$lib/stores/notifikasi.svelte';
+  import { JASA_AKTIF } from '$lib/config';
 
   let { data, children } = $props();
 
@@ -74,6 +75,7 @@
     }
   ];
 
+  const menuTampil = JASA_AKTIF ? menu : menu.filter((item) => item.href !== '/jastiper/jasa');
   let navScrollEl = $state<HTMLElement | null>(null);
 
 $effect(() => {
@@ -126,7 +128,7 @@ $effect(() => {
 
     <!-- Menu -->
     <nav class="flex-1 p-4 flex flex-col gap-1.5 overflow-y-auto">
-      {#each menu as item}
+     {#each menuTampil as item}
         <a
           href={item.href}
           class="relative flex items-center gap-3 px-4 py-3 rounded-2xl
@@ -242,8 +244,8 @@ $effect(() => {
     </div>
 
     <nav class="px-3 pb-3 overflow-x-auto">
-      <div bind:this={navScrollEl} class="flex gap-1.5 min-w-max">
-        {#each menu as item}
+      <div class="flex gap-1.5 min-w-max">
+       {#each menuTampil as item}
           <a
             href={item.href}
             class="relative flex items-center gap-2 px-3.5 py-2.5

@@ -203,6 +203,20 @@
 					</select>
 				</div>
 
+				<!-- BARU: kecamatan dipisah dari alamat detail supaya pencarian lokasi
+					lebih presisi (dulu jadi salah satu sumber lokasi nyasar) -->
+				<div>
+					<label for="kecamatanJemput" class="block text-xs text-ink-soft mb-1">Kecamatan</label>
+					<input
+						id="kecamatanJemput"
+						name="kecamatanJemput"
+						type="text"
+						required
+						placeholder="Misal: Kertosono"
+						class="w-full rounded-xl px-4 py-2.5 border border-ink/10 text-sm outline-none focus:ring-2 focus:ring-accent"
+					/>
+				</div>
+
 				<div>
 					<label for="titikJemput" class="block text-xs text-ink-soft mb-1">Alamat detail</label>
 					<input
@@ -240,6 +254,21 @@
 				</select>
 			</div>
 
+			<!-- BARU: kecamatan tujuan, dikirim terpisah ke jarak.ts supaya
+				pencarian LocationIQ tidak salah pilih jalan dengan nama sama
+				di kecamatan lain dalam kabupaten yang sama -->
+			<div>
+				<label for="kecamatanTujuan" class="block text-xs text-ink-soft mb-1">Kecamatan</label>
+				<input
+					id="kecamatanTujuan"
+					name="kecamatanTujuan"
+					type="text"
+					required
+					placeholder="Misal: Kertosono"
+					class="w-full rounded-xl px-4 py-2.5 border border-ink/10 text-sm outline-none focus:ring-2 focus:ring-accent"
+				/>
+			</div>
+
 			<div>
 				<label for="titikTujuan" class="block text-xs text-ink-soft mb-1">Alamat detail</label>
 				<input
@@ -270,7 +299,7 @@
 
 		<p class="text-xs text-ink-soft">
 			Jarak dan harga total dihitung otomatis setelah kamu menekan tombol pesan. Pastikan
-			kabupaten/kota sudah benar agar jarak akurat.
+			kabupaten/kota dan kecamatan sudah benar agar jarak akurat.
 		</p>
 
 		<button
