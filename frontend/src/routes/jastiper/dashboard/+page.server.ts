@@ -1,6 +1,7 @@
 import { db } from '$lib/server/db';
 import { jastiperProfiles, produk, jasa, pesanan, pesananItem } from '$lib/server/db/schema';
 import { eq, and, gte, lt, desc, count, inArray } from 'drizzle-orm';
+import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
 const LABEL_STATUS: Record<string, string> = {
@@ -12,14 +13,23 @@ const LABEL_STATUS: Record<string, string> = {
 };
 
 export const load: PageServerLoad = async ({ locals }) => {
-	const jastiperId = locals.user!.id;
+	// Kalau belum login, jangan crash — lempar ke halaman login
+	if (!locals.user) {
+		throw redirect(303, '/masuk');
+	}
+
+	// Kalau login tapi bukan jastiper, jangan izinkan akses dashboard ini
+	if (locals.user.role !== 'jastiper') {
+		throw redirect(303, '/publik/katalog');
+	}
+
+	const jastiperId = locals.user.id;
 
 	const [profil] = await db
 		.select()
 		.from(jastiperProfiles)
 		.where(eq(jastiperProfiles.userId, jastiperId));
 
-	// Batas bulan berjalan, dipakai buat hitung "selesai bulan ini"
 	const sekarang = new Date();
 	const awalBulan = new Date(sekarang.getFullYear(), sekarang.getMonth(), 1);
 	const awalBulanDepan = new Date(sekarang.getFullYear(), sekarang.getMonth() + 1, 1);
@@ -35,7 +45,6 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.where(
 			and(
 				eq(pesanan.jastiperId, jastiperId),
-				// gabungan dibelanjakan + dikirim = masih "diproses"
 				and(eq(pesanan.status, 'dibelanjakan'))
 			)
 		);
@@ -109,7 +118,6 @@ export const load: PageServerLoad = async ({ locals }) => {
 		status: LABEL_STATUS[h.status] ?? h.status
 	}));
 
-	
 	return {
 		profil,
 		statistik,

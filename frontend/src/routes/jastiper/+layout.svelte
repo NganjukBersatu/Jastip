@@ -76,6 +76,21 @@
   ];
 
   const menuTampil = JASA_AKTIF ? menu : menu.filter((item) => item.href !== '/jastiper/jasa');
+  let navScrollEl = $state<HTMLElement | null>(null);
+
+$effect(() => {
+  const activeHref = $page.url.pathname;
+  if (!navScrollEl) return;
+
+  const activeLink = navScrollEl.querySelector(`a[href="${activeHref}"]`);
+  if (activeLink) {
+    activeLink.scrollIntoView({
+      behavior: 'smooth',
+      inline: 'center',
+      block: 'nearest'
+    });
+  }
+});
 </script>
 
 <div class="min-h-screen bg-bg flex flex-col lg:flex-row">
