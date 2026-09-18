@@ -1,12 +1,21 @@
 import { db } from '$lib/server/db';
 import { produk, users, jastiperProfiles } from '$lib/server/db/schema';
 import { eq, desc } from 'drizzle-orm';
+import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals }) => {
-	// Landing page sekarang tampil untuk semua role, termasuk jastiper.
-	// (redirect otomatis ke /jastiper/dashboard dihapus)
+	// Kalau user sudah login, jangan tampilin landing page lagi
+	if (locals.user) {
+		if (locals.user.role === 'pelanggan') {
+			throw redirect(303, '/publik/katalog');
+		}
+		if (locals.user.role === 'jastiper') {
+			throw redirect(303, '/jastiper/dashboard');
+		}
+	}
 
+	// Kalau belum login, tampilkan landing page seperti biasa
 	const produkPilihan = await db
 		.select({
 			id: produk.id,
