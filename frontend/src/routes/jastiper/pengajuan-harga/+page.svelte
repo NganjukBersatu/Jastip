@@ -11,6 +11,7 @@
 
 	let kataKunci = $state('');
 	let filterAktif = $state('semua');
+	let riwayatTerbuka = $state(false);
 
 	const opsiFilter = [
 		{ nilai: 'semua', label: 'Semua' },
@@ -26,6 +27,17 @@
 			const cocokKataKunci = teks.includes(kataKunci.toLowerCase());
 			return cocokFilter && cocokKataKunci;
 		})
+	);
+
+	// BARU: saat filter "Semua" dipilih, pisahkan yang masih menunggu (aktif)
+	// dari yang sudah diterima/ditolak (riwayat), supaya tidak membingungkan.
+	// Untuk filter spesifik (Menunggu/Diterima/Ditolak), tampilkan datar saja.
+	let pisahkanAktifRiwayat = $derived(filterAktif === 'semua');
+	let pengajuanAktif = $derived(
+		pisahkanAktifRiwayat ? daftarTertampil.filter((p) => p.status === 'menunggu') : daftarTertampil
+	);
+	let pengajuanRiwayat = $derived(
+		pisahkanAktifRiwayat ? daftarTertampil.filter((p) => p.status !== 'menunggu') : []
 	);
 
 	/** @param {number} angka */
@@ -100,19 +112,13 @@
 		{/each}
 	</div>
 
-	<div class="mb-3.5 flex items-center gap-2">
-		<h2 class="font-bold text-[15px] text-ink">
-			Pengajuan masuk
-		</h2>
-
-		{#if daftarTertampil.length > 0}
-			<span class="text-[11px] font-bold bg-bg-alt text-primary-deep px-2 py-0.5 rounded-full">
-				{daftarTertampil.length}
-			</span>
-		{/if}
-	</div>
-
 	{#if daftarTertampil.length === 0}
+		<div class="mb-3.5 flex items-center gap-2">
+			<h2 class="font-bold text-[15px] text-ink">
+				Pengajuan masuk
+			</h2>
+		</div>
+
 		<div class="bg-white rounded-2xl border border-dashed border-bg-alt px-5 py-14 sm:p-16 text-center">
 			<div class="w-14 h-14 mx-auto mb-4 rounded-full bg-accent/20 flex items-center justify-center">
 				<svg class="w-6 h-6 text-primary-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
@@ -131,62 +137,157 @@
 			{/if}
 		</div>
 	{:else}
-		<div class="flex flex-col gap-3 sm:gap-4">
-			{#each daftarTertampil as p (p.id)}
-				{@const st = labelStatus(p.status)}
-				<div class="bg-white rounded-[26px] border border-bg-alt p-4 sm:p-5 transition hover:shadow-md {sedangProses === p.id ? 'opacity-50 pointer-events-none' : ''}">
-					<div class="flex justify-between items-start gap-4">
-						<div class="flex items-start gap-3 min-w-0">
-							<div class="w-11 h-11 rounded-full bg-accent flex items-center justify-center font-display font-semibold text-[15px] text-primary-deep shrink-0">
-								{inisial(p.pelangganNama)}
-							</div>
-							<div class="min-w-0">
-								<div class="flex items-center gap-2 flex-wrap">
-									<span class="font-bold text-sm text-ink truncate">{p.produkNama}</span>
-									<span class="text-[11px] font-extrabold px-2.5 py-0.5 rounded-full {st.kelas} shrink-0">
-										{st.teks}
-									</span>
+		<!-- ===== PENGAJUAN AKTIF (menunggu) ===== -->
+		<div class="mb-3.5 flex items-center gap-2">
+			<h2 class="font-bold text-[15px] text-ink">
+				{pisahkanAktifRiwayat ? 'Pengajuan masuk' : opsiFilter.find((o) => o.nilai === filterAktif)?.label}
+			</h2>
+
+			{#if pengajuanAktif.length > 0}
+				<span class="text-[11px] font-bold bg-bg-alt text-primary-deep px-2 py-0.5 rounded-full">
+					{pengajuanAktif.length}
+				</span>
+			{/if}
+		</div>
+
+		{#if pengajuanAktif.length === 0 && pisahkanAktifRiwayat}
+			<div class="bg-white rounded-2xl border border-dashed border-bg-alt px-5 py-10 text-center mb-8">
+				<div class="text-[13.5px] text-ink-soft">Tidak ada pengajuan yang masih menunggu.</div>
+			</div>
+		{:else}
+			<div class="flex flex-col gap-3 sm:gap-4 {pisahkanAktifRiwayat ? 'mb-8 sm:mb-10' : ''}">
+				{#each pengajuanAktif as p (p.id)}
+					{@const st = labelStatus(p.status)}
+					<div class="bg-white rounded-[26px] border border-bg-alt p-4 sm:p-5 transition hover:shadow-md {sedangProses === p.id ? 'opacity-50 pointer-events-none' : ''}">
+						<div class="flex justify-between items-start gap-4">
+							<div class="flex items-start gap-3 min-w-0">
+								<div class="w-11 h-11 rounded-full bg-accent flex items-center justify-center font-display font-semibold text-[15px] text-primary-deep shrink-0">
+									{inisial(p.pelangganNama)}
 								</div>
-								<div class="text-[12.5px] text-ink-soft mt-1 leading-relaxed">
-									dari <span class="font-semibold text-ink">{p.pelangganNama}</span> · {formatTanggal(p.createdAt)}
+								<div class="min-w-0">
+									<div class="flex items-center gap-2 flex-wrap">
+										<span class="font-bold text-sm text-ink truncate">{p.produkNama}</span>
+										<span class="text-[11px] font-extrabold px-2.5 py-0.5 rounded-full {st.kelas} shrink-0">
+											{st.teks}
+										</span>
+									</div>
+									<div class="text-[12.5px] text-ink-soft mt-1 leading-relaxed">
+										dari <span class="font-semibold text-ink">{p.pelangganNama}</span> · {formatTanggal(p.createdAt)}
+									</div>
 								</div>
 							</div>
+							<div class="text-right shrink-0">
+								<div class="font-display font-semibold text-lg text-primary-dark">{formatRupiah(p.hargaDiajukan)}</div>
+								<div class="text-[12px] text-ink-soft">× {p.jumlah} pcs</div>
+							</div>
 						</div>
-						<div class="text-right shrink-0">
-							<div class="font-display font-semibold text-lg text-primary-dark">{formatRupiah(p.hargaDiajukan)}</div>
-							<div class="text-[12px] text-ink-soft">× {p.jumlah} pcs</div>
-						</div>
-					</div>
 
-					{#if p.catatan}
-						<div class="mt-3 bg-bg rounded-xl px-4 py-2.5 text-[13.5px] text-ink-soft italic">
-							"{p.catatan}"
-						</div>
-					{/if}
+						{#if p.catatan}
+							<div class="mt-3 bg-bg rounded-xl px-4 py-2.5 text-[13.5px] text-ink-soft italic">
+								"{p.catatan}"
+							</div>
+						{/if}
 
-					<div class="flex gap-2 mt-4">
-						<a href="/jastiper/pengajuan-harga/{p.id}" class="flex-1">
-							<button
-								type="button"
-								class="w-full min-h-[42px] inline-flex items-center justify-center gap-1.5 rounded-full bg-white border border-bg-alt text-ink font-bold text-[13px] hover:bg-bg transition"
-							>
-								<i class="ti ti-message-circle" aria-hidden="true"></i> Balas chat
-							</button>
-						</a>
-
-						{#if p.status === 'menunggu'}
+						<div class="flex gap-2 mt-4">
 							<a href="/jastiper/pengajuan-harga/{p.id}" class="flex-1">
 								<button
 									type="button"
-									class="w-full min-h-[42px] inline-flex items-center justify-center rounded-full bg-primary text-white font-bold text-[13px] hover:-translate-y-0.5 hover:shadow-md transition"
+									class="w-full min-h-[42px] inline-flex items-center justify-center gap-1.5 rounded-full bg-white border border-bg-alt text-ink font-bold text-[13px] hover:bg-bg transition"
 								>
-									Terima / Tolak
+									<i class="ti ti-message-circle" aria-hidden="true"></i> Balas chat
 								</button>
 							</a>
-						{/if}
+
+							{#if p.status === 'menunggu'}
+								<a href="/jastiper/pengajuan-harga/{p.id}" class="flex-1">
+									<button
+										type="button"
+										class="w-full min-h-[42px] inline-flex items-center justify-center rounded-full bg-primary text-white font-bold text-[13px] hover:-translate-y-0.5 hover:shadow-md transition"
+									>
+										Terima / Tolak
+									</button>
+								</a>
+							{/if}
+						</div>
 					</div>
-				</div>
-			{/each}
-		</div>
+				{/each}
+			</div>
+		{/if}
+
+		<!-- ===== RIWAYAT (diterima/ditolak) — hanya muncul saat filter "Semua" ===== -->
+		{#if pisahkanAktifRiwayat && pengajuanRiwayat.length > 0}
+			<section>
+				<button
+					type="button"
+					class="w-full flex items-center justify-between gap-3 mb-3.5 text-left"
+					onclick={() => (riwayatTerbuka = !riwayatTerbuka)}
+				>
+					<div>
+						<h2 class="font-bold text-[15px] text-ink flex items-center gap-2">
+							Riwayat
+							<span class="text-[11px] font-bold bg-bg-alt text-primary-deep px-2 py-0.5 rounded-full">
+								{pengajuanRiwayat.length}
+							</span>
+						</h2>
+						<p class="text-xs text-ink-soft mt-0.5">Pengajuan yang sudah diterima atau ditolak</p>
+					</div>
+					<svg
+						class="w-5 h-5 text-ink-soft shrink-0 transition-transform {riwayatTerbuka ? 'rotate-180' : ''}"
+						viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+					>
+						<path d="m6 9 6 6 6-6" />
+					</svg>
+				</button>
+
+				{#if riwayatTerbuka}
+					<div class="flex flex-col gap-3 sm:gap-4">
+						{#each pengajuanRiwayat as p (p.id)}
+							{@const st = labelStatus(p.status)}
+							<div class="bg-white rounded-[26px] border border-bg-alt p-4 sm:p-5 transition hover:shadow-md">
+								<div class="flex justify-between items-start gap-4">
+									<div class="flex items-start gap-3 min-w-0">
+										<div class="w-11 h-11 rounded-full bg-accent flex items-center justify-center font-display font-semibold text-[15px] text-primary-deep shrink-0">
+											{inisial(p.pelangganNama)}
+										</div>
+										<div class="min-w-0">
+											<div class="flex items-center gap-2 flex-wrap">
+												<span class="font-bold text-sm text-ink truncate">{p.produkNama}</span>
+												<span class="text-[11px] font-extrabold px-2.5 py-0.5 rounded-full {st.kelas} shrink-0">
+													{st.teks}
+												</span>
+											</div>
+											<div class="text-[12.5px] text-ink-soft mt-1 leading-relaxed">
+												dari <span class="font-semibold text-ink">{p.pelangganNama}</span> · {formatTanggal(p.createdAt)}
+											</div>
+										</div>
+									</div>
+									<div class="text-right shrink-0">
+										<div class="font-display font-semibold text-lg text-primary-dark">{formatRupiah(p.hargaDiajukan)}</div>
+										<div class="text-[12px] text-ink-soft">× {p.jumlah} pcs</div>
+									</div>
+								</div>
+
+								{#if p.catatan}
+									<div class="mt-3 bg-bg rounded-xl px-4 py-2.5 text-[13.5px] text-ink-soft italic">
+										"{p.catatan}"
+									</div>
+								{/if}
+
+								<div class="flex gap-2 mt-4">
+									<a href="/jastiper/pengajuan-harga/{p.id}" class="flex-1">
+										<button
+											type="button"
+											class="w-full min-h-[42px] inline-flex items-center justify-center gap-1.5 rounded-full bg-white border border-bg-alt text-ink font-bold text-[13px] hover:bg-bg transition"
+										>
+											<i class="ti ti-message-circle" aria-hidden="true"></i> Balas chat
+										</button>
+									</a>
+								</div>
+							</div>
+						{/each}
+					</div>
+				{/if}
+			</section>
+		{/if}
 	{/if}
 </div>

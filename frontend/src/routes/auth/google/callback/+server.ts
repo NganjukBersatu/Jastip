@@ -44,7 +44,7 @@ export const GET: RequestHandler = async ({ url, cookies, fetch }) => {
 
 	const email = profil.email.toLowerCase();
 
-		let [user] = await db.select().from(users).where(eq(users.email, email));
+	let [user] = await db.select().from(users).where(eq(users.email, email));
 
 	const roleCookie = cookies.get('google_pending_role');
 	const roleBaru = roleCookie === 'jastiper' ? 'jastiper' : 'pelanggan';
