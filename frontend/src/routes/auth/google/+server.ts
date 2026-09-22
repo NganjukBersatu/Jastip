@@ -20,7 +20,11 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 	const intentParam = url.searchParams.get('intent');
 	const intent = intentParam === 'daftar' ? 'daftar' : 'masuk';
 
-	const googleAuthUrl = google.createAuthorizationURL(state, codeVerifier, ['openid', 'profile', 'email']);
+	const googleAuthUrl = google.createAuthorizationURL(state, codeVerifier, [
+		'openid',
+		'profile',
+		'email'
+	]);
 
 	cookies.set('google_oauth_state', state, {
 		path: '/',

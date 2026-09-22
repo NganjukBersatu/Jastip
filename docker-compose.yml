@@ -4,7 +4,7 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: salsa123
+      POSTGRES_PASSWORD: jastip123
       POSTGRES_DB: jastip_local
     ports:
       - "5433:5432"
@@ -15,7 +15,7 @@ services:
     build:
       context: ./frontend
       args:
-        DATABASE_URL: postgresql://postgres:salsa123@db:5432/jastip_local
+        DATABASE_URL: postgresql://postgres:jastip123@db:5432/jastip_local
         GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
         GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
         SMTP_HOST: ${SMTP_HOST}
@@ -27,9 +27,7 @@ services:
     depends_on:
       - db
     environment:
-      ORIGIN: http://localhost:5173
-      BODY_SIZE_LIMIT: 10M
-      DATABASE_URL: postgresql://postgres:salsa123@db:5432/jastip_local
+      DATABASE_URL: postgresql://postgres:jastip123@db:5432/jastip_local
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
       SMTP_HOST: ${SMTP_HOST}
@@ -37,6 +35,7 @@ services:
       SMTP_USER: ${SMTP_USER}
       SMTP_PASS: ${SMTP_PASS}
       LOCATIONIQ_API_KEY: ${LOCATIONIQ_API_KEY}
+      ORIGIN: http://localhost:5173
     ports:
       - "5173:3000"
 

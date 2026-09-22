@@ -1,6 +1,6 @@
 import { db } from '$lib/server/db';
 import { pengajuanHarga, produk, users } from '$lib/server/db/schema';
-import { eq, and, desc } from 'drizzle-orm';
+import { eq, desc } from 'drizzle-orm';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals }) => {
@@ -10,6 +10,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			hargaDiajukan: pengajuanHarga.hargaDiajukan,
 			jumlah: pengajuanHarga.jumlah,
 			catatan: pengajuanHarga.catatan,
+			status: pengajuanHarga.status,
 			createdAt: pengajuanHarga.createdAt,
 			produkNama: produk.nama,
 			pelangganNama: users.nama
@@ -17,7 +18,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.from(pengajuanHarga)
 		.innerJoin(produk, eq(pengajuanHarga.produkId, produk.id))
 		.innerJoin(users, eq(pengajuanHarga.pelangganId, users.id))
-		.where(and(eq(produk.jastiperId, locals.user!.id), eq(pengajuanHarga.status, 'menunggu')))
+		.where(eq(produk.jastiperId, locals.user!.id))
 		.orderBy(desc(pengajuanHarga.createdAt));
 
 	return { daftarPengajuan };

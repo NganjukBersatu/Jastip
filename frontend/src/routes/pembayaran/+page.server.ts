@@ -1,7 +1,7 @@
 import { redirect, fail } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
 import { keranjangItem, produk, pesanan, pesananItem, ongkirWilayah } from '$lib/server/db/schema';
-import { eq, inArray } from 'drizzle-orm';
+import { eq, and, inArray } from 'drizzle-orm';
 import { randomUUID } from 'node:crypto';
 import type { Actions, PageServerLoad } from './$types';
 
@@ -16,11 +16,26 @@ function uraikanPilihanOngkir(raw: string | null): Record<string, string> {
 	return hasil;
 }
 
+// BARU: daftar id item keranjang yang dipilih pelanggan, format "id1,id2".
+// Kosong = tidak ada pilihan, dianggap semua item keranjang (perilaku lama).
+function uraikanIdItem(raw: string | null | undefined): string[] {
+	if (!raw) return [];
+	return [
+		...new Set(
+			raw
+				.split(',')
+				.map((s) => s.trim())
+				.filter(Boolean)
+		)
+	];
+}
+
 export const load: PageServerLoad = async ({ locals, url }) => {
 	if (!locals.user) throw redirect(303, '/publik/masuk');
 	if (locals.user.role !== 'pelanggan') throw redirect(303, '/publik/katalog');
 
 	const mode = url.searchParams.get('mode') === 'langsung' ? 'langsung' : 'keranjang';
+	const idItemPilihan = uraikanIdItem(url.searchParams.get('item'));
 
 	let items: {
 		produkId: string;
@@ -54,6 +69,8 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 			}
 		];
 	} else {
+		// DIUBAH: kalau ada item terpilih, hanya item itu yang dimuat
+		// (dan hanya yang benar-benar milik pelanggan ini).
 		items = await db
 			.select({
 				produkId: keranjangItem.produkId,
@@ -64,7 +81,14 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 			})
 			.from(keranjangItem)
 			.innerJoin(produk, eq(keranjangItem.produkId, produk.id))
-			.where(eq(keranjangItem.pelangganId, locals.user.id));
+			.where(
+				idItemPilihan.length > 0
+					? and(
+							eq(keranjangItem.pelangganId, locals.user.id),
+							inArray(keranjangItem.id, idItemPilihan)
+						)
+					: eq(keranjangItem.pelangganId, locals.user.id)
+			);
 
 		if (items.length === 0) throw redirect(303, '/keranjang');
 	}
@@ -114,6 +138,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		totalOngkir,
 		totalBayar: totalBarang + totalOngkir,
 		ongkirRaw: ongkirRaw ?? '',
+		itemRaw: idItemPilihan.join(','),
 		mode,
 		produkIdLangsung,
 		jumlahLangsung,
@@ -129,12 +154,19 @@ export const actions: Actions = {
 		const alamat = data.get('alamat')?.toString().trim();
 		const metodePembayaran = data.get('metodePembayaran')?.toString();
 		const ongkirRaw = data.get('ongkirRaw')?.toString() ?? '';
+		const idItemPilihan = uraikanIdItem(data.get('itemRaw')?.toString());
 		const mode = data.get('mode')?.toString() === 'langsung' ? 'langsung' : 'keranjang';
 
 		if (!alamat) return fail(400, { error: 'Alamat pengiriman wajib diisi.' });
 		if (!metodePembayaran) return fail(400, { error: 'Pilih metode pembayaran dulu.' });
 
-		let items: { produkId: string; jumlah: number; hargaSatuan: number; jastiperId: string }[];
+		let items: {
+			keranjangId?: string;
+			produkId: string;
+			jumlah: number;
+			hargaSatuan: number;
+			jastiperId: string;
+		}[];
 
 		if (mode === 'langsung') {
 			const produkId = data.get('produkId')?.toString();
@@ -159,8 +191,10 @@ export const actions: Actions = {
 				}
 			];
 		} else {
+			// DIUBAH: hanya item keranjang yang dipilih (dan milik pelanggan ini) yang diproses.
 			items = await db
 				.select({
+					keranjangId: keranjangItem.id,
 					produkId: keranjangItem.produkId,
 					jumlah: keranjangItem.jumlah,
 					hargaSatuan: produk.harga,
@@ -168,9 +202,16 @@ export const actions: Actions = {
 				})
 				.from(keranjangItem)
 				.innerJoin(produk, eq(keranjangItem.produkId, produk.id))
-				.where(eq(keranjangItem.pelangganId, locals.user.id));
+				.where(
+					idItemPilihan.length > 0
+						? and(
+								eq(keranjangItem.pelangganId, locals.user.id),
+								inArray(keranjangItem.id, idItemPilihan)
+							)
+						: eq(keranjangItem.pelangganId, locals.user.id)
+				);
 
-			if (items.length === 0) return fail(400, { error: 'Keranjang kamu kosong.' });
+			if (items.length === 0) return fail(400, { error: 'Tidak ada item yang dipilih di keranjang.' });
 		}
 
 		const pilihanWilayah = uraikanPilihanOngkir(ongkirRaw);
@@ -231,8 +272,23 @@ export const actions: Actions = {
 			idPesananBaru.push(idBaru);
 		}
 
+		// DIUBAH: hanya item yang barusan dibeli yang dihapus dari keranjang,
+		// item yang tidak dipilih tetap tersimpan.
 		if (mode === 'keranjang') {
-			await db.delete(keranjangItem).where(eq(keranjangItem.pelangganId, locals.user.id));
+			const idKeranjangDipakai = items
+				.map((i) => i.keranjangId)
+				.filter((v): v is string => Boolean(v));
+
+			if (idKeranjangDipakai.length > 0) {
+				await db
+					.delete(keranjangItem)
+					.where(
+						and(
+							eq(keranjangItem.pelangganId, locals.user.id),
+							inArray(keranjangItem.id, idKeranjangDipakai)
+						)
+					);
+			}
 		}
 
 		throw redirect(303, `/pembayaran/selesai?ids=${idPesananBaru.join(',')}`);

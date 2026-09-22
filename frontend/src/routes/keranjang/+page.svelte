@@ -12,6 +12,10 @@
     )
   );
 
+  // Id item keranjang yang TIDAK dicentang. Default kosong = semua item terpilih.
+  /** @type {string[]} */
+  let tidakDipilih = $state([]);
+
   /** @param {number} angka */
   function formatRupiah(angka) {
     return new Intl.NumberFormat('id-ID', {
@@ -21,13 +25,33 @@
     }).format(angka);
   }
 
+  /** @param {string} id */
+  function dipilih(id) {
+    return !tidakDipilih.includes(id);
+  }
+
+  /** @param {string} id */
+  function togglePilih(id) {
+    tidakDipilih = tidakDipilih.includes(id)
+      ? tidakDipilih.filter((x) => x !== id)
+      : [...tidakDipilih, id];
+  }
+
+  /** @param {typeof data.kelompokJastiper[number]} kelompok */
+  function adaTerpilih(kelompok) {
+    return kelompok.items.some((item) => dipilih(item.id));
+  }
+
   /** @param {typeof data.kelompokJastiper[number]} kelompok */
   function subtotalBarang(kelompok) {
-    return kelompok.items.reduce((jumlah, item) => jumlah + item.hargaSatuan * item.jumlah, 0);
+    return kelompok.items
+      .filter((item) => dipilih(item.id))
+      .reduce((jumlah, item) => jumlah + item.hargaSatuan * item.jumlah, 0);
   }
 
   /** @param {typeof data.kelompokJastiper[number]} kelompok */
   function ongkirTerpilih(kelompok) {
+    if (!adaTerpilih(kelompok)) return 0;
     const idTerpilih = wilayahTerpilih[kelompok.jastiperId];
     return kelompok.ongkirOptions.find((o) => o.id === idTerpilih)?.biaya ?? 0;
   }
@@ -40,18 +64,26 @@
     )
   );
 
-  // Checkout diblokir kalau ada jastiper yang belum atur ongkir sama sekali
+  // Checkout diblokir hanya kalau jastiper yang itemnya DIPILIH belum atur ongkir
   let adaJastiperBelumAturOngkir = $derived(
-    data.kelompokJastiper.some((k) => k.ongkirOptions.length === 0)
+    data.kelompokJastiper.some((k) => adaTerpilih(k) && k.ongkirOptions.length === 0)
   );
 
-  // Bawa pilihan wilayah tiap jastiper ke halaman pembayaran lewat URL,
-  // format: "jastiperId1:wilayahId1,jastiperId2:wilayahId2"
+  // Semua id item keranjang yang dicentang
+  let idDipilih = $derived(
+    data.kelompokJastiper.flatMap((k) =>
+      k.items.filter((item) => dipilih(item.id)).map((item) => item.id)
+    )
+  );
+
+  // Bawa pilihan wilayah tiap jastiper DAN item terpilih ke halaman pembayaran lewat URL,
+  // format ongkir: "jastiperId1:wilayahId1,jastiperId2:wilayahId2"
+  // format item: "idItem1,idItem2"
   let urlPembayaran = $derived(() => {
     const bagian = data.kelompokJastiper
-      .filter((k) => wilayahTerpilih[k.jastiperId])
+      .filter((k) => adaTerpilih(k) && wilayahTerpilih[k.jastiperId])
       .map((k) => `${k.jastiperId}:${wilayahTerpilih[k.jastiperId]}`);
-    return `/pembayaran?ongkir=${encodeURIComponent(bagian.join(','))}`;
+    return `/pembayaran?ongkir=${encodeURIComponent(bagian.join(','))}&item=${encodeURIComponent(idDipilih.join(','))}`;
   });
 </script>
 
@@ -105,7 +137,19 @@
 
           <div class="space-y-3">
             {#each kelompok.items as item (item.id)}
-              <div class="flex flex-wrap items-center gap-4">
+              <div
+                class="flex flex-wrap items-center gap-3 sm:gap-4 transition-opacity {dipilih(item.id) ? '' : 'opacity-55'}"
+              >
+                <label class="flex h-8 w-6 shrink-0 cursor-pointer items-center">
+                  <input
+                    type="checkbox"
+                    class="h-5 w-5 cursor-pointer accent-orange-500"
+                    checked={dipilih(item.id)}
+                    onchange={() => togglePilih(item.id)}
+                    aria-label="Pilih {item.namaProduk}"
+                  />
+                </label>
+
                 <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-bg-alt flex items-center justify-center overflow-hidden shrink-0">
                   {#if item.gambarUrl}
                     <img src={item.gambarUrl} alt={item.namaProduk} class="w-full h-full object-cover" />
@@ -177,7 +221,7 @@
           <div class="mt-4 pt-4 border-t border-ink/10">
             {#if kelompok.ongkirOptions.length === 0}
               <div class="bg-red-50 border border-red-200 text-red-700 text-[13px] font-semibold px-4 py-3 rounded-xl">
-                Jastiper ini belum atur ongkir wilayah — checkout belum bisa dilakukan sampai diatur.
+                Jastiper ini belum atur ongkir wilayah — item dari jastiper ini belum bisa di-checkout sampai diatur.
               </div>
             {:else}
               <div class="flex flex-wrap items-center justify-between gap-3">
@@ -204,13 +248,25 @@
     </div>
 
     <div class="mt-10 flex justify-between items-center border-t border-ink/10 pt-6">
-      <span class="font-bold text-lg text-ink">Total</span>
+      <div>
+        <span class="font-bold text-lg text-ink">Total</span>
+        <div class="text-[12.5px] text-ink-soft mt-0.5">{idDipilih.length} item dipilih</div>
+      </div>
       <span class="font-display font-bold text-2xl">{formatRupiah(totalHarga)}</span>
     </div>
 
     {#if adaJastiperBelumAturOngkir}
       <p class="text-center text-[13px] text-red-600 font-semibold mt-4">
         Belum bisa lanjut — ada jastiper yang belum atur ongkir wilayah.
+      </p>
+      <div
+        class="block text-center w-full mt-3 py-3.5 rounded-full font-bold text-[15px] bg-ink/30 text-bg cursor-not-allowed"
+      >
+        Lanjut ke pembayaran
+      </div>
+    {:else if idDipilih.length === 0}
+      <p class="text-center text-[13px] text-red-600 font-semibold mt-4">
+        Pilih minimal 1 item untuk lanjut ke pembayaran.
       </p>
       <div
         class="block text-center w-full mt-3 py-3.5 rounded-full font-bold text-[15px] bg-ink/30 text-bg cursor-not-allowed"
