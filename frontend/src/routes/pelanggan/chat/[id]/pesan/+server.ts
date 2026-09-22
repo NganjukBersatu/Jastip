@@ -5,10 +5,12 @@ import { eq, and, gt, asc } from 'drizzle-orm';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async ({ params, url, locals }) => {
+	if (!locals.user) throw error(401, 'Belum login.');
+
 	const [row] = await db
 		.select({ id: pengajuanHarga.id })
 		.from(pengajuanHarga)
-		.where(and(eq(pengajuanHarga.id, params.id), eq(pengajuanHarga.pelangganId, locals.user!.id)));
+		.where(and(eq(pengajuanHarga.id, params.id), eq(pengajuanHarga.pelangganId, locals.user.id)));
 
 	if (!row) throw error(404, 'Percakapan tidak ditemukan.');
 

@@ -70,6 +70,7 @@
 
   <form method="POST" action="?/bayar" use:enhance class="space-y-8">
     <input type="hidden" name="ongkirRaw" value={data.ongkirRaw} />
+    <input type="hidden" name="itemRaw" value={data.itemRaw} />
     <input type="hidden" name="mode" value={data.mode} />
     {#if data.mode === 'langsung'}
       <input type="hidden" name="produkId" value={data.produkIdLangsung} />

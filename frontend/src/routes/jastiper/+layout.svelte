@@ -1,5 +1,6 @@
 <script lang="ts">
   import { page } from '$app/stores';
+  import { invalidate } from '$app/navigation';
   import { onMount } from 'svelte';
   import { notifikasiState } from '$lib/stores/notifikasi.svelte';
   import { JASA_AKTIF } from '$lib/config';
@@ -30,6 +31,14 @@
     } catch (e) {
       console.error(e);
     }
+  });
+
+  // BARU: perbarui angka notifikasi pesanan tiap 15 detik selama tab sedang dilihat
+  onMount(() => {
+    const timer = setInterval(() => {
+      if (document.visibilityState === 'visible') invalidate('app:pesanan-baru');
+    }, 15000);
+    return () => clearInterval(timer);
   });
 
   const menu = [
@@ -108,8 +117,8 @@ $effect(() => {
     <div class="px-5 py-6 border-b border-ink/10">
       <a
         href="/profile"
-        class="inline-flex items-center gap-2.5 text-[13px] font-bold
-               text-ink-soft hover:text-primary-dark transition"
+        class="inline-flex items-center gap-2.5 px-2 py-1.5 -mx-2 rounded-xl text-[13px] font-bold
+               text-ink-soft transition hover:bg-bg-alt hover:text-primary-dark"
       >
         <svg
           class="w-4 h-4"
@@ -135,7 +144,7 @@ $effect(() => {
                  text-sm font-semibold transition
                  {$page.url.pathname === item.href
             ? 'bg-primary text-white shadow-sm'
-            : 'text-ink-soft hover:bg-bg-alt hover:text-ink'}"
+            : 'text-ink-soft hover:bg-bg-alt hover:text-primary-dark'}"
         >
           <svg
             class="w-4.5 h-4.5 shrink-0"
@@ -153,11 +162,27 @@ $effect(() => {
 
           {#if item.href === '/jastiper/pengajuan-harga' && notifikasi.jumlah > 0}
             <span
-              class="ml-auto bg-primary text-bg text-[10px] font-bold
+              class="ml-auto text-[10px] font-bold
                      rounded-full min-w-5 h-5 px-1.5
-                     flex items-center justify-center"
+                     flex items-center justify-center
+                     {$page.url.pathname === item.href
+                ? 'bg-white text-primary-dark'
+                : 'bg-primary text-bg'}"
             >
               {notifikasi.jumlah > 9 ? '9+' : notifikasi.jumlah}
+            </span>
+          {/if}
+
+          {#if item.href === '/jastiper/pesanan' && data.jumlahPesananBaru > 0}
+            <span
+              class="ml-auto text-[10px] font-bold
+                     rounded-full min-w-5 h-5 px-1.5
+                     flex items-center justify-center
+                     {$page.url.pathname === item.href
+                ? 'bg-white text-primary-dark'
+                : 'bg-primary text-bg'}"
+            >
+              {data.jumlahPesananBaru > 9 ? '9+' : data.jumlahPesananBaru}
             </span>
           {/if}
         </a>
@@ -169,7 +194,7 @@ $effect(() => {
       <a
         href="/profile"
         class="flex items-center gap-3 px-3 py-2.5 rounded-2xl
-               hover:bg-bg-alt transition"
+               text-ink transition hover:bg-bg-alt hover:text-primary-dark"
       >
         {#if avatarUrl}
           <img
@@ -253,7 +278,7 @@ $effect(() => {
                    transition
                    {$page.url.pathname === item.href
               ? 'bg-primary text-white'
-              : 'bg-bg text-ink-soft hover:bg-bg-alt hover:text-ink'}"
+              : 'bg-bg text-ink-soft hover:bg-bg-alt hover:text-primary-dark'}"
           >
             <svg
               class="w-4 h-4 shrink-0"
@@ -271,11 +296,27 @@ $effect(() => {
 
             {#if item.href === '/jastiper/pengajuan-harga' && notifikasi.jumlah > 0}
               <span
-                class="ml-1 bg-primary text-bg text-[9px] font-bold
+                class="ml-1 text-[9px] font-bold
                        rounded-full min-w-4 h-4 px-1
-                       flex items-center justify-center"
+                       flex items-center justify-center
+                       {$page.url.pathname === item.href
+                  ? 'bg-white text-primary-dark'
+                  : 'bg-primary text-bg'}"
               >
                 {notifikasi.jumlah > 9 ? '9+' : notifikasi.jumlah}
+              </span>
+            {/if}
+
+            {#if item.href === '/jastiper/pesanan' && data.jumlahPesananBaru > 0}
+              <span
+                class="ml-1 text-[9px] font-bold
+                       rounded-full min-w-4 h-4 px-1
+                       flex items-center justify-center
+                       {$page.url.pathname === item.href
+                  ? 'bg-white text-primary-dark'
+                  : 'bg-primary text-bg'}"
+              >
+                {data.jumlahPesananBaru > 9 ? '9+' : data.jumlahPesananBaru}
               </span>
             {/if}
           </a>

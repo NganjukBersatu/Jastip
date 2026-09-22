@@ -286,6 +286,16 @@
                     <div class="text-[12px] text-ink-soft mt-0.5">
                       {p.jumlah} pcs · {formatTanggal(p.createdAt)}
                     </div>
+                    {#if p.items.length > 1}
+                      <div class="mt-2 flex flex-col gap-1 border-l-2 border-orange-200 pl-3">
+                        {#each p.items as it (it.id)}
+                          <div class="flex items-start justify-between gap-3 text-[12px] text-ink-soft">
+                            <span class="min-w-0 wrap-break-word">{it.nama} × {it.jumlah}</span>
+                            <span class="shrink-0">{formatRupiah(it.hargaSatuan * it.jumlah)}</span>
+                          </div>
+                        {/each}
+                      </div>
+                    {/if}
                   </div>
                 </label>
               {/each}
