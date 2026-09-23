@@ -38,6 +38,7 @@ Nitip adalah aplikasi web marketplace jasa titip (jastip) yang menghubungkan **j
 
 - **Beli langsung**: checkout satu produk, tidak masuk ke tabel keranjang.
 - **+ Keranjang**: kumpulkan beberapa item dulu, checkout sekaligus lewat halaman Keranjang → Pembayaran.
+- **Nego harga** (untuk produk/jasa dengan harga tidak tetap): klik "Hubungi Penjual" → diskusi harga lewat chat nego → pembeli mengajukan tawaran → jastiper menyetujui atau menolak. Kalau disetujui, lanjut ke pilih metode pembayaran dengan harga hasil nego; kalau ditolak, alur berhenti di situ.
 - Pembayaran non-COD (transfer bank / e-wallet) **tidak menyimpan nomor rekening/e-wallet di sistem** — pelanggan diarahkan konfirmasi langsung ke WhatsApp pribadi jastiper untuk mengurangi risiko kebocoran data.
 
 ## Skema Database (ringkas)
@@ -82,4 +83,4 @@ Masih aktif dikembangkan. Beberapa hal yang masih berjalan/dipertimbangkan:
 
 ## Tim
 
-Dikembangkan oleh tim yang terdiri dari 3 orang: Ifaniaa, Salsa, dan Sabela.
+Dikembangkan oleh tim yang terdiri dari 4 orang: Ifaniaa, Shinta, Salsa, dan Sabela.
