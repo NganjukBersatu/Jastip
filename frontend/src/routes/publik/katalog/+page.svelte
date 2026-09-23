@@ -102,9 +102,6 @@
 	function tutupDetail() {
 		itemDipilih = null;
 	}
-	function hubungiJastiper() {
-		goto('/publik/pesan');
-	}
 
 	// BARU: tambah/kurangi jumlah pilihan di modal, minimal 1
 	function tambahJumlah() {
@@ -600,12 +597,15 @@
 							Pesan Jasa
 						</a>
 					{:else if item.hargaTipe === 'nego'}
-						<button
-							onclick={hubungiJastiper}
-							class="w-full py-3.5 rounded-full font-bold text-[15px] bg-accent text-ink transition-transform hover:-translate-y-0.5"
-						>
-							Hubungi Jastiper
-						</button>
+    <form method="POST" action="?/chatJastiper" use:enhance>
+        <input type="hidden" name="produkId" value={item.id} />
+        <button
+            type="submit"
+            class="w-full py-3.5 rounded-full font-bold text-[15px] bg-accent text-ink transition-transform hover:-translate-y-0.5"
+        >
+            Hubungi Jastiper
+        </button>
+    </form>
 					{:else}
 						<div class="flex gap-3">
 							<form
