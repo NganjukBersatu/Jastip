@@ -114,13 +114,13 @@
 	<title>Chat — {data.item.produkNama} — Nitip</title>
 </svelte:head>
 
-<div class="w-full max-w-285 mx-auto p-8 flex flex-col h-[calc(100vh-4rem)]">
-		<!-- Header -->
-	<div class="flex justify-between items-start gap-4">
+<div class="w-full max-w-285 mx-auto p-4 sm:p-8 flex flex-col h-dvh">
+	<!-- Header -->
+	<div class="flex flex-col sm:flex-row justify-between items-start gap-3 sm:gap-4">
 		<div>
-			<h1 class="text-[24px]">{data.item.produkNama}</h1>
+			<h1 class="text-[20px] sm:text-[24px]">{data.item.produkNama}</h1>
 
-			<p class="text-ink-soft text-[14px]">
+			<p class="text-ink-soft text-[13px] sm:text-[14px]">
 				Nego dengan
 				<span class="font-semibold text-ink">
 					{data.item.pelangganNama}
@@ -128,7 +128,7 @@
 			</p>
 		</div>
 
-		<div class="text-right shrink-0">
+		<div class="text-left sm:text-right shrink-0">
 			<div class="font-display font-semibold text-lg text-primary-dark">
 				{formatRupiah(data.item.hargaDiajukan)}
 			</div>
@@ -203,7 +203,7 @@
 
 	<!-- Tombol Terima / Tolak -->
 	{#if data.item.status === 'menunggu'}
-		<div class="flex gap-3 mt-4">
+		<div class="flex flex-col sm:flex-row gap-3 mt-4">
 			<form
 				method="POST"
 				action="?/terima"
@@ -251,14 +251,14 @@
 	<!-- Chat -->
 	<div
 		bind:this={elemChat}
-		class="flex-1 overflow-y-auto mt-6 flex flex-col gap-3 pr-1"
+		class="flex-1 min-h-0 overflow-y-auto mt-6 flex flex-col gap-3 pr-1"
 	>
 		{#each daftarPesan as pesan (pesan.id)}
 			{@const punyaSaya = pesan.pengirimId === data.userId}
 
 			<div class="flex {punyaSaya ? 'justify-end' : 'justify-start'}">
 				<div
-					class="max-w-[75%] rounded-2xl px-4 py-2.5 text-[14px] {punyaSaya
+					class="max-w-[85%] sm:max-w-[75%] rounded-2xl px-4 py-2.5 text-[14px] {punyaSaya
 						? 'bg-ink text-bg'
 						: 'bg-white border border-ink/10'}"
 				>
@@ -281,7 +281,8 @@
 		method="POST"
 		action="?/kirimPesan"
 		use:enhance={handleKirim}
-		class="flex gap-2 mt-4 pt-4 border-t border-ink/10"
+		class="shrink-0 flex items-center gap-2
+		       mt-3 pt-3 border-t border-ink/10"
 	>
 		<input
 			type="text"
@@ -289,12 +290,20 @@
 			bind:value={isiPesan}
 			placeholder="Tulis pesan..."
 			required
-			class="flex-1 rounded-pill border border-ink/15 px-4 py-2.5 text-[14px] focus:outline-none focus:border-ink/40"
+			autocomplete="off"
+			class="flex-1 min-w-0 rounded-pill
+			       border border-ink/15 bg-white
+			       px-4 py-3 text-[13.5px]
+			       focus:outline-none
+			       focus:border-ink/40"
 		/>
 
 		<button
 			type="submit"
-			class="rounded-pill bg-primary text-bg font-bold text-[13.5px] px-5"
+			class="rounded-pill bg-primary text-bg
+			       font-bold text-[13px]
+			       px-5 py-3 shrink-0
+			       hover:-translate-y-0.5 transition"
 		>
 			Kirim
 		</button>

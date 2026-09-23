@@ -175,7 +175,7 @@ const sesudah = [
     </div>
   </section>
 
-  <!-- Penutup: Card ajakan buka katalog -->
+  <!-- Penutup: Card ajakan buka katalog --> 
   <section class="max-w-350 mx-auto px-8 pb-16">
     <div class="bg-ink rounded-card px-8 py-12 md:py-16 text-center relative overflow-hidden">
       <svg class="absolute -top-10 -right-10 w-40 h-40 text-white/5" viewBox="0 0 100 100" fill="currentColor">
