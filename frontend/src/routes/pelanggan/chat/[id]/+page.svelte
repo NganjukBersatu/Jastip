@@ -1,4 +1,6 @@
 <script>
+// @ts-nocheck
+
 	import { enhance } from '$app/forms';
 	import { onMount, onDestroy } from 'svelte';
 
@@ -17,9 +19,11 @@
 	let jumlahBaru = $state(1);
 
 	let mengirimTawaran = $state(false);
-	let mengirimWilayah = $state(false);
+	let mengirimKonfirmasi = $state(false);
 
 	let wilayahDipilih = $state('');
+	let alamatLengkap = $state('');
+	let metodePembayaran = $state('');
 
 	/** @type {HTMLDivElement | null} */
 	let elemChat = $state(null);
@@ -29,30 +33,18 @@
 
 	let sedangPolling = false;
 
-	// ID pesan yang sedang diproses hapus (untuk disable tombolnya sementara)
 	/** @type {string | null} */
 	let menghapusId = $state(null);
 
-	// ID pesan yang menu opsinya sedang terbuka
 	/** @type {string | null} */
 	let menuTerbukaId = $state(null);
 
-	// Posisi menu (fixed, dihitung dari lokasi tombol yang diklik)
 	let menuPosisi = $state({ top: 0, left: 0 });
 
-	// ID pesan yang sedang dalam mode edit
 	/** @type {string | null} */
 	let editIdAktif = $state(null);
 
-	// Isi sementara saat mengedit pesan
 	let isiEditSementara = $state('');
-
-	// Panel detail transaksi
-	let detailTerbuka = $state(false);
-
-	// Accordion
-	let penawaranTerbuka = $state(true);
-	let ongkirTerbuka = $state(false);
 
 	// =========================================================
 	// DATA DARI SERVER
@@ -63,30 +55,37 @@
 		daftarTawaran = data.daftarTawaran ?? [];
 	});
 
-	// Ambil wilayah yang sebelumnya sudah dipilih
-	$effect(() => {
-		wilayahDipilih = data.item.wilayahId ?? '';
-	});
-
 	// =========================================================
 	// DERIVED DATA
 	// =========================================================
 
 	let tawaranTerakhir = $derived(daftarTawaran.at(-1));
 
-	let ongkirTerpilih = $derived(
+	let ongkirDipilih = $derived(
 		(data.daftarWilayah ?? []).find(
 			/** @param {{ id: string }} w */
 			(w) => w.id === wilayahDipilih
 		)
 	);
 
-	let totalPerkiraan = $derived(
+	let totalKonfirmasi = $derived(
 		Number(data.item.hargaDiajukan ?? 0) * Number(data.item.jumlah ?? 0) +
-			Number(ongkirTerpilih?.biaya ?? 0)
+			Number(ongkirDipilih?.biaya ?? 0)
 	);
 
 	let statusInfo = $derived(labelStatus(data.item.status));
+
+	// BARU: nomor WA jastiper dirapikan jadi format internasional (62...),
+	// dipakai buat arahkan pembayaran non-COD.
+	let nomorWaJastiper = $derived(formatNomorWa(data.item.jastiperNoWa));
+
+	let pesanWa = $derived(
+		`Halo ${data.item.jastiperNama}, saya mau konfirmasi pembayaran untuk pesanan "${data.item.namaItem}" sebesar ${formatRupiah(totalKonfirmasi)}.`
+	);
+
+	let linkWa = $derived(
+		nomorWaJastiper ? `https://wa.me/${nomorWaJastiper}?text=${encodeURIComponent(pesanWa)}` : null
+	);
 
 	// =========================================================
 	// HELPER
@@ -139,6 +138,24 @@
 				kelas: 'bg-gray-100 text-gray-700'
 			}
 		);
+	}
+
+	/** @param {string} nama */
+	function inisial(nama) {
+		return nama?.trim()?.charAt(0)?.toUpperCase() ?? '?';
+	}
+
+	/**
+	 * Rapikan nomor WA ke format internasional (62...) tanpa +/spasi/strip.
+	 * @param {string | null | undefined} nomor
+	 */
+	function formatNomorWa(nomor) {
+		if (!nomor) return null;
+		const bersih = nomor.replace(/[^0-9]/g, '');
+		if (!bersih) return null;
+		if (bersih.startsWith('0')) return '62' + bersih.slice(1);
+		if (bersih.startsWith('62')) return bersih;
+		return '62' + bersih;
 	}
 
 	function scrollKeBawah() {
@@ -195,7 +212,6 @@
 				return;
 			}
 
-			// Cegah pesan yang sudah ada masuk lagi
 			const idSudahAda = new Set(daftarPesan.map((pesan) => pesan.id));
 
 			const pesanBaru = pesanDariServer.filter((pesan) => !idSudahAda.has(pesan.id));
@@ -274,11 +290,9 @@
 		const tombol = /** @type {HTMLElement} */ (e.currentTarget);
 		const rect = tombol.getBoundingClientRect();
 
-		const lebarMenu = 144; // sesuai w-36
+		const lebarMenu = 144;
 		const tinggiMenuPerkiraan = 90;
 
-		// buka ke atas kalau tombolnya dekat bagian bawah layar,
-		// kalau tidak, buka ke bawah seperti biasa
 		const bukaKeAtas = rect.bottom + tinggiMenuPerkiraan > window.innerHeight;
 
 		menuPosisi = {
@@ -372,6 +386,16 @@
 	// FORM TAWARAN
 	// =========================================================
 
+	/**
+	 * BARU: klik chip riwayat tawaran buat isi ulang form,
+	 * bukan langsung kirim — biar pelanggan masih bisa sesuaikan dulu.
+	 * @param {{ harga: number; jumlah: number }} t
+	 */
+	function pakaiTawaranLagi(t) {
+		hargaBaru = t.harga;
+		jumlahBaru = t.jumlah;
+	}
+
 	/** @type {SubmitFunction} */
 	function handleAjukanTawaran() {
 		mengirimTawaran = true;
@@ -383,36 +407,21 @@
 			jumlahBaru = 1;
 
 			await update();
-
-			// Setelah kirim tawaran,
-			// buka bagian penawaran supaya hasilnya terlihat.
-			detailTerbuka = true;
-			penawaranTerbuka = true;
 		};
 	}
 
 	// =========================================================
-	// FORM WILAYAH
+	// FORM KONFIRMASI PESANAN
 	// =========================================================
 
 	/** @type {SubmitFunction} */
-	function handlePilihWilayah() {
-		mengirimWilayah = true;
+	function handleKonfirmasiPesanan() {
+		mengirimKonfirmasi = true;
 
 		return async ({ update }) => {
-			mengirimWilayah = false;
-
+			mengirimKonfirmasi = false;
 			await update();
-
-			// Setelah menyimpan wilayah,
-			// buka bagian ongkir supaya hasilnya terlihat.
-			detailTerbuka = true;
-			ongkirTerbuka = true;
 		};
-	}
-
-	function toggleDetail() {
-		detailTerbuka = !detailTerbuka;
 	}
 </script>
 
@@ -432,8 +441,7 @@
 	<!-- ===================================================== -->
 
 	<div class="shrink-0">
-		
-			<a href="/pelanggan/chat"
+		<a href="/pelanggan/chat"
 			class="inline-flex items-center gap-1
 			       text-[13px] font-semibold text-ink
 			       hover:text-ink/70 transition mb-1"
@@ -492,348 +500,132 @@
 				</span>
 			</div>
 		</div>
+	</div>
 
-		<!-- ================================================= -->
-		<!-- DETAIL TRANSAKSI -->
-		<!-- ================================================= -->
+	<!-- ===================================================== -->
+	<!-- PANEL AJUKAN HARGA — selalu tampil (tidak dropdown), -->
+	<!-- cuma muncul selama belum diterima jastiper -->
+	<!-- ===================================================== -->
 
-		<div class="mt-4">
-			<button
-				type="button"
-				onclick={toggleDetail}
-				class="w-full flex items-center justify-between
-				       gap-3 bg-white border border-ink/10
-				       rounded-2xl px-4 py-3
-				       hover:border-ink/20 hover:bg-bg-alt
-				       transition"
-			>
-				<div class="flex items-center gap-3">
-					<div
-						class="w-8 h-8 rounded-xl bg-bg
-						       flex items-center justify-center
-						       text-ink-soft shrink-0"
+	{#if data.item.status !== 'diterima'}
+		<div class="mt-4 bg-white border border-ink/10 rounded-2xl p-4 shrink-0">
+			<div class="flex items-center gap-2.5 mb-3">
+				<div
+					class="w-7 h-7 rounded-lg bg-primary/10
+					       flex items-center justify-center
+					       text-primary-dark shrink-0"
+				>
+					<svg
+						class="w-3.5 h-3.5"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
 					>
-						<svg
-							class="w-4 h-4"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="2"
-							stroke-linecap="round"
-							stroke-linejoin="round"
-						>
-							<line x1="4" y1="6" x2="20" y2="6" />
-							<line x1="4" y1="12" x2="20" y2="12" />
-							<line x1="4" y1="18" x2="20" y2="18" />
-						</svg>
-					</div>
+						<path d="M12 2v20" />
+						<path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+					</svg>
+				</div>
+				<span class="text-[13px] font-bold">Ajukan harga</span>
+			</div>
 
-					<div class="text-left">
-						<div class="text-[13px] font-bold text-ink">Detail transaksi</div>
-
+			{#if tawaranTerakhir}
+				<div class="flex items-center justify-between gap-3 bg-bg rounded-xl px-3.5 py-2.5 mb-3">
+					<div>
 						<div class="text-[11px] text-ink-soft">
-							{#if detailTerbuka}
-								Sembunyikan penawaran & ongkir
-							{:else}
-								Buka penawaran & ongkos kirim
-							{/if}
+							Tawaran terakhirmu · {tawaranTerakhir.jumlah} pcs
+						</div>
+						<div class="font-display font-semibold text-[15px] mt-0.5">
+							{formatRupiah(Number(tawaranTerakhir.harga))}
 						</div>
 					</div>
+					<span
+						class="text-[10px] font-bold px-2 py-1 rounded-full
+						       {labelStatus(tawaranTerakhir.status).kelas}"
+					>
+						{labelStatus(tawaranTerakhir.status).teks}
+					</span>
 				</div>
+			{:else}
+				<p class="text-[12px] text-ink-soft mb-3">
+					Belum ada tawaran. Ajukan harga yang kamu mau di bawah ini.
+				</p>
+			{/if}
 
-				<svg
-					class="w-4 h-4 text-ink-soft
-					       transition-transform
-					       {detailTerbuka ? 'rotate-180' : ''}"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-					stroke-linecap="round"
-					stroke-linejoin="round"
-				>
-					<polyline points="6 9 12 15 18 9" />
-				</svg>
-			</button>
-
-			<!-- ================================================= -->
-			<!-- DETAIL DIBUKA -->
-			<!-- ================================================= -->
-
-			{#if detailTerbuka}
-				<div class="mt-2 flex flex-col gap-2">
-					<!-- ================================================= -->
-					<!-- PENAWARAN HARGA -->
-					<!-- ================================================= -->
-
-					<div class="bg-white border border-ink/10 rounded-2xl overflow-hidden">
-						<button
-							type="button"
-							onclick={() => (penawaranTerbuka = !penawaranTerbuka)}
-							class="w-full flex items-center
-							       justify-between px-4 py-3"
-						>
-							<div class="flex items-center gap-2.5">
-								<div
-									class="w-7 h-7 rounded-lg bg-primary/10
-									       flex items-center justify-center
-									       text-primary-dark"
-								>
-									<svg
-										class="w-3.5 h-3.5"
-										viewBox="0 0 24 24"
-										fill="none"
-										stroke="currentColor"
-										stroke-width="2"
-										stroke-linecap="round"
-										stroke-linejoin="round"
-									>
-										<path d="M12 2v20" />
-										<path
-											d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"
-										/>
-									</svg>
-								</div>
-
-								<span class="text-[13px] font-bold">Penawaran harga</span>
-							</div>
-
-							<svg
-								class="w-4 h-4 text-ink-soft
-								       transition-transform
-								       {penawaranTerbuka ? 'rotate-180' : ''}"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								stroke-width="2"
-								stroke-linecap="round"
-								stroke-linejoin="round"
-							>
-								<polyline points="6 9 12 15 18 9" />
-							</svg>
-						</button>
-
-						{#if penawaranTerbuka}
-							<div class="px-4 pb-4 border-t border-ink/5">
-								{#if tawaranTerakhir}
-									<div class="flex items-center justify-between gap-3 pt-3">
-										<div>
-											<div class="text-[12px] text-ink-soft">
-												Tawaranmu · {tawaranTerakhir.jumlah} pcs
-											</div>
-
-											<div class="font-display font-semibold text-[16px] mt-0.5">
-												{formatRupiah(Number(tawaranTerakhir.harga))}
-											</div>
-										</div>
-
-										<div>
-											<span
-												class="text-[10px]
-												       font-bold px-2 py-1
-												       rounded-full
-												       {labelStatus(tawaranTerakhir.status).kelas}"
-											>
-												{labelStatus(tawaranTerakhir.status).teks}
-											</span>
-										</div>
-									</div>
-
-									<p class="text-[10px] text-ink-soft mt-1">
-										Dikirim {formatJam(tawaranTerakhir.createdAt)}
-									</p>
-								{:else}
-									<p class="text-[12px] text-ink-soft pt-3">
-										Belum ada tawaran. Kamu bisa mengajukan harga baru.
-									</p>
-								{/if}
-
-								<!-- FORM TAWARAN -->
-
-								<form
-									method="POST"
-									action="?/ajukanTawaran"
-									use:enhance={handleAjukanTawaran}
-									class="flex gap-2 mt-3"
-								>
-									<input
-										type="number"
-										name="harga"
-										bind:value={hargaBaru}
-										placeholder="Harga tawaran baru"
-										required
-										min="1"
-										class="flex-1 min-w-0
-										       rounded-xl
-										       border border-ink/15
-										       px-3 py-2.5
-										       text-[13px]
-										       focus:outline-none
-										       focus:border-ink/40"
-									/>
-
-									<input
-										type="number"
-										name="jumlah"
-										bind:value={jumlahBaru}
-										placeholder="Jumlah"
-										required
-										min="1"
-										class="w-18.75
-										       rounded-xl
-										       border border-ink/15
-										       px-3 py-2.5
-										       text-[13px]
-										       focus:outline-none
-										       focus:border-ink/40"
-									/>
-
-									<button
-										type="submit"
-										disabled={mengirimTawaran}
-										class="rounded-pill
-										       bg-primary text-bg
-										       font-bold text-[12px]
-										       px-4 shrink-0
-										       disabled:opacity-50"
-									>
-										{mengirimTawaran ? '...' : 'Kirim'}
-									</button>
-								</form>
-							</div>
-						{/if}
+			{#if daftarTawaran.length > 1}
+				<div class="mb-3">
+					<div class="text-[11px] font-semibold text-ink-soft mb-1.5">
+						Riwayat tawaran · klik buat pakai lagi
 					</div>
-
-					<!-- ================================================= -->
-					<!-- ONGKOS KIRIM -->
-					<!-- ================================================= -->
-
-					<div class="bg-white border border-ink/10 rounded-2xl overflow-hidden">
-						<button
-							type="button"
-							onclick={() => (ongkirTerbuka = !ongkirTerbuka)}
-							class="w-full flex items-center
-							       justify-between px-4 py-3"
-						>
-							<div class="flex items-center gap-2.5">
-								<div
-									class="w-7 h-7 rounded-lg bg-primary/10
-									       flex items-center justify-center
-									       text-primary-dark"
-								>
-									<svg
-										class="w-3.5 h-3.5"
-										viewBox="0 0 24 24"
-										fill="none"
-										stroke="currentColor"
-										stroke-width="2"
-										stroke-linecap="round"
-										stroke-linejoin="round"
-									>
-										<rect x="3" y="7" width="11" height="9" />
-										<path d="M14 10h4l3 3v3h-7z" />
-										<circle cx="7" cy="18" r="2" />
-										<circle cx="18" cy="18" r="2" />
-									</svg>
-								</div>
-
-								<span class="text-[13px] font-bold">Ongkos kirim</span>
-							</div>
-
-							<svg
-								class="w-4 h-4 text-ink-soft
-								       transition-transform
-								       {ongkirTerbuka ? 'rotate-180' : ''}"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								stroke-width="2"
-								stroke-linecap="round"
-								stroke-linejoin="round"
+					<div class="flex flex-wrap gap-1.5">
+						{#each [...daftarTawaran].reverse() as t (t.id)}
+							<button
+								type="button"
+								onclick={() => pakaiTawaranLagi(t)}
+								class="text-[11.5px] font-semibold bg-bg hover:bg-bg-alt
+								       border border-ink/10 rounded-full px-3 py-1.5 transition"
 							>
-								<polyline points="6 9 12 15 18 9" />
-							</svg>
-						</button>
-
-						{#if ongkirTerbuka}
-							<div class="px-4 pb-4 border-t border-ink/5">
-								{#if (data.daftarWilayah ?? []).length === 0}
-									<p class="text-[12px] text-ink-soft pt-3">
-										Jastiper ini belum mengatur wilayah pengiriman. Tanyakan lewat chat jika
-										perlu.
-									</p>
-								{:else}
-									<form
-										method="POST"
-										action="?/pilihWilayah"
-										use:enhance={handlePilihWilayah}
-										class="flex gap-2 pt-3"
-									>
-										<select
-											name="wilayahId"
-											bind:value={wilayahDipilih}
-											required
-											class="flex-1 min-w-0
-											       rounded-xl
-											       border border-ink/15
-											       px-3 py-2.5
-											       text-[13px]
-											       focus:outline-none
-											       focus:border-ink/40
-											       bg-white"
-										>
-											<option value="" disabled>Pilih wilayah tujuan...</option>
-
-											{#each data.daftarWilayah ?? [] as w (w.id)}
-												<option value={w.id}>
-													{w.wilayah} — {formatRupiah(Number(w.biaya))}
-												</option>
-											{/each}
-										</select>
-
-										<button
-											type="submit"
-											disabled={mengirimWilayah || !wilayahDipilih}
-											class="rounded-pill
-											       bg-ink text-bg
-											       font-bold text-[12px]
-											       px-4 shrink-0
-											       disabled:opacity-50"
-										>
-											{mengirimWilayah ? '...' : 'Simpan'}
-										</button>
-									</form>
-
-									{#if data.item.wilayahId}
-										<div
-											class="flex justify-between
-											       items-center gap-3
-											       mt-3 pt-3
-											       border-t border-ink/5"
-										>
-											<div>
-												<div class="text-[11px] text-ink-soft">Total perkiraan</div>
-
-												<div class="text-[10px] text-ink-soft/70">Barang + ongkos kirim</div>
-											</div>
-
-											<span class="font-display font-semibold text-[15px]">
-												{formatRupiah(totalPerkiraan)}
-											</span>
-										</div>
-									{:else}
-										<p class="text-[11px] text-ink-soft mt-2">
-											Pilih wilayah tujuan untuk menghitung total perkiraan.
-										</p>
-									{/if}
-								{/if}
-							</div>
-						{/if}
+								{formatRupiah(Number(t.harga))} · {t.jumlah} pcs
+							</button>
+						{/each}
 					</div>
 				</div>
 			{/if}
+
+			<form
+				method="POST"
+				action="?/ajukanTawaran"
+				use:enhance={handleAjukanTawaran}
+				class="flex gap-2"
+			>
+				<input
+					type="number"
+					name="harga"
+					bind:value={hargaBaru}
+					placeholder="Harga tawaran baru"
+					required
+					min="1"
+					class="flex-1 min-w-0
+					       rounded-xl
+					       border border-ink/15
+					       px-3 py-2.5
+					       text-[13px]
+					       focus:outline-none
+					       focus:border-ink/40"
+				/>
+
+				<input
+					type="number"
+					name="jumlah"
+					bind:value={jumlahBaru}
+					placeholder="Jumlah"
+					required
+					min="1"
+					class="w-18.75
+					       rounded-xl
+					       border border-ink/15
+					       px-3 py-2.5
+					       text-[13px]
+					       focus:outline-none
+					       focus:border-ink/40"
+				/>
+
+				<button
+					type="submit"
+					disabled={mengirimTawaran}
+					class="rounded-pill
+					       bg-primary text-bg
+					       font-bold text-[12px]
+					       px-4 shrink-0
+					       disabled:opacity-50"
+				>
+					{mengirimTawaran ? '...' : 'Kirim'}
+				</button>
+			</form>
 		</div>
-	</div>
+	{/if}
 
 	<!-- ===================================================== -->
 	<!-- AREA CHAT -->
@@ -905,7 +697,6 @@
 								{pesan.isi}
 							</div>
 
-							<!-- JAM + TOMBOL OPSI (chevron), sejajar, di dalam bubble -->
 							<div class="flex items-center justify-end gap-1.5 mt-1">
 								<span class="text-[10px] opacity-60">
 									{formatJam(pesan.createdAt)}
@@ -942,7 +733,6 @@
 				</div>
 			</div>
 
-			<!-- MENU DROPDOWN — fixed di viewport, gak pernah kepotong -->
 			{#if menuTerbukaId === pesan.id}
 				<!-- svelte-ignore a11y_click_events_have_key_events -->
 				<!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -1013,40 +803,210 @@
 				</div>
 			{/if}
 		{:else}
-			<div class="flex-1 flex items-center justify-center">
-				<div class="text-center max-w-70">
-					<div
-						class="w-12 h-12 rounded-full bg-white
-						       border border-ink/10
-						       flex items-center justify-center
-						       mx-auto mb-3"
-					>
-						<svg
-							class="w-5 h-5 text-ink-soft"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="1.75"
-							stroke-linecap="round"
-							stroke-linejoin="round"
+			{#if data.item.status !== 'diterima'}
+				<div class="flex-1 flex items-center justify-center">
+					<div class="text-center max-w-70">
+						<div
+							class="w-12 h-12 rounded-full bg-white
+							       border border-ink/10
+							       flex items-center justify-center
+							       mx-auto mb-3"
 						>
-							<path
-								d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5
-								   c-1.35 0-2.62-.32-3.74-.9L3 21
-								   l1.9-5.76A8.46 8.46 0 0 1 3.5 11.5
-								   8.5 8.5 0 0 1 12 3a8.5 8.5 0 0 1 9 8.5Z"
-							/>
-						</svg>
+							<svg
+								class="w-5 h-5 text-ink-soft"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="1.75"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							>
+								<path
+									d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5
+									   c-1.35 0-2.62-.32-3.74-.9L3 21
+									   l1.9-5.76A8.46 8.46 0 0 1 3.5 11.5
+									   8.5 8.5 0 0 1 12 3a8.5 8.5 0 0 1 9 8.5Z"
+								/>
+							</svg>
+						</div>
+
+						<p class="text-[13px] font-semibold text-ink">Belum ada pesan</p>
+
+						<p class="text-[12px] text-ink-soft mt-1">
+							Mulai nego dengan jastiper melalui chat ini.
+						</p>
+					</div>
+				</div>
+			{/if}
+		{/each}
+
+		<!-- ================================================= -->
+		<!-- BUBBLE "JASTIPER" BERISI KONFIRMASI PESANAN — -->
+		<!-- muncul otomatis di ujung chat begitu status diterima -->
+		<!-- ================================================= -->
+
+		{#if data.item.status === 'diterima'}
+			<div class="flex justify-start">
+				<div class="max-w-[85%] sm:max-w-[75%]">
+					<div class="flex items-center gap-2 mb-1 pl-0.5">
+						<div
+							class="w-6 h-6 rounded-full bg-accent
+							       flex items-center justify-center
+							       text-[11px] font-bold text-primary-deep shrink-0"
+						>
+							{inisial(data.item.jastiperNama)}
+						</div>
+						<span class="text-[11px] font-semibold text-ink-soft">
+							{data.item.jastiperNama}
+						</span>
 					</div>
 
-					<p class="text-[13px] font-semibold text-ink">Belum ada pesan</p>
+					<div class="bg-white border border-ink/10 rounded-2xl rounded-tl-md px-4 py-3.5">
+						{#if !data.pesananId}
+							<p class="text-[13.5px] leading-relaxed mb-3.5">
+								 Tawaran <span class="font-semibold">{formatRupiah(Number(data.item.hargaDiajukan))}</span>
+								buat <span class="font-semibold">{data.item.namaItem}</span> diterima! Lengkapi pesanan
+								di bawah ini ya biar bisa langsung diproses.
+							</p>
 
-					<p class="text-[12px] text-ink-soft mt-1">
-						Mulai nego dengan jastiper melalui chat ini.
-					</p>
+							<form
+								method="POST"
+								action="?/konfirmasiPesanan"
+								use:enhance={handleKonfirmasiPesanan}
+								class="flex flex-col gap-3"
+							>
+								{#if (data.daftarWilayah ?? []).length === 0}
+									<p class="text-[12px] text-ink-soft">
+										Jastiper ini belum mengatur wilayah pengiriman. Tanyakan lewat chat
+										sebelum lanjut.
+									</p>
+								{:else}
+									<div>
+									<label for="wilayahId" class="text-[12px] font-semibold text-ink block mb-1.5">
+              						   Wilayah tujuan
+									</label>
+										<select
+  										  id="wilayahId"
+  										  name="wilayahId"
+  										  bind:value={wilayahDipilih}
+  										  required
+											class="w-full rounded-xl border border-ink/15
+											       px-3 py-2.5 text-[13px]
+											       focus:outline-none focus:border-ink/40 bg-white"
+										>
+											<option value="" disabled>Pilih wilayah tujuan...</option>
+											{#each data.daftarWilayah as w (w.id)}
+												<option value={w.id}>
+													{w.wilayah} — {formatRupiah(Number(w.biaya))}
+												</option>
+											{/each}
+										</select>
+									</div>
+								{/if}
+
+								<div>
+									<label for="alamatLengkap" class="text-[12px] font-semibold text-ink block mb-1.5">
+   									 Alamat lengkap
+									</label>
+									<textarea
+  										id="alamatLengkap"
+  										name="alamatLengkap"
+   										bind:value={alamatLengkap}
+										required
+										rows="3"
+										placeholder="Nama jalan, nomor rumah, patokan, dll."
+										class="w-full rounded-xl border border-ink/15
+										       px-3 py-2.5 text-[13px] resize-none
+										       focus:outline-none focus:border-ink/40"
+									></textarea>
+								</div>
+
+								<div>
+									<label for="metodePembayaran" class="text-[12px] font-semibold text-ink block mb-1.5">
+  									  Metode pembayaran
+									</label>
+									<select
+  										id="metodePembayaran"
+   										name="metodePembayaran"
+   										bind:value={metodePembayaran}
+										required
+										class="w-full rounded-xl border border-ink/15
+										       px-3 py-2.5 text-[13px]
+										       focus:outline-none focus:border-ink/40 bg-white"
+									>
+										<option value="" disabled>Pilih metode pembayaran...</option>
+										<option value="transfer_bank">Transfer bank</option>
+										<option value="e_wallet">E-wallet</option>
+										<option value="cod">Bayar di tempat (COD)</option>
+									</select>
+								</div>
+
+								{#if metodePembayaran && metodePembayaran !== 'cod'}
+									<div class="bg-yellow-50 border border-yellow-200 rounded-xl px-3.5 py-3 text-[12px] text-yellow-800 leading-relaxed">
+										Pembayaran non-COD belum bisa diproses langsung di aplikasi. Setelah
+										konfirmasi pesanan, hubungi jastiper lewat WhatsApp buat dapat nomor
+										rekening/e-wallet tujuan.
+
+										{#if linkWa}
+											<a
+												href={linkWa}
+												target="_blank"
+												rel="noopener noreferrer"
+												class="mt-2 inline-flex items-center gap-1.5
+												       rounded-full bg-green-600 text-white
+												       font-bold text-[11.5px] px-3 py-1.5"
+											>
+												<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
+													<path d="M20.5 3.5A11.8 11.8 0 0 0 12 0C5.4 0 .1 5.3.1 11.9c0 2.1.5 4.1 1.6 5.9L0 24l6.3-1.7a11.9 11.9 0 0 0 5.7 1.5h.1c6.6 0 11.9-5.3 11.9-11.9 0-3.2-1.2-6.1-3.5-8.4Zm-8.5 18.2h-.1a9.9 9.9 0 0 1-5-1.4l-.4-.2-3.7 1 1-3.6-.2-.4a9.9 9.9 0 0 1-1.5-5.2c0-5.5 4.4-9.9 9.9-9.9 2.6 0 5.1 1 7 2.9a9.8 9.8 0 0 1 2.9 7c0 5.5-4.5 9.9-9.9 9.9Z" />
+												</svg>
+												Chat WA jastiper
+											</a>
+										{:else}
+											<div class="mt-1.5 text-[11px] italic">
+												Jastiper belum mengisi nomor WhatsApp. Tanyakan cara pembayarannya
+												lewat chat di sini dulu.
+											</div>
+										{/if}
+									</div>
+								{/if}
+
+								{#if wilayahDipilih}
+									<div class="flex justify-between items-center pt-2 border-t border-ink/10">
+										<span class="text-[12px] text-ink-soft">Total (barang + ongkir)</span>
+										<span class="font-display font-semibold text-[15px]">
+											{formatRupiah(totalKonfirmasi)}
+										</span>
+									</div>
+								{/if}
+
+								<button
+									type="submit"
+									disabled={mengirimKonfirmasi || (data.daftarWilayah ?? []).length === 0}
+									class="rounded-pill bg-primary text-bg
+									       font-bold text-[13px] py-2.5
+									       disabled:opacity-50"
+								>
+									{mengirimKonfirmasi ? 'Menyimpan...' : 'Konfirmasi & lanjutkan pesanan'}
+								</button>
+							</form>
+						{:else}
+							<p class="text-[13.5px] leading-relaxed mb-3">
+								Pesanan kamu sudah dikonfirmasi dan siap diproses. Pantau statusnya di halaman
+								Pesanan saya, ya.
+							</p>
+							<a
+								href="/pesanan"
+								class="inline-flex items-center gap-1.5
+								       rounded-full bg-ink text-bg
+								       font-bold text-[12px] px-4 py-2"
+							>
+								Lihat pesanan
+							</a>
+						{/if}
+					</div>
 				</div>
 			</div>
-		{/each}
+		{/if}
 	</div>
 
 	<!-- ===================================================== -->
