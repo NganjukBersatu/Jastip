@@ -203,7 +203,7 @@
       <button
         type="submit"
         disabled={mengirim}
-        class="mt-6 sm:mt-7 w-full sm:w-auto min-h-[46px] inline-flex items-center justify-center rounded-xl bg-ink px-8 py-3 text-[13px] sm:text-sm font-bold text-bg shadow-sm transition hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60"
+        class="mt-6 sm:mt-7 w-full sm:w-auto min-h-11.5 inline-flex items-center justify-center rounded-xl bg-ink px-8 py-3 text-[13px] sm:text-sm font-bold text-bg shadow-sm transition hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {mengirim ? 'Menyimpan...' : 'Simpan profil'}
       </button>
@@ -260,7 +260,7 @@
     {:else}
       <div class="bg-white rounded-2xl border border-ink/10 p-4 sm:p-5 shadow-[0_2px_12px_rgba(0,0,0,0.025)] flex flex-wrap gap-2">
         {#each data.daftarWilayahLayanan as w (w.id)}
-          <span class="max-w-full bg-bg-alt text-primary-dark text-[12px] sm:text-[12.5px] font-bold px-3.5 py-2 rounded-pill break-words">
+          <span class="max-w-full bg-bg-alt text-primary-dark text-[12px] sm:text-[12.5px] font-bold px-3.5 py-2 rounded-pill wrap-break-word">
             {w.wilayah}
           </span>
         {/each}

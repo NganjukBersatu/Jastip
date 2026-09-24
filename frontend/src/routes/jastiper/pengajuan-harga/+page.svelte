@@ -131,7 +131,7 @@
 				<div class="text-[13.5px] text-ink-soft mt-1.5">Coba ubah kata kunci atau filter status.</div>
 			{:else}
 				<div class="font-bold text-[15px] text-ink">Belum ada pengajuan masuk</div>
-				<div class="text-[13.5px] text-ink-soft mt-1.5 max-w-[280px] mx-auto leading-relaxed">
+				<div class="text-[13.5px] text-ink-soft mt-1.5 max-w-70 mx-auto leading-relaxed">
 					Tawaran harga dari pelanggan bakal muncul di sini.
 				</div>
 			{/if}
@@ -158,7 +158,7 @@
 			<div class="flex flex-col gap-3 sm:gap-4 {pisahkanAktifRiwayat ? 'mb-8 sm:mb-10' : ''}">
 				{#each pengajuanAktif as p (p.id)}
 					{@const st = labelStatus(p.status)}
-					<div class="bg-white rounded-[26px] border border-bg-alt p-4 sm:p-5 transition hover:shadow-md {sedangProses === p.id ? 'opacity-50 pointer-events-none' : ''}">
+					<div class="bg-white rounded-card border border-bg-alt p-4 sm:p-5 transition hover:shadow-md {sedangProses === p.id ? 'opacity-50 pointer-events-none' : ''}">
 						<div class="flex justify-between items-start gap-4">
 							<div class="flex items-start gap-3 min-w-0">
 								<div class="w-11 h-11 rounded-full bg-accent flex items-center justify-center font-display font-semibold text-[15px] text-primary-deep shrink-0">
@@ -192,7 +192,7 @@
 							<a href="/jastiper/pengajuan-harga/{p.id}" class="flex-1">
 								<button
 									type="button"
-									class="w-full min-h-[42px] inline-flex items-center justify-center gap-1.5 rounded-full bg-white border border-bg-alt text-ink font-bold text-[13px] hover:bg-bg transition"
+									class="w-full min-h-10.5 inline-flex items-center justify-center gap-1.5 rounded-full bg-white border border-bg-alt text-ink font-bold text-[13px] hover:bg-bg transition"
 								>
 									<i class="ti ti-message-circle" aria-hidden="true"></i> Balas chat
 								</button>
@@ -202,7 +202,7 @@
 								<a href="/jastiper/pengajuan-harga/{p.id}" class="flex-1">
 									<button
 										type="button"
-										class="w-full min-h-[42px] inline-flex items-center justify-center rounded-full bg-primary text-white font-bold text-[13px] hover:-translate-y-0.5 hover:shadow-md transition"
+										class="w-full min-h-10.5 inline-flex items-center justify-center rounded-full bg-primary text-white font-bold text-[13px] hover:-translate-y-0.5 hover:shadow-md transition"
 									>
 										Terima / Tolak
 									</button>
@@ -243,7 +243,7 @@
 					<div class="flex flex-col gap-3 sm:gap-4">
 						{#each pengajuanRiwayat as p (p.id)}
 							{@const st = labelStatus(p.status)}
-							<div class="bg-white rounded-[26px] border border-bg-alt p-4 sm:p-5 transition hover:shadow-md">
+							<div class="bg-white rounded-card border border-bg-alt p-4 sm:p-5 transition hover:shadow-md">
 								<div class="flex justify-between items-start gap-4">
 									<div class="flex items-start gap-3 min-w-0">
 										<div class="w-11 h-11 rounded-full bg-accent flex items-center justify-center font-display font-semibold text-[15px] text-primary-deep shrink-0">
@@ -277,7 +277,7 @@
 									<a href="/jastiper/pengajuan-harga/{p.id}" class="flex-1">
 										<button
 											type="button"
-											class="w-full min-h-[42px] inline-flex items-center justify-center gap-1.5 rounded-full bg-white border border-bg-alt text-ink font-bold text-[13px] hover:bg-bg transition"
+											class="w-full min-h-10.5 inline-flex items-center justify-center gap-1.5 rounded-full bg-white border border-bg-alt text-ink font-bold text-[13px] hover:bg-bg transition"
 										>
 											<i class="ti ti-message-circle" aria-hidden="true"></i> Balas chat
 										</button>

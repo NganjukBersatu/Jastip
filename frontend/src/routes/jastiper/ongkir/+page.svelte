@@ -75,7 +75,7 @@
               ? 'col-span-2 sm:col-span-1'
               : ''}"
           >
-            <div class="font-display text-2xl sm:text-3xl font-semibold break-words">
+            <div class="font-display text-2xl sm:text-3xl font-semibold wrap-break-wordword">
               {kartu.nilai}
             </div>
 
@@ -153,7 +153,7 @@
         <button
           type="submit"
           disabled={mengirim}
-          class="inline-flex min-h-[46px] w-full md:w-auto items-center justify-center rounded-xl bg-ink px-6 text-[13px] sm:text-sm font-bold text-bg shadow-sm transition hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60"
+          class="inline-flex min-h-11.5 w-full md:w-auto items-center justify-center rounded-xl bg-ink px-6 text-[13px] sm:text-sm font-bold text-bg shadow-sm transition hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {mengirim ? 'Menambahkan...' : 'Tambah'}
         </button>
@@ -243,7 +243,7 @@
                 <div class="flex gap-2">
                   <button
                     type="submit"
-                    class="min-h-[46px] flex-1 md:flex-none rounded-xl bg-ink px-5 text-[13px] font-bold text-bg transition hover:-translate-y-0.5 hover:shadow-md"
+                    class="min-h-11.5 flex-1 md:flex-none rounded-xl bg-ink px-5 text-[13px] font-bold text-bg transition hover:-translate-y-0.5 hover:shadow-md"
                   >
                     Simpan
                   </button>
@@ -251,7 +251,7 @@
                   <button
                     type="button"
                     onclick={batalEdit}
-                    class="min-h-[46px] flex-1 md:flex-none rounded-xl border border-ink/10 px-4 text-[13px] font-bold text-ink-soft transition hover:bg-bg-alt"
+                    class="min-h-11.5 flex-1 md:flex-none rounded-xl border border-ink/10 px-4 text-[13px] font-bold text-ink-soft transition hover:bg-bg-alt"
                   >
                     Batal
                   </button>

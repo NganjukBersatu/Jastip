@@ -42,7 +42,7 @@
       Edit produk
     </h1>
 
-    <p class="text-ink-soft mt-2 text-sm sm:text-[15px] leading-relaxed max-w-[620px]">
+    <p class="text-ink-soft mt-2 text-sm sm:text-[15px] leading-relaxed max-w-155">
       Perbarui detail barang yang kamu tawarkan.
     </p>
   </div>
@@ -196,7 +196,7 @@
     <button
       type="submit"
       disabled={mengirim}
-      class="mt-2 inline-flex h-[46px] w-full items-center justify-center rounded-xl bg-ink px-6 text-sm font-bold text-bg shadow-sm transition hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+      class="mt-2 inline-flex h-11.5 w-full items-center justify-center rounded-xl bg-ink px-6 text-sm font-bold text-bg shadow-sm transition hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
     >
       {mengirim ? 'Menyimpan...' : 'Simpan perubahan'}
     </button>

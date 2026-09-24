@@ -49,7 +49,7 @@
 
 		<a
 			href="/jastiper/produk/baru"
-			class="w-full sm:w-auto shrink-0 inline-flex items-center justify-center gap-2 rounded-xl bg-ink text-bg font-bold text-sm px-5 py-3 min-h-[44px] hover:-translate-y-0.5 hover:shadow-md transition"
+			class="w-full sm:w-auto shrink-0 inline-flex items-center justify-center gap-2 rounded-xl bg-ink text-bg font-bold text-sm px-5 py-3 min-h-11 hover:-translate-y-0.5 hover:shadow-md transition"
 		>
 			<svg
 				class="w-4 h-4"
@@ -94,7 +94,7 @@
 				</svg>
 			</div>
 			<div class="font-bold text-[15px] text-ink">Belum ada produk</div>
-			<div class="text-[13.5px] text-ink-soft mt-1.5 leading-relaxed max-w-[300px] mx-auto">
+			<div class="text-[13.5px] text-ink-soft mt-1.5 leading-relaxed max-w-75 mx-auto">
 				Mulai tambahkan barang pertama yang mau kamu titipkan.
 			</div>
 		</div>
@@ -156,7 +156,7 @@
 							<div class="mt-4 flex items-center gap-2">
 								<a
 									href="/jastiper/produk/{p.id}/edit"
-									class="flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg bg-bg-alt text-primary-dark font-bold text-[12.5px] px-3 py-2 min-h-[38px] hover:bg-[#FFDFA8] transition"
+									class="flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg bg-bg-alt text-primary-dark font-bold text-[12.5px] px-3 py-2 min-h-9.5 hover:bg-[#FFDFA8] transition"
 								>
 									<svg
 										class="w-3.5 h-3.5"
@@ -261,7 +261,7 @@
 				<button
 					type="button"
 					onclick={tutupModal}
-					class="inline-flex items-center justify-center rounded-xl border border-white/25 text-bg font-bold text-[13px] px-4 py-2.5 min-h-[42px] hover:bg-white/10 transition cursor-pointer"
+					class="inline-flex items-center justify-center rounded-xl border border-white/25 text-bg font-bold text-[13px] px-4 py-2.5 min-h-10.5 hover:bg-white/10 transition cursor-pointer"
 				>
 					Batal
 				</button>
