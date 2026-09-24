@@ -49,7 +49,7 @@
 
 		<a
 			href="/jastiper/produk/baru"
-			class="w-full sm:w-auto shrink-0 inline-flex items-center justify-center gap-2 rounded-xl bg-ink text-bg font-bold text-sm px-5 py-3 min-h-[44px] hover:-translate-y-0.5 hover:shadow-md transition"
+			class="w-full sm:w-auto shrink-0 inline-flex items-center justify-center gap-2 rounded-xl bg-ink text-bg font-bold text-sm px-5 py-3 min-h-11 hover:-translate-y-0.5 hover:shadow-md transition"
 		>
 			<svg
 				class="w-4 h-4"
@@ -94,7 +94,7 @@
 				</svg>
 			</div>
 			<div class="font-bold text-[15px] text-ink">Belum ada produk</div>
-			<div class="text-[13.5px] text-ink-soft mt-1.5 leading-relaxed max-w-[300px] mx-auto">
+			<div class="text-[13.5px] text-ink-soft mt-1.5 leading-relaxed max-w-75 mx-auto">
 				Mulai tambahkan barang pertama yang mau kamu titipkan.
 			</div>
 		</div>
@@ -155,7 +155,7 @@
 							<div class="mt-4 flex items-center gap-2">
 								<a
 									href="/jastiper/produk/{p.id}/edit"
-									class="flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg bg-bg-alt text-primary-dark font-bold text-[12.5px] px-3 py-2 min-h-[38px] hover:bg-[#FFDFA8] transition"
+									class="flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg bg-bg-alt text-primary-dark font-bold text-[12.5px] px-3 py-2 min-h-9.5 hover:bg-[#FFDFA8] transition"
 								>
 									<svg
 										class="w-3.5 h-3.5"
@@ -176,7 +176,7 @@
 								<button
 									type="button"
 									onclick={() => (produkHapus = { id: p.id, nama: p.nama })}
-									class="shrink-0 inline-flex items-center justify-center rounded-lg bg-red-50 text-red-600 font-bold text-[12.5px] px-4 py-2 min-h-[38px] hover:bg-red-100 transition cursor-pointer"
+									class="shrink-0 inline-flex items-center justify-center rounded-lg bg-red-50 text-red-600 font-bold text-[12.5px] px-4 py-2 min-h-9.5 hover:bg-red-100 transition cursor-pointer"
 								>
 									Hapus
 								</button>
@@ -191,7 +191,7 @@
 
 <!-- MODAL KONFIRMASI HAPUS (tema gelap) -->
 {#if produkHapus}
-	<div class="fixed inset-0 z-[70] flex items-center justify-center p-4">
+	<div class="fixed inset-0 z-70 flex items-center justify-center p-4">
 		<button
 			type="button"
 			class="absolute inset-0 bg-black/60 cursor-default"
@@ -203,7 +203,7 @@
 			role="dialog"
 			aria-modal="true"
 			aria-labelledby="judul-hapus"
-			class="relative w-full max-w-[360px] bg-ink text-bg rounded-2xl px-6 pt-6 pb-5 text-center shadow-2xl border border-white/10"
+			class="relative w-full max-w-90 bg-ink text-bg rounded-2xl px-6 pt-6 pb-5 text-center shadow-2xl border border-white/10"
 		>
 			<div
 				class="w-12 h-12 mx-auto mb-3.5 rounded-full bg-red-500/15 text-red-400 flex items-center justify-center"
@@ -247,7 +247,7 @@
 				<button
 					type="button"
 					onclick={tutupModal}
-					class="inline-flex items-center justify-center rounded-xl border border-white/25 text-bg font-bold text-[13px] px-4 py-2.5 min-h-[42px] hover:bg-white/10 transition cursor-pointer"
+					class="inline-flex items-center justify-center rounded-xl border border-white/25 text-bg font-bold text-[13px] px-4 py-2.5 min-h-10.5 hover:bg-white/10 transition cursor-pointer"
 				>
 					Batal
 				</button>
@@ -255,7 +255,7 @@
 				<button
 					type="submit"
 					disabled={sedangMenghapus}
-					class="inline-flex items-center justify-center rounded-xl bg-red-500 text-white font-bold text-[13px] px-4 py-2.5 min-h-[42px] hover:bg-red-600 transition cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+					class="inline-flex items-center justify-center rounded-xl bg-red-500 text-white font-bold text-[13px] px-4 py-2.5 min-h-10.5 hover:bg-red-600 transition cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
 				>
 					{sedangMenghapus ? 'Menghapus…' : 'Hapus'}
 				</button>

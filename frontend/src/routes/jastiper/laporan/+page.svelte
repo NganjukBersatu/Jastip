@@ -322,7 +322,7 @@ let sampaiDipilih = $state(data.sampai ?? '');
 				</p>
 			</div>
       		{:else}
-			<div class="bg-white border border-ink/10 rounded-2xl divide-y divide-ink/10 max-h-[420px] overflow-y-auto">
+			<div class="bg-white border border-ink/10 rounded-2xl divide-y divide-ink/10 max-h-105 overflow-y-auto">
 				{#each data.riwayatPesanan as p (p.id)}
 					<div class="flex flex-col gap-2 px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
 						<div class="min-w-0">
