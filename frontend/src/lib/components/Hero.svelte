@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
-import { heroThemeState } from '$lib/stores/heroTheme.svelte.js';
+  import { heroThemeState } from '$lib/stores/heroTheme.svelte.js';
 
   const heroTheme = heroThemeState();
 
@@ -16,22 +16,33 @@ import { heroThemeState } from '$lib/stores/heroTheme.svelte.js';
   //
   // 2. Tambahkan object baru di bawah.
   //
+  // Field bubble (isinya keuntungan/fitur yang ada di web):
+  //   cardPill   -> label kecil di bubble atas
+  //   cardTitle  -> judul bubble atas
+  //   cardMeta   -> keterangan singkat bubble atas
+  //   tipIcon    -> emoji kecil di bubble bawah
+  //   tipTitle   -> judul bubble bawah
+  //   tipLabel   -> label kecil di bawah judul bubble bawah
+  //   tipText    -> penjelasan singkat bubble bawah
+  //
   // =========================================================
 
   const categories = [
     {
       id: 1,
-      image: '/hero-images/jajanan.jpg',
+      image: '/hero-images/tugujogja.jpg',
       imageAlt: 'Jajanan khas daerah',
       bg: 'linear-gradient(90deg, #FFE4C7 0%, #FFD9B0 28%, #FF8C4D 65%, #D84317 100%)',
       accent: '#FFD36A',
       solid: '#D84317',
       sub: 'Nggak perlu ke luar kota buat dapetin jajanan, oleh-oleh, atau barang langka. Chat jastiper terdekat, deal harga, tinggal tunggu sampai.',
-      cardTitle: 'Lumpia Basah Ny. Lin',
-      cardMeta: 'Prambon · mulai Rp15rb',
-      jastiperName: 'Rina',
-      jastiperLoc: 'Prambon',
-      jastiperMsg: '"Siap kak, otw ambil ya 🛵"',
+      cardPill: 'Chat langsung',
+      cardTitle: 'Ngobrol dulu sama jastiper',
+      cardMeta: 'Tanya stok & detail sebelum beli',
+      tipIcon: '🧾',
+      tipTitle: 'Rincian biaya jelas',
+      tipLabel: 'Sebelum bayar',
+      tipText: 'Harga barang + ongkir wilayahmu kelihatan dari awal.',
       icon: `
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M11 3v18"/>
@@ -42,17 +53,19 @@ import { heroThemeState } from '$lib/stores/heroTheme.svelte.js';
     },
     {
       id: 2,
-      image: '/hero-images/paket.jpg',
+      image: '/hero-images/oleh-oleh.jpg',
       imageAlt: 'Serah terima paket',
       bg: 'linear-gradient(90deg, #FFE2C0 0%, #FFD3A3 28%, #F05420 65%, #C63711 100%)',
       accent: '#FFD983',
       solid: '#C63711',
-      sub: 'Barang dari luar kota, dokumen, atau apapun yang mesti sampai cepat. Serahin ke jastiper terpercaya, pantau sampai tujuan.',
-      cardTitle: 'Antar Kilat',
-      cardMeta: 'Malang · mulai Rp10rb',
-      jastiperName: 'Dinda',
-      jastiperLoc: 'Malang',
-      jastiperMsg: '"Oke kak, meluncur ya 🏍️"',
+      sub: 'Barang dari luar kota yang susah dicari di sini? Titip ke jastiper yang lagi ke sana, lalu pantau pesananmu sampai tujuan.',
+      cardPill: 'Bisa nego',
+      cardTitle: 'Ajukan harga sendiri',
+      cardMeta: 'Nego lewat chat, jastiper yang putuskan',
+      tipIcon: '🏷️',
+      tipTitle: 'Harga sesuai kesepakatan',
+      tipLabel: 'Fitur ajukan harga',
+      tipText: 'Kalau disetujui, langsung lanjut ke pembayaran.',
       icon: `
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12.89 1.45l8 4A2 2 0 0 1 22 7.24v9.53a2 2 0 0 1-1.11 1.79l-8 4a2 2 0 0 1-1.79 0l-8-4a2 2 0 0 1-1.11-1.8V7.24a2 2 0 0 1 1.11-1.79l8-4a2 2 0 0 1 1.79 0z"/>
@@ -69,11 +82,13 @@ import { heroThemeState } from '$lib/stores/heroTheme.svelte.js';
       accent: '#FFE29A',
       solid: '#C53A12',
       sub: 'Pengen bawa pulang oleh-oleh khas daerah tanpa perlu ke sana? Jastiper lokal siap cariin yang paling otentik.',
-      cardTitle: 'Hampers Custom',
-      cardMeta: 'Kediri-Nganjuk · mulai Rp25rb',
-      jastiperName: 'Bagas',
-      jastiperLoc: 'Nganjuk',
-      jastiperMsg: '"Udah dapet, kak. Otw kirim 📦"',
+      cardPill: 'Pantau pesanan',
+      cardTitle: 'Status pesanan terpantau',
+      cardMeta: 'Dari diproses sampai selesai',
+      tipIcon: '📄',
+      tipTitle: 'Struk & riwayat pesanan',
+      tipLabel: 'Tersimpan di akunmu',
+      tipText: 'Bisa dilihat lagi kapan saja lewat halaman pesanan.',
       icon: `
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="20 12 20 22 4 22 4 12"/>
@@ -86,17 +101,19 @@ import { heroThemeState } from '$lib/stores/heroTheme.svelte.js';
     },
     {
       id: 4,
-      image: '/hero-images/custom.jpg',
+      image: '/hero-images/lapis-surabaya.jpg',
       imageAlt: 'Barang custom dan belanja',
-     bg: 'linear-gradient(90deg, #FFDFBC 0%, #FFD0A0 28%, #EF5A25 65%, #C53A14 100%)',
+      bg: 'linear-gradient(90deg, #FFDFBC 0%, #FFD0A0 28%, #EF5A25 65%, #C53A14 100%)',
       accent: '#FFD9A0',
       solid: '#C53A14',
       sub: 'Barang unik, edisi terbatas, atau susah dicari sendiri? Jastiper siap bantu buru sampai dapet, kamu tinggal terima.',
-      cardTitle: 'Cari Semua Barang',
-      cardMeta: 'Se-Jatim · nego harga',
-      jastiperName: 'Sari',
-      jastiperLoc: 'Kediri',
-      jastiperMsg: '"Nemu barangnya kak, fix ya 👍"',
+      cardPill: 'Gratis',
+      cardTitle: 'Daftar tanpa biaya',
+      cardMeta: 'Langsung pakai, tinggal login',
+      tipIcon: '🛒',
+      tipTitle: 'Keranjang belanja',
+      tipLabel: 'Beli sekaligus',
+      tipText: 'Kumpulkan beberapa item, checkout satu kali.',
       icon: `
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
@@ -139,27 +156,27 @@ import { heroThemeState } from '$lib/stores/heroTheme.svelte.js';
 
   let active = $derived(categories[current]);
 
-let heroEl: HTMLElement | undefined = $state();
+  let heroEl: HTMLElement | undefined = $state();
 
-$effect(() => {
-  if (!heroEl) return;
-  const el = heroEl;
+  $effect(() => {
+    if (!heroEl) return;
+    const el = heroEl;
 
-  function cekPosisi() {
-    const tinggiHero = el.offsetHeight;
-    const tinggiNavbar = 76;
-    heroTheme.setOverHero(window.scrollY < tinggiHero - tinggiNavbar);
-  }
+    function cekPosisi() {
+      const tinggiHero = el.offsetHeight;
+      const tinggiNavbar = 76;
+      heroTheme.setOverHero(window.scrollY < tinggiHero - tinggiNavbar);
+    }
 
-  cekPosisi();
-  window.addEventListener('scroll', cekPosisi, { passive: true });
-  window.addEventListener('resize', cekPosisi, { passive: true });
+    cekPosisi();
+    window.addEventListener('scroll', cekPosisi, { passive: true });
+    window.addEventListener('resize', cekPosisi, { passive: true });
 
-  return () => {
-    window.removeEventListener('scroll', cekPosisi);
-    window.removeEventListener('resize', cekPosisi);
-  };
-});
+    return () => {
+      window.removeEventListener('scroll', cekPosisi);
+      window.removeEventListener('resize', cekPosisi);
+    };
+  });
 </script>
 
 <!-- =========================================================
@@ -254,23 +271,22 @@ $effect(() => {
       <div class="float-card card-a">
         <div class="nego-pill">
           <span class="nego-icon">✦</span>
-          Bisa nego
+          {active.cardPill}
         </div>
         <div class="card-title">{active.cardTitle}</div>
         <div class="card-meta">{active.cardMeta}</div>
-        <div class="card-arrow" style={`background: ${active.bg};`}>→</div>
       </div>
 
-      <!-- Testimonial card -->
+      <!-- Benefit card -->
       <div class="float-card card-b">
         <div class="card-b-top">
-          <div class="avatar">{active.jastiperName.charAt(0)}</div>
+          <div class="avatar">{active.tipIcon}</div>
           <div>
-            <div class="name">Jastiper · {active.jastiperName}</div>
-            <div class="sub-role">{active.jastiperLoc}</div>
+            <div class="name">{active.tipTitle}</div>
+            <div class="sub-role">{active.tipLabel}</div>
           </div>
         </div>
-        <div class="msg">{active.jastiperMsg}</div>
+        <div class="msg">{active.tipText}</div>
       </div>
 
       <!-- Decorative dots -->
@@ -311,55 +327,47 @@ $effect(() => {
   ========================================================= */
 
   .hero {
-  position: relative;
-  width: 100%;
-  min-height: 590px;
-  overflow: hidden;
-  color: #2a1a10;
-  transition: background 0.8s ease;
-}
+    position: relative;
+    width: 100%;
+    min-height: 590px;
+    overflow: hidden;
+    color: #2a1a10;
+    transition: background 0.8s ease;
+  }
 
-.hero h1,
-.hero-description,
-.badge,
-.picker-label {
-  text-shadow: none;
-}
+  .hero h1,
+  .hero-description,
+  .badge,
+  .picker-label {
+    text-shadow: none;
+  }
 
-.hero h1 {
-  color: #1f1208;
-}
+  .hero h1 {
+    color: #1f1208;
+  }
 
-/* Teks deskripsi & label dibuat lebih gelap + lebih tebal
-   agar tidak "kalah" dengan area krem/putih di sisi kiri. */
-.hero-description {
-  color: #3b2716;
-  font-weight: 600;
-}
+  /* Teks deskripsi & label dibuat lebih gelap + lebih tebal
+     agar tidak "kalah" dengan area krem/putih di sisi kiri. */
+  .hero-description {
+    color: #3b2716;
+    font-weight: 600;
+  }
 
-.badge {
-  color: #C2410C;
-  font-weight: 800;
-  background: rgba(255, 255, 255, 0.85);
-  border: 1px solid rgba(194, 65, 12, 0.3);
-}
+  .badge {
+    color: #C2410C;
+    font-weight: 800;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(194, 65, 12, 0.3);
+  }
 
-.badge-dot {
-  background: #FF6B1A;
-}
+  .badge-dot {
+    background: #FF6B1A;
+  }
 
-.picker-label {
-  color: #3b2716;
-  font-weight: 700;
-}
-
-.btn-outline {
-  color: #2a1a10;
-  border: 1.5px solid rgba(42, 26, 16, 0.35);
-  background: transparent;
-}
-
-
+  .picker-label {
+    color: #3b2716;
+    font-weight: 700;
+  }
 
   /* =========================================================
      CONTAINER
@@ -409,10 +417,10 @@ $effect(() => {
   ========================================================= */
 
   .hero-left {
-  position: relative;
-  z-index: 10;
-  padding: 75px 0 75px;
-}
+    position: relative;
+    z-index: 10;
+    padding: 75px 0 75px;
+  }
 
   /* =========================================================
      BADGE
@@ -466,7 +474,7 @@ $effect(() => {
     min-height: 88px;
     margin: 24px 0 28px;
     font-size: 18.5px;
-    max-width: 500px;   
+    max-width: 500px;
     line-height: 1.65;
   }
 
@@ -505,20 +513,25 @@ $effect(() => {
     transition: transform .3s ease, background .3s ease, border-color .3s ease, color .3s ease, box-shadow .3s ease;
   }
 
-  .pick:hover {
-  background: rgba(255, 255, 255, .85);
-  border-color: var(--cat-color);
-}
-.pick.active {
-  background: #ffffff;
-  border-color: #ffffff;
-  color: var(--cat-color);
-  box-shadow: 0 10px 22px rgba(0,0,0,.18), 0 0 0 4px rgba(255,255,255,.55);
-  transform: translateY(-4px) scale(1.08);
-}
+  @media (hover: hover) {
+    .pick:hover {
+      background: rgba(255, 255, 255, .9);
+      border-color: var(--cat-color);
+      color: var(--cat-color);
+      transform: translateY(-2px);
+    }
+  }
+
+  .pick.active {
+    background: #ffffff;
+    border-color: #ffffff;
+    color: var(--cat-color);
+    box-shadow: 0 10px 22px rgba(0,0,0,.18), 0 0 0 4px rgba(255,255,255,.55);
+    transform: translateY(-4px) scale(1.08);
+  }
 
   .pick:focus-visible {
-    outline: 2px solid #ffffff;
+    outline: 2px solid var(--cat-color);
     outline-offset: 3px;
   }
 
@@ -561,9 +574,11 @@ $effect(() => {
     box-shadow: 0 14px 28px rgba(0, 0, 0, .25);
   }
 
-  .btn-primary:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 18px 34px rgba(0, 0, 0, .32);
+  @media (hover: hover) {
+    .btn-primary:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 18px 34px rgba(0, 0, 0, .32);
+    }
   }
 
   .btn-primary span {
@@ -578,21 +593,23 @@ $effect(() => {
   }
 
   .btn-outline {
-  color: var(--btn-color);
-  border: 2px solid var(--btn-color);
-  background: rgba(255, 255, 255, .65);
-}
+    color: var(--btn-color);
+    border: 2px solid var(--btn-color);
+    background: rgba(255, 255, 255, .65);
+  }
 
-.btn-outline:hover {
-  background: var(--btn-color);
-  color: #ffffff;
-  border-color: var(--btn-color);
-  transform: translateY(-4px);
-}
+  @media (hover: hover) {
+    .btn-outline:hover {
+      background: var(--btn-color);
+      color: #ffffff;
+      border-color: var(--btn-color);
+      transform: translateY(-4px);
+    }
+  }
 
   .btn-primary:focus-visible,
   .btn-outline:focus-visible {
-    outline: 2px solid #ffffff;
+    outline: 2px solid var(--btn-color);
     outline-offset: 3px;
   }
 
@@ -749,19 +766,6 @@ $effect(() => {
     margin-top: 2px;
   }
 
-  .card-arrow {
-    position: absolute;
-    right: 13px;
-    bottom: 13px;
-    width: 31px;
-    height: 31px;
-    border-radius: 50%;
-    color: #ffffff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 15px;
-  }
 
   /* =========================================================
      CARD B
@@ -792,7 +796,7 @@ $effect(() => {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 12px;
+    font-size: 16px;
     font-weight: 800;
   }
 
@@ -926,9 +930,13 @@ $effect(() => {
       font-size: 15px;
     }
 
+    /* Foto ada di tengah, bubble ditaruh di area kosong
+       atas (bubble A) dan bawah (bubble B) supaya tidak
+       menutupi isi foto. */
     .hero-right {
-      height: 390px;
-      margin-bottom: 45px;
+      height: auto;
+      padding: 72px 0 76px;
+      margin-bottom: 70px;
     }
 
     .hero-photo {
@@ -937,20 +945,84 @@ $effect(() => {
     }
 
     .visual-bg-one {
-      width: 370px;
-      height: 350px;
+      width: 320px;
+      height: 300px;
+      right: -30px;
+      top: 60px;
     }
 
+    .visual-bg-two {
+      width: 140px;
+      height: 120px;
+      right: -35px;
+      bottom: 45px;
+    }
+
+    .visual-line {
+      width: 80px;
+      height: 80px;
+      border-width: 12px;
+      right: 10px;
+      top: 60px;
+    }
+
+    .dots {
+      display: none;
+    }
+
+    /* Bubble A (atas) */
     .card-a {
-      top: 20px;
+      top: 0;
       left: 0;
-      width: 185px;
+      width: 176px;
+      padding: 11px 13px;
     }
 
+    .nego-pill {
+      padding: 4px 8px;
+      margin-bottom: 6px;
+      font-size: 9.5px;
+    }
+
+    .card-title {
+      padding-right: 0;
+      font-size: 12.5px;
+    }
+
+    .card-meta {
+      font-size: 10.5px;
+    }
+
+    /* Bubble B (bawah) */
     .card-b {
       right: 0;
-      bottom: 30px;
-      width: 190px;
+      bottom: 0;
+      width: 180px;
+      padding: 11px 13px;
+    }
+
+    .card-b-top {
+      gap: 8px;
+      margin-bottom: 5px;
+    }
+
+    .avatar {
+      width: 28px;
+      height: 28px;
+      font-size: 14px;
+    }
+
+    .name {
+      font-size: 11.5px;
+    }
+
+    .sub-role {
+      font-size: 10px;
+    }
+
+    .msg {
+      font-size: 10.5px;
+      line-height: 1.4;
     }
   }
 
@@ -998,7 +1070,8 @@ $effect(() => {
     }
 
     .hero-right {
-      height: 330px;
+      padding: 68px 0 68px;
+      margin-bottom: 60px;
     }
 
     .hero-photo {
@@ -1006,22 +1079,34 @@ $effect(() => {
       height: 280px;
     }
 
+    /* Bubble dibuat ringkas: keterangan panjang disembunyikan
+       supaya bubble kecil dan foto tetap kelihatan. */
     .card-a {
-      width: 155px;
-      padding: 11px 13px;
+      width: 150px;
+      padding: 9px 11px;
+    }
+
+    .nego-pill {
+      padding: 3px 7px;
+      margin-bottom: 5px;
+      font-size: 9px;
     }
 
     .card-title {
-      font-size: 12px;
+      font-size: 11.5px;
     }
 
     .card-meta {
-      font-size: 10px;
+      display: none;
     }
 
     .card-b {
-      width: 165px;
-      padding: 11px 13px;
+      width: 150px;
+      padding: 9px 11px;
+    }
+
+    .card-b-top {
+      margin-bottom: 0;
     }
 
     .name {
@@ -1029,7 +1114,7 @@ $effect(() => {
     }
 
     .msg {
-      font-size: 10.5px;
+      display: none;
     }
 
     .hero-wave {
