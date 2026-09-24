@@ -2,7 +2,8 @@
   /**
    * Testimoni.svelte
    * Menampilkan testimoni campuran: jastiper dan pelanggan.
-   * Layout: grid 3 kolom rapi (ukuran seragam per baris), kartu berwarna selang-seling.
+   * Layout: di HP kartu digeser ke samping (carousel), di tablet/desktop
+   * grid 2-3 kolom rapi (ukuran seragam per baris), kartu berwarna selang-seling.
    * Taruh file ini di: src/lib/components/Testimoni.svelte
    *
    * Cara pakai di Home (+page.svelte):
@@ -174,20 +175,18 @@
 
   // Rotasi diagonal, BUKAN i % 3 biasa.
   // Kalau cuma i % 3, di grid 3 kolom tiap kolom bakal SELALU dapet warna
-  // yang sama di setiap baris (kolom 1 selalu putih, kolom 2 selalu oranye, dst)
-  // -- itu yang bikin polanya kebaca terlalu rapi/mekanis.
-  // Dengan menambahkan offset dari nomor baris (Math.floor(i / 3)), warnanya
-  // jadi geser diagonal tiap baris, jadi tetap merata tapi tidak menempel
-  // di kolom yang sama terus-menerus.
+  // yang sama di setiap baris. Dengan menambahkan offset dari nomor baris
+  // (Math.floor(i / 3)), warnanya geser diagonal tiap baris, jadi tetap
+  // merata tapi tidak menempel di kolom yang sama terus-menerus.
   function schemeFor(i: number) {
     const row = Math.floor(i / 3);
     return schemes[(i + row) % schemes.length];
   }
 </script>
 
-<section class="py-14 sm:py-24">
+<section class="py-10 sm:py-12 md:py-16">
   <div class="max-w-295 mx-auto px-5 sm:px-8">
-    <div class="mb-8 sm:mb-10">
+    <div class="mb-6 sm:mb-10">
       <span class="inline-block bg-primary text-white text-[11px] font-bold px-3 py-1.5 rounded-pill mb-4">
         {tag}
       </span>
@@ -197,20 +196,21 @@
     </div>
 
     <!--
-      Grid biasa 3 kolom (bukan masonry). Semua kartu di satu baris
-      punya tinggi sama (default perilaku grid), jadi ukurannya rapi dan
-      seragam kayak referensi ukuran kamu -- tapi tetap pakai warna
-      selang-seling putih / primary / primary-deep dan urutan
-      rating -> teks -> profil dari versi berwarna.
+      Di HP (di bawah sm): kartu berjajar ke samping dan bisa digeser
+      (scroll snap), lebar tiap kartu ~82% supaya kartu berikutnya
+      mengintip sebagai petunjuk bisa digeser.
+      Di sm ke atas: grid 2-3 kolom, semua kartu satu baris tingginya sama.
     -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-5">
+    <div
+      class="flex gap-3 overflow-x-auto snap-x snap-mandatory -mx-5 px-5 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:px-0 sm:pb-0 sm:grid sm:grid-cols-2 md:grid-cols-3 sm:gap-5 sm:overflow-visible"
+    >
       {#each testimonials as t, i}
         {@const scheme = schemeFor(i)}
         <div
-          class="relative {scheme.cardBg} {scheme.border} rounded-card p-5 sm:p-6 flex flex-col"
+          class="relative {scheme.cardBg} {scheme.border} rounded-[20px] sm:rounded-card p-4 sm:p-6 flex flex-col w-[82%] shrink-0 snap-start sm:w-auto sm:shrink"
         >
           <span
-            class="absolute top-5 right-5 sm:top-6 sm:right-6 {scheme.badgeBg} {scheme.badgeText} text-[10px] font-bold px-2.5 py-1 rounded-pill"
+            class="absolute top-4 right-4 sm:top-6 sm:right-6 {scheme.badgeBg} {scheme.badgeText} text-[10px] font-bold px-2.5 py-1 rounded-pill"
           >
             {roleLabel[t.role]}
           </span>
@@ -227,7 +227,7 @@
             </div>
           </div>
 
-          <p class="text-[13.5px] sm:text-sm {scheme.textMain} leading-relaxed mb-4 flex-1">
+          <p class="text-[13px] sm:text-sm {scheme.textMain} leading-relaxed mb-3 sm:mb-4 flex-1">
             {t.text}
           </p>
 

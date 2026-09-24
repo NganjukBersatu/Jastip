@@ -114,9 +114,14 @@
 	<title>Chat — {data.item.produkNama} — Nitip</title>
 </svelte:head>
 
-<div class="w-full max-w-285 mx-auto p-4 sm:p-8 flex flex-col h-dvh">
+<!--
+	Tinggi di HP dikurangi header panel jastiper (kira-kira 6rem) supaya kolom
+	chat dan kotak ketik langsung kelihatan tanpa perlu scroll halaman.
+	Kalau header panel di layout-mu lebih tinggi/rendah, ubah angka 6rem.
+-->
+<div class="w-full max-w-285 mx-auto p-4 sm:p-8 flex flex-col h-[calc(100dvh-6rem)] sm:h-dvh">
 	<!-- Header -->
-	<div class="flex flex-col sm:flex-row justify-between items-start gap-3 sm:gap-4">
+	<div class="flex flex-col sm:flex-row justify-between items-start gap-2 sm:gap-4">
 		<div>
 			<h1 class="text-[20px] sm:text-[24px]">{data.item.produkNama}</h1>
 
@@ -160,7 +165,7 @@
 	</div>
 
 	<!-- History Tawaran -->
-	<div class="mt-4 bg-white rounded-2xl border border-ink/10 p-4 shrink-0">
+	<div class="mt-3 sm:mt-4 bg-white rounded-2xl border border-ink/10 p-3 sm:p-4 shrink-0">
 		<div class="text-[13px] font-bold mb-2">
 			Riwayat tawaran
 		</div>
@@ -169,7 +174,7 @@
 			<div class="flex flex-col gap-2">
 				{#each data.daftarTawaran as t (t.id)}
 					<div
-						class="flex justify-between items-center bg-bg rounded-xl px-4 py-2.5"
+						class="flex justify-between items-center bg-bg rounded-xl px-3 sm:px-4 py-2 sm:py-2.5"
 					>
 						<div>
 							<div class="text-[13px] font-medium">
@@ -201,9 +206,9 @@
 		{/if}
 	</div>
 
-	<!-- Tombol Terima / Tolak -->
+	<!-- Tombol Terima / Tolak (di HP berdampingan supaya hemat tinggi) -->
 	{#if data.item.status === 'menunggu'}
-		<div class="flex flex-col sm:flex-row gap-3 mt-4">
+		<div class="flex flex-row gap-2 sm:gap-3 mt-3 sm:mt-4 shrink-0">
 			<form
 				method="POST"
 				action="?/terima"
@@ -214,12 +219,12 @@
 						mengirimTerima = false;
 					};
 				}}
-				class="flex-1"
+				class="flex-1 min-w-0"
 			>
 				<button
 					type="submit"
 					disabled={mengirimTerima || mengirimTolak}
-					class="w-full rounded-pill bg-ink text-bg font-bold text-[13.5px] py-2.5 disabled:opacity-50"
+					class="w-full rounded-pill bg-ink text-bg font-bold text-[13px] sm:text-[13.5px] py-2.5 px-3 disabled:opacity-50"
 				>
 					{mengirimTerima ? 'Memproses...' : `Terima harga ini (${formatRupiah(data.item.hargaDiajukan)})`}
 				</button>
@@ -235,12 +240,12 @@
 						mengirimTolak = false;
 					};
 				}}
-				class="flex-1"
+				class="sm:flex-1"
 			>
 				<button
 					type="submit"
 					disabled={mengirimTerima || mengirimTolak}
-					class="w-full rounded-pill border-2 border-ink/15 text-ink-soft font-bold text-[13.5px] py-2.5 hover:border-red-300 hover:text-red-500 disabled:opacity-50"
+					class="w-full rounded-pill border-2 border-ink/15 text-ink-soft font-bold text-[13px] sm:text-[13.5px] py-2.5 px-5 sm:px-0 hover:border-red-300 hover:text-red-500 disabled:opacity-50"
 				>
 					{mengirimTolak ? 'Memproses...' : 'Tolak'}
 				</button>
@@ -251,7 +256,7 @@
 	<!-- Chat -->
 	<div
 		bind:this={elemChat}
-		class="flex-1 min-h-0 overflow-y-auto mt-6 flex flex-col gap-3 pr-1"
+		class="flex-1 min-h-0 overflow-y-auto mt-4 sm:mt-6 flex flex-col gap-3 pr-1"
 	>
 		{#each daftarPesan as pesan (pesan.id)}
 			{@const punyaSaya = pesan.pengirimId === data.userId}

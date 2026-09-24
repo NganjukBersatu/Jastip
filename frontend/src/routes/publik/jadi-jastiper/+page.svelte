@@ -5,29 +5,89 @@
 		openFaq = openFaq === i ? null : i;
 	}
 
+	// Keuntungan jadi jastiper di Nitip
 	const benefits = [
 		{
-			icon: 'M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6',
-			title: 'Nggak perlu modal',
-			desc: 'Kamu jalan seperti biasa, titipan dibayar duluan sama pemesan.'
+			icon: 'M20 12v10H4V12M2 7h20v5H2zM12 22V7M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z',
+			title: 'Gratis, tanpa biaya daftar',
+			desc: 'Daftar, pasang produk, dan terima pesanan tanpa bayar apa pun ke Nitip.'
+		},
+		{
+			icon: 'M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82zM7 7h.01',
+			title: 'Harga kamu yang tentukan',
+			desc: 'Pilih harga tetap atau harga bisa ditawar. Untung dan komisinya kamu atur sendiri.'
+		},
+		{
+			icon: 'M21 12V7H5a2 2 0 0 1 0-4h14v4M3 5v14a2 2 0 0 0 2 2h16v-5M18 12a2 2 0 0 0 0 4h4v-4h-4Z',
+			title: 'Pembayaran langsung ke kamu',
+			desc: 'Uang nggak lewat web kami, jadi nggak ada potongan atau saldo yang tertahan. Urusan bayar antara kamu dan pelanggan.'
 		},
 		{
 			icon: 'M12 8v4l3 3M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z',
 			title: 'Atur waktu sendiri',
-			desc: 'Buka trip cuma kalau kamu memang lagi mau jalan ke sana.'
+			desc: 'Aktif kalau lagi mau jalan, nonaktifkan akun kalau lagi sibuk. Produkmu otomatis hilang dari katalog.'
 		},
 		{
-			icon: 'M21 12V7H5a2 2 0 0 1 0-4h14v4M3 5v14a2 2 0 0 0 2 2h16v-5M18 12a2 2 0 0 0 0 4h4v-4h-4Z',
-			title: 'Komisi langsung cair',
-			desc: 'Selesai antar barang, saldo bisa langsung ditarik ke rekening.'
+			icon: 'M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4zM3 6h18M16 10a4 4 0 0 1-8 0',
+			title: 'Etalase online sendiri',
+			desc: 'Produk tampil di katalog Jawa Timur, bisa dilihat pelanggan kapan saja.'
+		},
+		{
+			icon: 'M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16zM3.27 6.96L12 12.01l8.73-5.05M12 22.08V12',
+			title: 'Nggak perlu nyetok barang',
+			desc: 'Belanja sesuai pesanan yang masuk, jadi nggak ada modal yang nyangkut di stok.'
+		}
+	];
+
+	// Fitur yang dipakai jastiper di dashboard
+	const features = [
+		{
+			icon: 'M3 3h7v9H3zM14 3h7v5h-7zM14 12h7v9h-7zM3 16h7v5H3z',
+			title: 'Dashboard ringkas',
+			desc: 'Pantau pesanan, chat, dan pengajuan harga dari satu halaman.'
+		},
+		{
+			icon: 'M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16zM3.27 6.96L12 12.01l8.73-5.05M12 22.08V12',
+			title: 'Produk saya',
+			desc: 'Tambah produk titipan, lengkap dengan kategori dan harga tetap atau nego.'
+		},
+		{
+			icon: 'M17 1l4 4-4 4M3 11V9a4 4 0 0 1 4-4h14M7 23l-4-4 4-4M21 13v2a4 4 0 0 1-4 4H3',
+			title: 'Pengajuan harga',
+			desc: 'Terima atau tolak tawaran pelanggan, lengkap dengan notifikasi pengajuan baru.'
+		},
+		{
+			icon: 'M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z',
+			title: 'Chat dengan pelanggan',
+			desc: 'Diskusi harga dan detail titipan langsung di web, dengan notifikasi pesan masuk.'
+		},
+		{
+			icon: 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8',
+			title: 'Kelola pesanan',
+			desc: 'Lihat detail semua item dalam satu pesanan, dan riwayat penjualanmu tersimpan rapi.'
+		},
+		{
+			icon: 'M1 3h15v13H1zM16 8h4l3 3v5h-7zM5.5 21a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM18.5 21a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z',
+			title: 'Ongkir per wilayah',
+			desc: 'Isi sendiri biaya antar untuk tiap wilayah yang kamu layani.'
+		},
+		{
+			icon: 'M18 20V10M12 20V4M6 20v-6',
+			title: 'Laporan penjualan',
+			desc: 'Catat pemasukanmu sendiri dan lihat produk mana yang paling laris.'
+		},
+		{
+			icon: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10zM9 12l2 2 4-4',
+			title: 'Profil & pengaturan',
+			desc: 'Atur profil, area layanan, nomor WA, dan nonaktifkan akun kapan pun perlu.'
 		}
 	];
 
 	const steps = [
-		{ n: 1, title: 'Daftar', desc: 'Isi profil' },
-		{ n: 2, title: 'Buka trip', desc: 'Set rute & tanggal' },
-		{ n: 3, title: 'Terima titipan', desc: 'Pelanggan pesan' },
-		{ n: 4, title: 'Cair', desc: 'Saldo masuk rekening' }
+		{ n: 1, title: 'Daftar', desc: 'Isi profil jastiper' },
+		{ n: 2, title: 'Pasang produk', desc: 'Atur harga & ongkir' },
+		{ n: 3, title: 'Terima pesanan', desc: 'Chat & nego dengan pelanggan' },
+		{ n: 4, title: 'Belanja & antar', desc: 'Pantau sampai selesai' }
 	];
 
 	const testimonials = [
@@ -35,27 +95,34 @@
 			initial: 'R',
 			name: 'Rani',
 			route: 'Nganjuk–Surabaya',
-			quote: 'Tiap pulang kampung sekarang jadi ada tambahan uang bensin.'
+			quote: 'Nego harga langsung di chat, jadi nggak bolak-balik WA lagi.'
 		},
 		{
 			initial: 'D',
 			name: 'Dimas',
 			route: 'Madiun–Malang',
-			quote: 'Aturannya fleksibel, aku cuma buka trip pas weekend.'
+			quote: 'Pas lagi sibuk tinggal nonaktifkan akun, jadi nggak ada pesanan yang numpuk.'
 		}
 	];
 
 	const faqs = [
 		{ q: 'Ada biaya pendaftaran?', a: 'Tidak ada. Daftar dan jadi jastiper di Nitip sepenuhnya gratis.' },
 		{
-			q: 'Kapan saldo bisa dicairkan?',
-			a: 'Saldo langsung cair ke saldo akunmu setelah titipan dikonfirmasi diterima pelanggan, dan bisa ditarik ke rekening kapan saja.'
+			q: 'Pembayaran dan komisinya gimana?',
+			a: 'Pembayaran dan komisi diatur langsung antara kamu dan pelanggan, termasuk lewat WhatsApp untuk transfer atau e-wallet. Nitip tidak memegang uang dan tidak memotong penghasilanmu.'
 		},
 		{
 			q: 'Barang rusak/hilang gimana?',
 			a: 'Setiap titipan tercatat di sistem, jadi ada jejak transaksi yang jelas kalau terjadi masalah dan perlu ditelusuri.'
 		},
-		{ q: 'Bisa jadi jastiper part-time?', a: 'Bisa. Kamu cuma buka trip saat memang lagi mau jalan ke sana, tanpa jadwal wajib.' }
+		{
+			q: 'Bisa jadi jastiper part-time?',
+			a: 'Bisa. Kamu bebas menentukan kapan aktif, dan bisa menonaktifkan akun sementara — produkmu otomatis hilang dari katalog.'
+		},
+		{
+			q: 'Perlu laptop untuk mengelola pesanan?',
+			a: 'Nggak perlu. Dashboard jastiper bisa dibuka lewat HP, jadi tetap bisa cek pesanan dan chat sambil di jalan.'
+		}
 	];
 
 	const heroStats = [
@@ -82,8 +149,8 @@
 					Jadiin itu <span class="text-[#D85A30]">penghasilan.</span>
 				</h1>
 				<p class="mb-8 max-w-md text-base text-[#5F5E5A]">
-					Jastipin nyambungin kamu yang lagi jalan antar kota dengan orang-orang yang mau nitip
-					barang.
+					Nitip nyambungin kamu yang lagi jalan antar kota dengan orang-orang yang mau nitip
+					barang. Pasang produk, atur harga sendiri, dan kelola semua pesanan dari satu dashboard.
 				</p>
 				<div class="mb-10 flex flex-wrap gap-3">
 					<a href="/publik/daftar" class="rounded-lg bg-[#D85A30] px-7 py-3 text-base font-medium text-white">
@@ -104,27 +171,27 @@
 				</div>
 			</div>
 
-			<!-- Kanan: ilustrasi kartu -->
+			<!-- Kanan: ilustrasi kartu dashboard -->
 			<div class="relative">
 				<div class="rounded-2xl bg-[#2C2416] p-6 sm:p-8">
 					<div class="mb-4 flex items-center justify-between">
-						<p class="text-sm font-medium text-[#FAC775]">Trip aktif</p>
-						<span class="rounded-full bg-[#3C3129] px-3 py-1 text-xs text-[#D3D1C7]">Live</span>
+						<p class="text-sm font-medium text-[#FAC775]">Dashboard jastiper</p>
+						<span class="rounded-full bg-[#3C3129] px-3 py-1 text-xs text-[#D3D1C7]">Aktif</span>
 					</div>
 
 					<div class="mb-3 rounded-xl bg-[#3C3129] p-4">
-						<p class="mb-1 text-sm text-white">Nganjuk → Surabaya</p>
-						<p class="text-xs text-[#D3D1C7]">4 titipan menunggu dijemput</p>
+						<p class="mb-1 text-sm text-white">Pesanan masuk</p>
+						<p class="text-xs text-[#D3D1C7]">4 titipan menunggu dibelikan</p>
 					</div>
 
 					<div class="mb-3 flex gap-3">
 						<div class="flex-1 rounded-xl bg-[#3C3129] p-4 text-center">
-							<p class="text-lg font-medium text-[#FAC775]">Rp70rb</p>
-							<p class="text-xs text-[#D3D1C7]">estimasi trip ini</p>
+							<p class="text-lg font-medium text-[#FAC775]">2</p>
+							<p class="text-xs text-[#D3D1C7]">pengajuan harga baru</p>
 						</div>
 						<div class="flex-1 rounded-xl bg-[#3C3129] p-4 text-center">
-							<p class="text-lg font-medium text-[#FAC775]">12 mnt</p>
-							<p class="text-xs text-[#D3D1C7]">lagi berangkat</p>
+							<p class="text-lg font-medium text-[#FAC775]">3</p>
+							<p class="text-xs text-[#D3D1C7]">chat belum dibaca</p>
 						</div>
 					</div>
 
@@ -133,25 +200,25 @@
 							R
 						</div>
 						<div>
-							<p class="text-sm text-white">Rani sedang menjemput titipan</p>
+							<p class="text-sm text-white">Rani sedang belanja titipan</p>
 							<p class="text-xs text-[#D3D1C7]">Update 2 menit lalu</p>
 						</div>
 					</div>
 				</div>
 
 				<div class="absolute -bottom-5 -left-5 rounded-xl bg-white px-5 py-3 shadow-sm">
-					<p class="text-xs text-[#5F5E5A]">Komisi bulan ini</p>
-					<p class="text-lg font-medium text-[#D85A30]">Rp1.4jt</p>
+					<p class="text-xs text-[#5F5E5A]">Pesanan selesai bulan ini</p>
+					<p class="text-lg font-medium text-[#D85A30]">28 pesanan</p>
 				</div>
 			</div>
 		</div>
 	</section>
 
-	<!-- Kenapa gabung -->
+	<!-- Keuntungan -->
 	<section class="mx-auto max-w-350 px-8 py-16">
 		<p class="mb-2 text-sm font-medium tracking-wide text-[#D85A30] uppercase">kenapa gabung</p>
-		<h2 class="mb-8 text-2xl font-medium sm:text-3xl">Cara kerjanya simpel banget</h2>
-		<div class="grid gap-6 sm:grid-cols-3">
+		<h2 class="mb-8 text-2xl font-medium sm:text-3xl">Untungnya jadi jastiper di Nitip</h2>
+		<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
 			{#each benefits as b}
 				<div class="flex h-full flex-col rounded-2xl border border-[#E8DECF] bg-white p-7 shadow-[0_1px_2px_rgba(44,36,22,0.04)] transition hover:-translate-y-0.5 hover:shadow-[0_8px_20px_rgba(44,36,22,0.08)]">
 					<div class="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-[#F5DCC0]">
@@ -166,28 +233,26 @@
 		</div>
 	</section>
 
-	<!-- Simulasi penghasilan -->
+	<!-- Fitur dashboard -->
 	<section class="mx-auto max-w-350 px-8 pb-16">
-		<div class="grid items-center gap-8 rounded-2xl bg-[#2C2416] p-8 sm:grid-cols-2 sm:p-10">
-			<div>
-				<p class="mb-2 text-sm font-medium tracking-wide text-[#FAC775] uppercase">
-					simulasi penghasilan
-				</p>
-				<h2 class="mb-3 text-xl font-medium text-white sm:text-2xl">Berapa yang bisa kamu dapat?</h2>
-				<p class="text-sm leading-relaxed text-[#D3D1C7]">
-					Trip ke Surabaya bawa 4 titipan @ Rp150rb, komisi 10%.
-				</p>
-			</div>
-			<div class="rounded-xl bg-[#3C3129] p-5">
-				<div class="flex justify-between border-b border-[#4a4136] py-2.5 text-sm text-[#D3D1C7]">
-					<span>4 titipan × Rp15rb</span><span class="text-white">Rp60rb</span>
-				</div>
-				<div class="flex justify-between border-b border-[#4a4136] py-2.5 text-sm text-[#D3D1C7]">
-					<span>Bonus rute jauh</span><span class="text-white">Rp10rb</span>
-				</div>
-				<div class="flex justify-between pt-3.5 text-base font-medium">
-					<span class="text-[#FAC775]">Total per trip</span><span class="text-[#FAC775]">Rp70rb</span>
-				</div>
+		<div class="rounded-2xl bg-[#2C2416] p-8 sm:p-10">
+			<p class="mb-2 text-sm font-medium tracking-wide text-[#FAC775] uppercase">fitur dashboard</p>
+			<h2 class="mb-2 text-xl font-medium text-white sm:text-2xl">Semua yang kamu butuh, di satu tempat</h2>
+			<p class="mb-8 max-w-xl text-sm leading-relaxed text-[#D3D1C7]">
+				Nggak perlu lagi catat pesanan di chat atau buku. Semua alat jastiper sudah ada di akunmu.
+			</p>
+			<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+				{#each features as f}
+					<div class="rounded-xl bg-[#3C3129] p-5">
+						<div class="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-[#2C2416]">
+							<svg viewBox="0 0 24 24" fill="none" stroke="#FAC775" stroke-width="2" class="h-5 w-5">
+								<path d={f.icon} stroke-linecap="round" stroke-linejoin="round" />
+							</svg>
+						</div>
+						<p class="mb-1 text-base font-medium text-white">{f.title}</p>
+						<p class="text-sm leading-relaxed text-[#D3D1C7]">{f.desc}</p>
+					</div>
+				{/each}
 			</div>
 		</div>
 	</section>
@@ -195,7 +260,7 @@
 	<!-- Cara kerja -->
 	<section class="mx-auto max-w-350 px-8 pb-16">
 		<p class="mb-2 text-sm font-medium tracking-wide text-[#D85A30] uppercase">cara kerja</p>
-		<h2 class="mb-10 text-xl font-medium sm:text-2xl">Empat langkah sampai saldo cair</h2>
+		<h2 class="mb-10 text-xl font-medium sm:text-2xl">Empat langkah sampai pesanan selesai</h2>
 		<div class="relative">
 			<div class="absolute top-6 right-[12.5%] left-[12.5%] hidden border-t-2 border-dashed border-[#E0C8A6] sm:block"></div>
 			<div class="relative grid grid-cols-2 gap-y-10 gap-x-6 sm:grid-cols-4">
@@ -292,7 +357,7 @@
 	<section class="relative overflow-hidden bg-[#D85A30] px-6 py-14 text-center sm:px-8">
 		<div class="pointer-events-none absolute -top-8 -left-8 h-32 w-32 rounded-full bg-[#e9764e]/50"></div>
 		<div class="relative">
-			<h2 class="mb-2 text-2xl font-medium text-white">Yuk, buka trip pertamamu</h2>
+			<h2 class="mb-2 text-2xl font-medium text-white">Yuk, buka toko titipanmu</h2>
 			<p class="mb-6 text-base text-[#FAECE7]">Daftar sekarang, nggak sampai 5 menit.</p>
 			<a href="/publik/daftar" class="rounded-lg bg-white px-8 py-3 text-base font-medium text-[#993C1D]">
 				Daftar jadi jastiper
