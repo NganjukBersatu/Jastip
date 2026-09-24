@@ -123,9 +123,11 @@
 	<!-- Header -->
 	<div class="flex flex-col sm:flex-row justify-between items-start gap-2 sm:gap-4">
 		<div>
-			<h1 class="text-[20px] sm:text-[24px]">{data.item.produkNama}</h1>
+			<h1 class="text-[20px] sm:text-[24px] font-extrabold tracking-tight text-ink">
+				{data.item.produkNama}
+			</h1>
 
-			<p class="text-ink-soft text-[13px] sm:text-[14px]">
+			<p class="text-ink-soft text-[13px] sm:text-[14px] mt-1">
 				Nego dengan
 				<span class="font-semibold text-ink">
 					{data.item.pelangganNama}

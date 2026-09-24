@@ -3,6 +3,10 @@
 
 	let { data } = $props();
 
+	/** @type {{ id: string | number, nama: string } | null} */
+	let produkHapus = $state(null);
+	let sedangMenghapus = $state(false);
+
 	/** @param {number} angka */
 	function formatRupiah(angka) {
 		return new Intl.NumberFormat('id-ID', {
@@ -11,13 +15,25 @@
 			minimumFractionDigits: 0
 		}).format(angka);
 	}
+
+	function tutupModal() {
+		if (sedangMenghapus) return;
+		produkHapus = null;
+	}
+
+	/** @param {KeyboardEvent} e */
+	function onKeydown(e) {
+		if (e.key === 'Escape' && produkHapus) tutupModal();
+	}
 </script>
+
+<svelte:window onkeydown={onKeydown} />
 
 <svelte:head>
 	<title>Produk saya — Nitip</title>
 </svelte:head>
 
-<div class="w-full max-w-[1140px] mx-auto px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
+<div class="w-full max-w-[1800px] mx-auto px-4 py-8 sm:px-6 sm:py-10 lg:px-10 xl:px-14">
 	<!-- HEADER -->
 	<div
 		class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between mb-8 sm:mb-10 pb-6 border-b border-ink/10"
@@ -156,39 +172,14 @@
 									Edit
 								</a>
 
-								<form
-									method="POST"
-									action="?/hapus"
-									use:enhance={() => {
-										return async ({ update }) => {
-											const confirmed = confirm(`Yakin mau hapus produk "${p.nama}"?`);
-											if (!confirmed) return;
-											await update();
-										};
-									}}
+								<!-- Tombol ini hanya membuka modal, penghapusan dilakukan di modal -->
+								<button
+									type="button"
+									onclick={() => (produkHapus = { id: p.id, nama: p.nama })}
+									class="shrink-0 inline-flex items-center justify-center rounded-lg bg-red-50 text-red-600 font-bold text-[12.5px] px-4 py-2 min-h-[38px] hover:bg-red-100 transition cursor-pointer"
 								>
-									<input type="hidden" name="id" value={p.id} />
-									<button
-										type="submit"
-										aria-label="Hapus produk"
-										class="w-9 h-9 shrink-0 inline-flex items-center justify-center rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition"
-									>
-										<svg
-											class="w-4 h-4"
-											viewBox="0 0 24 24"
-											fill="none"
-											stroke="currentColor"
-											stroke-width="2"
-											stroke-linecap="round"
-											stroke-linejoin="round"
-										>
-											<path d="M3 6h18" />
-											<path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-											<path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
-											<path d="M10 11v6M14 11v6" />
-										</svg>
-									</button>
-								</form>
+									Hapus
+								</button>
 							</div>
 						</div>
 					</div>
@@ -197,3 +188,78 @@
 		</div>
 	{/if}
 </div>
+
+<!-- MODAL KONFIRMASI HAPUS (tema gelap) -->
+{#if produkHapus}
+	<div class="fixed inset-0 z-[70] flex items-center justify-center p-4">
+		<button
+			type="button"
+			class="absolute inset-0 bg-black/60 cursor-default"
+			aria-label="Tutup"
+			onclick={tutupModal}
+		></button>
+
+		<div
+			role="dialog"
+			aria-modal="true"
+			aria-labelledby="judul-hapus"
+			class="relative w-full max-w-[360px] bg-ink text-bg rounded-2xl px-6 pt-6 pb-5 text-center shadow-2xl border border-white/10"
+		>
+			<div
+				class="w-12 h-12 mx-auto mb-3.5 rounded-full bg-red-500/15 text-red-400 flex items-center justify-center"
+			>
+				<svg
+					class="w-6 h-6"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				>
+					<path
+						d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"
+					/>
+					<path d="M12 9v4M12 17h.01" />
+				</svg>
+			</div>
+
+			<h3 id="judul-hapus" class="font-bold text-base">Hapus produk?</h3>
+			<p class="text-[13.5px] text-bg/70 mt-1.5 mb-5 leading-relaxed">
+				Produk "{produkHapus.nama}" akan dihapus permanen dan tidak bisa dikembalikan.
+			</p>
+
+			<form
+				method="POST"
+				action="?/hapus"
+				class="grid grid-cols-2 gap-2.5"
+				use:enhance={() => {
+					sedangMenghapus = true;
+					return async ({ update }) => {
+						await update();
+						sedangMenghapus = false;
+						produkHapus = null;
+					};
+				}}
+			>
+				<input type="hidden" name="id" value={produkHapus.id} />
+
+				<button
+					type="button"
+					onclick={tutupModal}
+					class="inline-flex items-center justify-center rounded-xl border border-white/25 text-bg font-bold text-[13px] px-4 py-2.5 min-h-[42px] hover:bg-white/10 transition cursor-pointer"
+				>
+					Batal
+				</button>
+
+				<button
+					type="submit"
+					disabled={sedangMenghapus}
+					class="inline-flex items-center justify-center rounded-xl bg-red-500 text-white font-bold text-[13px] px-4 py-2.5 min-h-[42px] hover:bg-red-600 transition cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+				>
+					{sedangMenghapus ? 'Menghapus…' : 'Hapus'}
+				</button>
+			</form>
+		</div>
+	</div>
+{/if}

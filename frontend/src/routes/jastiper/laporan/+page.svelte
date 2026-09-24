@@ -110,12 +110,12 @@ let sampaiDipilih = $state(data.sampai ?? '');
 	<title>Laporan — Nitip</title>
 </svelte:head>
 
-<div class="w-full px-4 py-6 sm:px-6 sm:py-8 lg:px-10">
-  	<div class="mb-6 sm:mb-8">
-		<h1 class="text-2xl sm:text-[28px] font-extrabold tracking-tight text-ink">
+<div class="w-full max-w-[1800px] mx-auto px-4 py-8 sm:px-6 sm:py-10 lg:px-10 xl:px-14">
+  	<div class="mb-8 sm:mb-10 pb-6 border-b border-ink/10">
+		<h1 class="text-2xl sm:text-[30px] font-extrabold tracking-tight text-ink">
 			Laporan penjualan
 		</h1>
-		<p class="text-ink-soft mt-1.5 text-sm sm:text-[15px] leading-relaxed">
+		<p class="text-ink-soft mt-2 text-sm sm:text-[15px] leading-relaxed">
 			Pendapatan dihitung dari pesanan yang sudah berstatus selesai.
 		</p>
 	</div>
@@ -224,7 +224,7 @@ let sampaiDipilih = $state(data.sampai ?? '');
 	<!-- PRODUK/JASA TERLARIS -->
 	<section>
 		<div class="flex items-center justify-between gap-2 bg-white border border-ink/10 rounded-2xl px-4 py-3.5 mb-3">
-			<h2 class="text-lg font-display font-semibold text-ink">Produk/jasa terlaris</h2>
+			<h2 class="font-bold text-[15px] text-ink">Produk/jasa terlaris</h2>
 			<span class="text-xs text-ink-soft">{labelPeriodeAktif}</span>
 		</div>
 
@@ -268,7 +268,7 @@ let sampaiDipilih = $state(data.sampai ?? '');
 		>
 			<span class="flex flex-col items-start gap-0.5">
 				<span class="flex items-center gap-2">
-					<h2 class="text-lg font-display font-semibold text-ink">Riwayat pesanan</h2>
+					<h2 class="font-bold text-[15px] text-ink">Riwayat pesanan</h2>
 					<span class="text-xs text-ink-soft">({data.riwayatPesanan.length} di halaman ini)</span>
 				</span>
 				<span class="text-xs text-primary-dark font-semibold">

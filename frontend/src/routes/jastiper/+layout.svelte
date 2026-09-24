@@ -33,7 +33,7 @@
     }
   });
 
-  // BARU: perbarui angka notifikasi pesanan tiap 15 detik selama tab sedang dilihat
+  // Perbarui angka notifikasi pesanan tiap 15 detik selama tab sedang dilihat
   onMount(() => {
     const timer = setInterval(() => {
       if (document.visibilityState === 'visible') invalidate('app:pesanan-baru');
@@ -85,21 +85,50 @@
   ];
 
   const menuTampil = JASA_AKTIF ? menu : menu.filter((item) => item.href !== '/jastiper/jasa');
-  let navScrollEl = $state<HTMLElement | null>(null);
 
-$effect(() => {
-  const activeHref = $page.url.pathname;
-  if (!navScrollEl) return;
+  // ==========================================
+  // Menu aktif + tab mobile otomatis ke tengah
+  // ==========================================
 
-  const activeLink = navScrollEl.querySelector(`a[href="${activeHref}"]`);
-  if (activeLink) {
-    activeLink.scrollIntoView({
-      behavior: 'smooth',
-      inline: 'center',
-      block: 'nearest'
-    });
+  const pathname = $derived($page.url.pathname);
+
+  // Aktif untuk halaman itu sendiri maupun sub-halamannya (mis. /jastiper/produk/baru)
+  function aktif(href: string) {
+    return pathname === href || pathname.startsWith(href + '/');
   }
-});
+
+  // Elemen <nav> mobile yang bisa di-scroll horizontal
+  let navScrollEl = $state<HTMLElement | null>(null);
+  let sudahRender = false;
+
+  // Geser scroll <nav> supaya tab `el` berada tepat di tengah.
+  // Hanya menggeser <nav> (bukan seluruh halaman), jadi tidak ikut menggulung ke atas/bawah.
+  function pusatkan(el: HTMLElement, behavior: ScrollBehavior = 'smooth') {
+    if (!navScrollEl) return;
+
+    const navRect = navScrollEl.getBoundingClientRect();
+    const elRect = el.getBoundingClientRect();
+
+    const left =
+      navScrollEl.scrollLeft + (elRect.left - navRect.left) - (navRect.width - elRect.width) / 2;
+
+    navScrollEl.scrollTo({ left: Math.max(0, left), behavior });
+  }
+
+  // Dijalankan tiap halaman berganti (klik menu, tombol back, atau buka langsung lewat URL)
+  $effect(() => {
+    // Jadikan pathname sebagai dependensi
+    pathname;
+
+    if (!navScrollEl) return;
+
+    const tabAktif = navScrollEl.querySelector<HTMLElement>('a[aria-current="page"]');
+    if (!tabAktif) return;
+
+    // Saat pertama kali dibuka langsung loncat (tanpa animasi), berikutnya halus
+    pusatkan(tabAktif, sudahRender ? 'smooth' : 'auto');
+    sudahRender = true;
+  });
 </script>
 
 <div class="min-h-screen bg-bg flex flex-col lg:flex-row">
@@ -137,12 +166,13 @@ $effect(() => {
 
     <!-- Menu -->
     <nav class="flex-1 p-4 flex flex-col gap-1.5 overflow-y-auto">
-     {#each menuTampil as item}
+      {#each menuTampil as item}
         <a
           href={item.href}
+          aria-current={aktif(item.href) ? 'page' : undefined}
           class="relative flex items-center gap-3 px-4 py-3 rounded-2xl
                  text-sm font-semibold transition
-                 {$page.url.pathname === item.href
+                 {aktif(item.href)
             ? 'bg-primary text-white shadow-sm'
             : 'text-ink-soft hover:bg-bg-alt hover:text-primary-dark'}"
         >
@@ -165,7 +195,7 @@ $effect(() => {
               class="ml-auto text-[10px] font-bold
                      rounded-full min-w-5 h-5 px-1.5
                      flex items-center justify-center
-                     {$page.url.pathname === item.href
+                     {aktif(item.href)
                 ? 'bg-white text-primary-dark'
                 : 'bg-primary text-bg'}"
             >
@@ -178,7 +208,7 @@ $effect(() => {
               class="ml-auto text-[10px] font-bold
                      rounded-full min-w-5 h-5 px-1.5
                      flex items-center justify-center
-                     {$page.url.pathname === item.href
+                     {aktif(item.href)
                 ? 'bg-white text-primary-dark'
                 : 'bg-primary text-bg'}"
             >
@@ -268,15 +298,18 @@ $effect(() => {
       </a>
     </div>
 
-    <nav class="px-3 pb-3 overflow-x-auto">
+    <!-- bind:this dipasang di sini supaya tab aktif bisa digeser ke tengah -->
+    <nav bind:this={navScrollEl} class="px-3 pb-3 overflow-x-auto">
       <div class="flex gap-1.5 min-w-max">
-       {#each menuTampil as item}
+        {#each menuTampil as item}
           <a
             href={item.href}
+            aria-current={aktif(item.href) ? 'page' : undefined}
+            onclick={(e) => pusatkan(e.currentTarget)}
             class="relative flex items-center gap-2 px-3.5 py-2.5
                    rounded-xl text-[12px] font-bold whitespace-nowrap
                    transition
-                   {$page.url.pathname === item.href
+                   {aktif(item.href)
               ? 'bg-primary text-white'
               : 'bg-bg text-ink-soft hover:bg-bg-alt hover:text-primary-dark'}"
           >
@@ -299,7 +332,7 @@ $effect(() => {
                 class="ml-1 text-[9px] font-bold
                        rounded-full min-w-4 h-4 px-1
                        flex items-center justify-center
-                       {$page.url.pathname === item.href
+                       {aktif(item.href)
                   ? 'bg-white text-primary-dark'
                   : 'bg-primary text-bg'}"
               >
@@ -312,7 +345,7 @@ $effect(() => {
                 class="ml-1 text-[9px] font-bold
                        rounded-full min-w-4 h-4 px-1
                        flex items-center justify-center
-                       {$page.url.pathname === item.href
+                       {aktif(item.href)
                   ? 'bg-white text-primary-dark'
                   : 'bg-primary text-bg'}"
               >
