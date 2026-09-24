@@ -129,7 +129,7 @@
 			<!-- HEADER -->
 			<div class="form-header">
 				<div class="welcome-text">
-					SELAMAT DATANG DI NITIP
+					Selamat datang di Nitip!
 				</div>
 				<h2>
 					Saya mendaftar sebagai
@@ -448,18 +448,19 @@
 		border-radius: 100px;
 		background: rgba(255, 106, 31, .1);
 		color: var(--color-primary-dark);
-		font-size: 12px;          /* sebelumnya 9px */
-		font-weight: 800;
+		font-family: var(--font-sans);
+		font-size: 12px;
+		font-weight: 700;
 		letter-spacing: .4px;
 	}
 
 	.hero-copy h1 {
 		margin: 17px 0 12px;
 		font-family: var(--font-display);
-		font-size: clamp(42px, 4.2vw, 58px);
-		font-weight: 600;
-		line-height: .98;
-		letter-spacing: -2px;
+		font-size: clamp(38px, 4vw, 52px);
+		font-weight: 900;
+		line-height: 1.05;
+		letter-spacing: normal;
 	}
 
 	.hero-copy h1 span {
@@ -472,7 +473,8 @@
 		max-width: 475px;
 		margin: 0 auto;
 		color: var(--color-ink-soft);
-		font-size: 15px;          /* sebelumnya 13px */
+		font-family: var(--font-sans);
+		font-size: 15px;
 		line-height: 1.65;
 	}
 
@@ -604,7 +606,7 @@
 		background: white;
 		color: var(--color-primary);
 		font-family: var(--font-display);
-		font-size: 11px;          /* sebelumnya 10px */
+		font-size: 11px;
 		font-weight: 900;
 	}
 
@@ -783,14 +785,16 @@
 	}
 
 	.benefit-item strong {
-		font-size: 12px;          /* sebelumnya 9px */
-		font-weight: 800;
+		font-family: var(--font-sans);
+		font-size: 13px;
+		font-weight: 700;
 	}
 
 	.benefit-item span {
 		margin-top: 2px;
 		color: var(--color-ink-soft);
-		font-size: 11px;          /* sebelumnya 7px */
+		font-family: var(--font-sans);
+		font-size: 12px;
 	}
 
 	.benefit-divider {
@@ -828,33 +832,37 @@
 
 	/* =====================================================
 	   FORM HEADER
+	   (disamakan dengan .login-header di halaman Masuk:
+	   span 13px/700, h2 pakai font-display default bold
+	   tanpa letter-spacing negatif, p 14px)
 	===================================================== */
 	.form-header {
 		margin-bottom: 22px;
 	}
 
 	.welcome-text {
-		margin-bottom: 8px;
+		margin-bottom: 6px;
 		color: var(--color-primary);
-		font-size: 11px;          /* sebelumnya 8px */
-		font-weight: 800;
-		letter-spacing: 1.4px;
+		font-family: var(--font-sans);
+		font-size: 13px;
+		font-weight: 700;
 	}
 
 	.form-header h2 {
-		margin: 0;
+		margin: 6px 0 8px;
 		font-family: var(--font-display);
 		font-size: 32px;
-		font-weight: 600;
-		line-height: 1.05;
-		letter-spacing: -1px;
+		font-weight: 700;
+		line-height: 1.1;
+		letter-spacing: normal;
 		color: var(--color-ink);
 	}
 
 	.form-header p {
-		margin: 8px 0 0;
+		margin: 0;
 		color: var(--color-ink-soft);
-		font-size: 13px;          /* sebelumnya 10px */
+		font-family: var(--font-sans);
+		font-size: 14px;
 	}
 
 	/* =====================================================
@@ -935,13 +943,15 @@
 	}
 
 	.role-info strong {
-		font-size: 13px;          /* sebelumnya 10px */
-		font-weight: 800;
+		font-family: var(--font-sans);
+		font-size: 13px;
+		font-weight: 700;
 	}
 
 	.role-info span {
 		color: #a18e7e;
-		font-size: 11px;          /* sebelumnya 7px */
+		font-family: var(--font-sans);
+		font-size: 12px;
 	}
 
 	.check {
@@ -956,8 +966,8 @@
 		border-radius: 50%;
 		background: var(--color-primary);
 		color: white;
-		font-size: 11px;          /* sebelumnya 8px */
-		font-weight: 900;
+		font-size: 11px;
+		font-weight: 700;
 		pointer-events: none;
 	}
 
@@ -971,8 +981,9 @@
 	.form-group label {
 		display: block;
 		margin-bottom: 7px;
-		font-size: 13px;          /* sebelumnya 9px */
-		font-weight: 800;
+		font-family: var(--font-sans);
+		font-size: 13px;
+		font-weight: 700;
 		color: var(--color-ink);
 	}
 
@@ -1008,7 +1019,7 @@
 		background: white;
 		color: var(--color-ink);
 		font-family: var(--font-sans);
-		font-size: 14px;          /* sebelumnya 9px */
+		font-size: 14px;
 		transition:
 			border-color .2s ease,
 			box-shadow .2s ease;
@@ -1054,7 +1065,8 @@
 	.password-help {
 		margin-top: 6px;
 		color: #a49b94;
-		font-size: 12px;          /* sebelumnya 6.5px */
+		font-family: var(--font-sans);
+		font-size: 12px;
 	}
 
 	/* =====================================================
@@ -1078,8 +1090,8 @@
 			);
 		color: white;
 		font-family: var(--font-sans);
-		font-size: 15px;          /* sebelumnya 10px */
-		font-weight: 800;
+		font-size: 15px;
+		font-weight: 700;
 		cursor: pointer;
 		box-shadow:
 			0 8px 18px rgba(255,106,31,.18);
@@ -1104,13 +1116,14 @@
 		justify-content: center;
 		gap: 5px;
 		margin-top: 18px;
-		font-size: 13px;          /* sebelumnya 8px */
+		font-family: var(--font-sans);
+		font-size: 13px;
 		color: #958b84;
 	}
 
 	.login-link a {
 		color: var(--color-primary);
-		font-weight: 800;
+		font-weight: 700;
 		text-decoration: none;
 	}
 
@@ -1120,52 +1133,213 @@
 
 	/* =====================================================
 	   RESPONSIVE
+	   (breakpoint disamakan dengan halaman Masuk:
+	   1100px tablet, 768px mobile/stack, 480px hp kecil,
+	   plus query layar pendek desktop)
 	===================================================== */
-	@media (max-width: 1000px) {
+
+	/* =================================
+	   TABLET
+	================================= */
+	@media (max-width: 1100px) {
 		.register-page {
-			grid-template-columns: 1fr;
+			grid-template-columns: 52% 48%;
+		}
+
+		.hero-content {
+			padding: 32px clamp(30px, 5vw, 60px) 24px;
+		}
+
+		.illustration {
+			transform: scale(.9);
+		}
+
+		.form-section {
+			padding: 24px 28px;
+		}
+
+		.register-card {
+			padding: 28px 30px;
+		}
+	}
+
+	/* =================================
+	   MOBILE
+	================================= */
+	@media (max-width: 768px) {
+		.register-page {
+			height: auto;
+			min-height: calc(100vh - 68px);
+			display: flex;
+			flex-direction: column;
 			overflow: visible;
 		}
 
 		.hero-section {
 			min-height: auto;
-			padding: 50px 0;
+			height: auto;
+			padding: 25px 0 20px;
+		}
+
+		.hero-content {
+			padding: 0 20px;
+		}
+
+		.hero-badge {
+			font-size: 11px;
+		}
+
+		.hero-copy h1 {
+			font-size: 34px;
+		}
+
+		.hero-copy p {
+			max-width: 430px;
+			font-size: 14px;
+		}
+
+		.illustration {
+			height: 160px;
+			max-width: 420px;
+			transform: scale(.72);
+			transform-origin: center bottom;
+			margin-top: 12px;
+		}
+
+		.benefits {
+			width: 100%;
+			max-width: 420px;
+			min-height: 58px;
+			margin-top: 20px;
 		}
 
 		.form-section {
 			min-height: auto;
-			padding:
-				50px
-				25px;
+			height: auto;
+			padding: 25px 16px 35px;
+		}
+
+		.register-card {
+			max-width: 500px;
+			padding: 28px 24px;
+			border-radius: 20px;
 		}
 	}
 
-	@media (max-width: 600px) {
+	/* =================================
+	   HP KECIL
+	================================= */
+	@media (max-width: 480px) {
 		.hero-content {
-			padding:
-				30px
-				22px;
+			padding: 0 15px;
+		}
+
+		.hero-badge {
+			font-size: 10px;
+			padding: 6px 11px;
 		}
 
 		.hero-copy h1 {
-			font-size: 40px;
+			margin-top: 14px;
+			font-size: 28px;
+		}
+
+		.hero-copy p {
+			font-size: 13px;
+			line-height: 1.5;
+		}
+
+		.illustration {
+			height: 130px;
+			transform: scale(.56);
+			margin-top: 4px;
+		}
+
+		.benefits {
+			min-height: 50px;
+			padding: 4px;
+		}
+
+		.benefit-item {
+			gap: 5px;
+		}
+
+		.benefit-icon {
+			display: none;
+		}
+
+		.benefit-item strong {
+			font-size: 12px;
+		}
+
+		.benefit-item span {
+			font-size: 11px;
+		}
+
+		.form-section {
+			padding: 20px 12px 30px;
+		}
+
+		.register-card {
+			padding: 24px 18px;
+			border-radius: 18px;
+		}
+
+		.form-header h2 {
+			font-size: 28px;
+		}
+
+		.form-header p {
+			font-size: 13px;
 		}
 
 		.role-options {
 			grid-template-columns: 1fr;
 		}
 
-		.form-section {
-			padding:
-				35px
-				18px;
+		.input-wrapper input {
+			height: 48px;
+			font-size: 14px;
+		}
+
+		.register-button {
+			height: 50px;
+			font-size: 15px;
+		}
+	}
+
+	/* =================================
+	   LAYAR PENDEK DESKTOP
+	================================= */
+	@media (min-width: 769px) and (max-height: 700px) {
+		.hero-content {
+			padding-top: 22px;
+		}
+
+		.hero-badge {
+			font-size: 11px;
+		}
+
+		.hero-copy h1 {
+			font-size: 40px;
+		}
+
+		.illustration {
+			height: 180px;
+			transform: scale(.88);
+		}
+
+		.benefits {
+			margin-top: 22px;
+			min-height: 58px;
 		}
 
 		.register-card {
-			padding:
-				28px
-				22px
-				24px;
+			padding: 26px 32px;
+		}
+
+		.form-header {
+			margin-bottom: 16px;
 		}
 	}
 </style>

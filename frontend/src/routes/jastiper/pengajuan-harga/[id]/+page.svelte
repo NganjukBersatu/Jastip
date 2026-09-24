@@ -114,13 +114,15 @@
 	<title>Chat — {data.item.produkNama} — Nitip</title>
 </svelte:head>
 
-<div class="w-full max-w-285 mx-auto p-4 sm:p-8 flex flex-col h-dvh">
+<div class="w-full max-w-[1800px] mx-auto p-4 sm:px-6 sm:py-10 lg:px-10 xl:px-14 flex flex-col h-dvh">
 	<!-- Header -->
 	<div class="flex flex-col sm:flex-row justify-between items-start gap-3 sm:gap-4">
 		<div>
-			<h1 class="text-[20px] sm:text-[24px]">{data.item.produkNama}</h1>
+			<h1 class="text-[20px] sm:text-[24px] font-extrabold tracking-tight text-ink">
+				{data.item.produkNama}
+			</h1>
 
-			<p class="text-ink-soft text-[13px] sm:text-[14px]">
+			<p class="text-ink-soft text-[13px] sm:text-[14px] mt-1">
 				Nego dengan
 				<span class="font-semibold text-ink">
 					{data.item.pelangganNama}

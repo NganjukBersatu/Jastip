@@ -71,7 +71,7 @@
 	<title>Pengajuan harga — Nitip</title>
 </svelte:head>
 
-<div class="w-full max-w-285uto px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
+<div class="w-full max-w-[1800px] mx-auto px-4 py-8 sm:px-6 sm:py-10 lg:px-10 xl:px-14">
 	<!-- HEADER -->
 	<div class="mb-8 sm:mb-10 pb-6 border-b border-ink/10">
 		<h1 class="text-2xl sm:text-[30px] font-extrabold tracking-tight text-ink">

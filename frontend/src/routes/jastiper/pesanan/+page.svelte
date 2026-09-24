@@ -151,8 +151,8 @@
   <title>Pesanan — Nitip</title>
 </svelte:head>
 
-<div class="w-full max-w-285 mx-auto px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
-  <div class="mb-6 sm:mb-7 pb-6 border-b border-ink/10">
+<div class="w-full max-w-[1800px] mx-auto px-4 py-8 sm:px-6 sm:py-10 lg:px-10 xl:px-14">
+  <div class="mb-8 sm:mb-10 pb-6 border-b border-ink/10">
     <h1 class="text-2xl sm:text-[30px] font-extrabold tracking-tight text-ink">Pesanan</h1>
     <p class="text-ink-soft mt-2 text-sm sm:text-[15px] leading-relaxed">
       Pesanan yang masuk, perlu diantar ke mana, dan riwayatnya.
