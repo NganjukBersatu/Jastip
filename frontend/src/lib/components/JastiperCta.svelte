@@ -1,4 +1,4 @@
-<section class="py-14 sm:py-24" id="jadi-jastiper">
+<section class="py-10 sm:py-12 md:py-16" id="jadi-jastiper">
   <div class="max-w-295 mx-auto px-5 sm:px-8">
     <div class="bg-ink text-bg rounded-[28px] sm:rounded-[36px] p-6 sm:p-10 md:p-16 grid md:grid-cols-[1.2fr_0.8fr] gap-10 items-center">
       <div>
