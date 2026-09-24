@@ -15,6 +15,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 };
 
 export const actions: Actions = {
+	// Menonaktifkan produk (bukan hapus permanen), supaya riwayat pesanan lama tetap aman
 	hapus: async ({ request, locals }) => {
 		const formData = await request.formData();
 		const id = formData.get('id');
@@ -23,34 +24,48 @@ export const actions: Actions = {
 			return fail(400, { error: 'ID produk tidak valid' });
 		}
 
-		// Pastikan produk milik user yang sedang login
-		const [produkYangDihapus] = await db
+		const [produkTarget] = await db
 			.select()
 			.from(produk)
-			.where(
-				and(
-					eq(produk.id, id),                    // ← tanpa Number()
-					eq(produk.jastiperId, locals.user!.id)
-				)
-			)
+			.where(and(eq(produk.id, id), eq(produk.jastiperId, locals.user!.id)))
 			.limit(1);
 
-		if (!produkYangDihapus) {
+		if (!produkTarget) {
 			return fail(404, { error: 'Produk tidak ditemukan' });
 		}
 
-		// Nonaktifkan produk (bukan hapus permanen), supaya riwayat pesanan lama tetap aman
-await db
-	.update(produk)
-	.set({ aktif: false })
-	.where(
-		and(
-			eq(produk.id, id),
-			eq(produk.jastiperId, locals.user!.id)
-		)
-	);
+		await db
+			.update(produk)
+			.set({ aktif: false })
+			.where(and(eq(produk.id, id), eq(produk.jastiperId, locals.user!.id)));
 
-return { success: true };
+		return { success: true };
+	},
 
+	// Baru: mengaktifkan kembali produk yang sebelumnya dinonaktifkan
+	aktifkan: async ({ request, locals }) => {
+		const formData = await request.formData();
+		const id = formData.get('id');
+
+		if (!id || typeof id !== 'string') {
+			return fail(400, { error: 'ID produk tidak valid' });
+		}
+
+		const [produkTarget] = await db
+			.select()
+			.from(produk)
+			.where(and(eq(produk.id, id), eq(produk.jastiperId, locals.user!.id)))
+			.limit(1);
+
+		if (!produkTarget) {
+			return fail(404, { error: 'Produk tidak ditemukan' });
+		}
+
+		await db
+			.update(produk)
+			.set({ aktif: true })
+			.where(and(eq(produk.id, id), eq(produk.jastiperId, locals.user!.id)));
+
+		return { success: true };
 	}
 };

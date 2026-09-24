@@ -3,9 +3,9 @@
 
 	let { data } = $props();
 
-	/** @type {{ id: string | number, nama: string } | null} */
-	let produkHapus = $state(null);
-	let sedangMenghapus = $state(false);
+	/** @type {{ id: string, nama: string } | null} */
+	let produkNonaktifkan = $state(null);
+	let sedangProses = $state(false);
 
 	/** @param {number} angka */
 	function formatRupiah(angka) {
@@ -17,13 +17,13 @@
 	}
 
 	function tutupModal() {
-		if (sedangMenghapus) return;
-		produkHapus = null;
+		if (sedangProses) return;
+		produkNonaktifkan = null;
 	}
 
 	/** @param {KeyboardEvent} e */
 	function onKeydown(e) {
-		if (e.key === 'Escape' && produkHapus) tutupModal();
+		if (e.key === 'Escape' && produkNonaktifkan) tutupModal();
 	}
 </script>
 
@@ -103,7 +103,8 @@
 		<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5">
 			{#each data.daftarProduk as p (p.id)}
 				<article
-					class="bg-white rounded-2xl border border-ink/10 overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.025)] hover:-translate-y-0.5 hover:shadow-md hover:border-ink/15 transition"
+					class="bg-white rounded-2xl border border-ink/10 overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.025)] hover:-translate-y-0.5 hover:shadow-md hover:border-ink/15 transition
+					{!p.aktif ? 'opacity-60' : ''}"
 				>
 					<!-- IMAGE -->
 					<div class="relative h-44 sm:h-40 bg-ink/5 overflow-hidden">
@@ -151,7 +152,7 @@
 								{/if}
 							</div>
 
-							<!-- ACTIONS: Edit + Hapus -->
+							<!-- ACTIONS -->
 							<div class="mt-4 flex items-center gap-2">
 								<a
 									href="/jastiper/produk/{p.id}/edit"
@@ -172,14 +173,27 @@
 									Edit
 								</a>
 
-								<!-- Tombol ini hanya membuka modal, penghapusan dilakukan di modal -->
-								<button
-									type="button"
-									onclick={() => (produkHapus = { id: p.id, nama: p.nama })}
-									class="shrink-0 inline-flex items-center justify-center rounded-lg bg-red-50 text-red-600 font-bold text-[12.5px] px-4 py-2 min-h-[38px] hover:bg-red-100 transition cursor-pointer"
-								>
-									Hapus
-								</button>
+								{#if p.aktif}
+									<!-- Tombol ini hanya membuka modal; nonaktifkan beneran terjadi di modal -->
+									<button
+										type="button"
+										onclick={() => (produkNonaktifkan = { id: p.id, nama: p.nama })}
+										class="shrink-0 inline-flex items-center justify-center rounded-lg bg-red-50 text-red-600 font-bold text-[12.5px] px-4 py-2 min-h-[38px] hover:bg-red-100 transition cursor-pointer"
+									>
+										Nonaktifkan
+									</button>
+								{:else}
+									<!-- Aktifkan kembali: langsung submit, tanpa modal -->
+									<form method="POST" action="?/aktifkan" use:enhance>
+										<input type="hidden" name="id" value={p.id} />
+										<button
+											type="submit"
+											class="shrink-0 inline-flex items-center justify-center rounded-lg bg-green-50 text-green-700 font-bold text-[12.5px] px-4 py-2 min-h-[38px] hover:bg-green-100 transition cursor-pointer"
+										>
+											Aktifkan
+										</button>
+									</form>
+								{/if}
 							</div>
 						</div>
 					</div>
@@ -189,8 +203,8 @@
 	{/if}
 </div>
 
-<!-- MODAL KONFIRMASI HAPUS (tema gelap) -->
-{#if produkHapus}
+<!-- MODAL KONFIRMASI NONAKTIFKAN (tema gelap) -->
+{#if produkNonaktifkan}
 	<div class="fixed inset-0 z-[70] flex items-center justify-center p-4">
 		<button
 			type="button"
@@ -202,7 +216,7 @@
 		<div
 			role="dialog"
 			aria-modal="true"
-			aria-labelledby="judul-hapus"
+			aria-labelledby="judul-nonaktifkan"
 			class="relative w-full max-w-[360px] bg-ink text-bg rounded-2xl px-6 pt-6 pb-5 text-center shadow-2xl border border-white/10"
 		>
 			<div
@@ -224,9 +238,9 @@
 				</svg>
 			</div>
 
-			<h3 id="judul-hapus" class="font-bold text-base">Hapus produk?</h3>
+			<h3 id="judul-nonaktifkan" class="font-bold text-base">Nonaktifkan produk?</h3>
 			<p class="text-[13.5px] text-bg/70 mt-1.5 mb-5 leading-relaxed">
-				Produk "{produkHapus.nama}" akan dihapus permanen dan tidak bisa dikembalikan.
+				Produk "{produkNonaktifkan.nama}" tidak akan tampil di katalog, tapi datanya tetap aman dan bisa diaktifkan lagi kapan saja.
 			</p>
 
 			<form
@@ -234,15 +248,15 @@
 				action="?/hapus"
 				class="grid grid-cols-2 gap-2.5"
 				use:enhance={() => {
-					sedangMenghapus = true;
+					sedangProses = true;
 					return async ({ update }) => {
 						await update();
-						sedangMenghapus = false;
-						produkHapus = null;
+						sedangProses = false;
+						produkNonaktifkan = null;
 					};
 				}}
 			>
-				<input type="hidden" name="id" value={produkHapus.id} />
+				<input type="hidden" name="id" value={produkNonaktifkan.id} />
 
 				<button
 					type="button"
@@ -254,10 +268,10 @@
 
 				<button
 					type="submit"
-					disabled={sedangMenghapus}
+					disabled={sedangProses}
 					class="inline-flex items-center justify-center rounded-xl bg-red-500 text-white font-bold text-[13px] px-4 py-2.5 min-h-[42px] hover:bg-red-600 transition cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
 				>
-					{sedangMenghapus ? 'Menghapus…' : 'Hapus'}
+					{sedangProses ? 'Memproses…' : 'Nonaktifkan'}
 				</button>
 			</form>
 		</div>
