@@ -30,23 +30,47 @@ export const actions: Actions = {
 			return fail(400, { error: 'Biaya harus berupa angka yang valid.' });
 		}
 
-		await db.insert(ongkirWilayah).values({
-			id: randomUUID(),
-			jastiperId: locals.user!.id,
-			wilayah,
-			biaya
-		});
+		try {
+			await db.insert(ongkirWilayah).values({
+				id: randomUUID(),
+				jastiperId: locals.user!.id,
+				wilayah,
+				biaya
+			});
+		} catch (err) {
+			console.error('Gagal menambah wilayah:', err);
+			return fail(500, { error: 'Gagal menambahkan wilayah. Coba lagi.' });
+		}
+
+		return { success: true };
 	},
 
-		hapus: async ({ request, locals }) => {
+	hapus: async ({ request, locals }) => {
 		const data = await request.formData();
 		const id = data.get('id')?.toString();
-		if (!id) return fail(400, { error: 'ID tidak ditemukan.' });
 
-		// pastikan cuma bisa hapus milik sendiri
-		await db
-			.delete(ongkirWilayah)
-			.where(and(eq(ongkirWilayah.id, id), eq(ongkirWilayah.jastiperId, locals.user!.id)));
+		if (!id) {
+			return fail(400, { error: 'ID tidak ditemukan.' });
+		}
+
+		try {
+			// pastikan cuma bisa hapus milik sendiri
+			const dihapus = await db
+				.delete(ongkirWilayah)
+				.where(and(eq(ongkirWilayah.id, id), eq(ongkirWilayah.jastiperId, locals.user!.id)))
+				.returning({ id: ongkirWilayah.id });
+
+			if (dihapus.length === 0) {
+				return fail(404, { error: 'Wilayah tidak ditemukan atau bukan milik Anda.' });
+			}
+		} catch (err) {
+			console.error('Gagal menghapus wilayah:', err);
+			return fail(500, {
+				error: 'Wilayah ini masih terpakai (misalnya ada pesanan terkait) sehingga tidak bisa dihapus.'
+			});
+		}
+
+		return { success: true };
 	},
 
 	ubah: async ({ request, locals }) => {
@@ -65,10 +89,22 @@ export const actions: Actions = {
 			return fail(400, { error: 'Biaya harus berupa angka yang valid.' });
 		}
 
-		// pastikan cuma bisa ubah milik sendiri
-		await db
-			.update(ongkirWilayah)
-			.set({ wilayah, biaya })
-			.where(and(eq(ongkirWilayah.id, id), eq(ongkirWilayah.jastiperId, locals.user!.id)));
+		try {
+			// pastikan cuma bisa ubah milik sendiri
+			const diubah = await db
+				.update(ongkirWilayah)
+				.set({ wilayah, biaya })
+				.where(and(eq(ongkirWilayah.id, id), eq(ongkirWilayah.jastiperId, locals.user!.id)))
+				.returning({ id: ongkirWilayah.id });
+
+			if (diubah.length === 0) {
+				return fail(404, { error: 'Wilayah tidak ditemukan atau bukan milik Anda.' });
+			}
+		} catch (err) {
+			console.error('Gagal mengubah wilayah:', err);
+			return fail(500, { error: 'Gagal menyimpan perubahan. Coba lagi.' });
+		}
+
+		return { success: true };
 	}
 };
