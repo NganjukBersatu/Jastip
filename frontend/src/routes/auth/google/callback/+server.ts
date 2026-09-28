@@ -1,6 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 import { Google } from 'arctic';
 import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 import { db } from '$lib/server/db';
 import { users } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
@@ -12,7 +13,7 @@ import type { RequestHandler } from './$types';
 const google = new Google(
 	GOOGLE_CLIENT_ID,
 	GOOGLE_CLIENT_SECRET,
-	'http://localhost:5173/auth/google/callback'
+	`${env.ORIGIN}/auth/google/callback`
 );
 
 export const GET: RequestHandler = async ({ url, cookies, fetch }) => {

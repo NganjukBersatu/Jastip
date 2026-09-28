@@ -1,12 +1,13 @@
 import { Google, generateState, generateCodeVerifier } from 'arctic';
 import { redirect } from '@sveltejs/kit';
 import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 import type { RequestHandler } from './$types';
 
 const google = new Google(
 	GOOGLE_CLIENT_ID,
 	GOOGLE_CLIENT_SECRET,
-	'http://localhost:5173/auth/google/callback'
+	`${env.ORIGIN}/auth/google/callback`
 );
 
 export const GET: RequestHandler = async ({ url, cookies }) => {
