@@ -36,6 +36,13 @@
       "when": 1789517835257,
       "tag": "0004_old_wallow",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1790662105054,
+      "tag": "0005_password_reset_tokens",
+      "breakpoints": true
     }
   ]
 }
