@@ -485,27 +485,33 @@
 </footer>
 
 <!-- ===== MODAL DETAIL ===== -->
-<!-- Revisi: overlay dipertegas (lebih gelap & blur) khusus di bawah xl supaya
-     background rame (hero + dekorasi blur + grid) tidak lagi tembus/kelihatan
-     numpuk di belakang kartu detail pada mode tablet & mobile.
-     Di xl: (desktop) dikembalikan persis ke nilai asli (bg-ink/40, blur 2px). -->
+<!-- Perbaikan: kartu dibatasi tinggi (dvh), isi tengah bisa di-scroll,
+     tombol aksi dipaku di footer supaya selalu terlihat.
+     Di mobile tampil sebagai bottom sheet, di sm: ke atas tetap di tengah. -->
 {#if itemDipilih}
 	{@const item = itemDipilih}
 	<div
-		class="fixed inset-0 z-[900] bg-ink/70 backdrop-blur-md xl:bg-ink/40 xl:backdrop-blur-[2px] flex items-center justify-center p-4"
+		class="fixed inset-0 z-[900] bg-ink/70 backdrop-blur-md xl:bg-ink/40 xl:backdrop-blur-[2px]
+		flex items-end sm:items-center justify-center p-0 sm:p-4"
 		role="presentation"
 		onclick={tutupDetail}
 	>
 		<!-- svelte-ignore a11y_click_events_have_key_events -->
 		<div
-			class="bg-white w-full max-w-110 rounded-card overflow-hidden shadow-[0_20px_60px_rgba(42,26,14,0.25)]"
+			class="bg-white w-full sm:max-w-110 rounded-t-card sm:rounded-card overflow-hidden
+			flex flex-col max-h-[92dvh] sm:max-h-[90dvh]
+			shadow-[0_20px_60px_rgba(42,26,14,0.25)]"
 			role="dialog"
 			aria-modal="true"
 			aria-label={item.nama}
 			tabindex="-1"
 			onclick={(e) => e.stopPropagation()}
 		>
-			<div class="aspect-16/10 relative overflow-hidden">
+			<!-- ZONA 1: gambar (tidak ikut mengecil) -->
+			<div
+				class="relative shrink-0 overflow-hidden
+				h-[24dvh] max-h-44 sm:h-auto sm:max-h-none sm:aspect-16/10"
+			>
 				<img src={item.gambarUrl} alt={item.nama} class="w-full h-full object-cover" />
 				<div
 					class="absolute inset-0 bg-linear-to-t from-black/25 via-transparent to-transparent"
@@ -533,14 +539,18 @@
 					</svg>
 				</button>
 			</div>
-			<div class="px-6 pt-5 pb-6">
-				<div class="flex justify-between items-center">
+
+			<!-- ZONA 2: isi yang bisa di-scroll -->
+			<div class="flex-1 min-h-0 overflow-y-auto overscroll-contain px-5 sm:px-6 pt-5 pb-4">
+				<div class="flex justify-between items-center gap-3">
 					<span class="text-xs font-bold text-primary-dark uppercase tracking-wide"
 						>{item.area ?? '-'}</span
 					>
-					<span class="text-xs text-ink-soft">Jastiper {item.jastiperNama}</span>
+					<span class="text-xs text-ink-soft text-right break-words min-w-0"
+						>Jastiper {item.jastiperNama}</span
+					>
 				</div>
-				<h2 class="font-bold text-xl mt-1.5">{item.nama}</h2>
+				<h2 class="font-bold text-xl mt-1.5 break-words">{item.nama}</h2>
 				<div class="font-display font-semibold text-2xl mt-2">
 					{formatRupiah(item.harga)}
 					{#if item.hargaTipe === 'nego'}
@@ -556,16 +566,38 @@
 				>
 					{item.hargaTipe === 'nego' ? 'Harga bisa dinego' : 'Harga pas, tanpa nego'}
 				</p>
-				<p class="text-sm text-ink-soft mt-4 leading-relaxed">
+				<p class="text-sm text-ink-soft mt-4 leading-relaxed whitespace-pre-line break-words">
 					{item.deskripsi ??
 						`Detail lengkap ${item.tipe === 'produk' ? 'produk' : 'jasa'} ini dari jastiper ${item.jastiperNama}.`}
 				</p>
+			</div>
 
-				<!-- BARU: stepper jumlah, hanya untuk produk harga tetap (bukan jasa, bukan nego) -->
-				{#if item.tipe === 'produk' && item.hargaTipe !== 'nego'}
-					<div class="mt-5 flex items-center justify-between bg-bg-alt rounded-2xl px-4 py-3">
-						<span class="text-sm font-semibold text-ink-soft">Jumlah</span>
-						<div class="flex items-center gap-4">
+			<!-- ZONA 3: footer tombol aksi (selalu terlihat) -->
+			<div
+				class="shrink-0 border-t border-ink/10 bg-white px-5 sm:px-6 pt-4
+				pb-[max(1rem,env(safe-area-inset-bottom))]"
+			>
+				{#if item.tipe === 'jasa'}
+					<a
+						href={`/pelanggan/pesan-jasa/${item.id}`}
+						class="block text-center w-full py-3.5 rounded-full font-bold text-[15px] bg-ink text-bg transition-transform hover:-translate-y-0.5"
+					>
+						Pesan Jasa
+					</a>
+				{:else if item.hargaTipe === 'nego'}
+					<form method="POST" action="?/chatJastiper" use:enhance>
+						<input type="hidden" name="produkId" value={item.id} />
+						<button
+							type="submit"
+							class="w-full py-3.5 rounded-full font-bold text-[15px] bg-accent text-ink transition-transform hover:-translate-y-0.5"
+						>
+							Hubungi Jastiper
+						</button>
+					</form>
+				{:else}
+					<div class="flex items-center gap-2.5 sm:gap-3">
+						<!-- Stepper jumlah (ringkas, satu baris dengan tombol) -->
+						<div class="flex items-center gap-2 bg-bg-alt rounded-full px-1.5 py-1.5 shrink-0">
 							<button
 								type="button"
 								onclick={kurangiJumlah}
@@ -575,7 +607,7 @@
 							>
 								−
 							</button>
-							<span class="w-6 text-center font-bold text-base">{jumlahDipilih}</span>
+							<span class="w-5 text-center font-bold text-base">{jumlahDipilih}</span>
 							<button
 								type="button"
 								onclick={tambahJumlah}
@@ -585,69 +617,51 @@
 								+
 							</button>
 						</div>
+
+						<!-- Tambah ke keranjang -->
+						<form
+							method="POST"
+							action="?/tambahKeranjang"
+							class="shrink-0"
+							use:enhance={() => {
+								return async ({ result, update }) => {
+									await update({ reset: false });
+									if (result.type === 'success') {
+										await invalidateAll();
+										tutupDetail();
+									}
+								};
+							}}
+						>
+							<input type="hidden" name="produkId" value={item.id} />
+							<input type="hidden" name="jumlah" value={jumlahDipilih} />
+							<button
+								type="submit"
+								aria-label="Tambah ke keranjang"
+								class="w-12 h-12 rounded-full border-2 border-ink text-ink flex items-center justify-center transition-transform hover:-translate-y-0.5 hover:bg-bg-alt"
+							>
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-5 h-5">
+									<circle cx="9" cy="21" r="1" />
+									<circle cx="20" cy="21" r="1" />
+									<path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6" />
+								</svg>
+							</button>
+						</form>
+
+						<!-- Beli langsung -->
+						<a
+							href={`/pembayaran?mode=langsung&produkId=${item.id}&jumlah=${jumlahDipilih}`}
+							class="flex-1 min-w-0 text-center py-3.5 rounded-full font-bold text-[15px] bg-ink text-bg transition-transform hover:-translate-y-0.5"
+						>
+							Beli
+						</a>
 					</div>
 				{/if}
-
-				<div class="mt-6">
-					{#if item.tipe === 'jasa'}
-						<a
-							href={`/pelanggan/pesan-jasa/${item.id}`}
-							class="block text-center w-full py-3.5 rounded-full font-bold text-[15px] bg-ink text-bg transition-transform hover:-translate-y-0.5"
-						>
-							Pesan Jasa
-						</a>
-					{:else if item.hargaTipe === 'nego'}
-    <form method="POST" action="?/chatJastiper" use:enhance>
-        <input type="hidden" name="produkId" value={item.id} />
-        <button
-            type="submit"
-            class="w-full py-3.5 rounded-full font-bold text-[15px] bg-accent text-ink transition-transform hover:-translate-y-0.5"
-        >
-            Hubungi Jastiper
-        </button>
-    </form>
-					{:else}
-						<div class="flex gap-3">
-							<form
-								method="POST"
-								action="?/tambahKeranjang"
-								use:enhance={() => {
-									return async ({ result, update }) => {
-										await update({ reset: false });
-										if (result.type === 'success') {
-											await invalidateAll();
-											tutupDetail();
-										}
-									};
-								}}
-							>
-								<input type="hidden" name="produkId" value={item.id} />
-								<input type="hidden" name="jumlah" value={jumlahDipilih} />
-								<button
-									type="submit"
-									aria-label="Tambah ke keranjang"
-									class="w-13.5 h-13.5 rounded-full border-2 border-ink text-ink flex items-center justify-center transition-transform hover:-translate-y-0.5 hover:bg-bg-alt shrink-0"
-								>
-									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-5 h-5">
-										<circle cx="9" cy="21" r="1" />
-										<circle cx="20" cy="21" r="1" />
-										<path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6" />
-									</svg>
-								</button>
-							</form>
-							<a
-								href={`/pembayaran?mode=langsung&produkId=${item.id}&jumlah=${jumlahDipilih}`}
-								class="flex-1 text-center py-3.5 rounded-full font-bold text-[15px] bg-ink text-bg transition-transform hover:-translate-y-0.5"
-							>
-								Beli
-							</a>
-						</div>
-					{/if}
-				</div>
 			</div>
 		</div>
 	</div>
 {/if}
+
 
 <style>
 	:global(.no-scrollbar) {
