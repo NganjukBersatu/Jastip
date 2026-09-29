@@ -7,7 +7,7 @@ import type { RequestHandler } from './$types';
 const google = new Google(
 	GOOGLE_CLIENT_ID,
 	GOOGLE_CLIENT_SECRET,
-	`${env.ORIGIN}/auth/google/callback`
+	`${(env.ORIGIN ?? '').trim().replace(/\/+$/, '')}/auth/google/callback`
 );
 
 export const GET: RequestHandler = async ({ url, cookies }) => {
