@@ -1,6 +1,7 @@
 import { pgTable, text, timestamp, boolean, integer, doublePrecision, pgEnum } from 'drizzle-orm/pg-core';
 
-export const roleEnum = pgEnum('role', ['pelanggan', 'jastiper']);
+// DIUBAH: tambah 'admin'
+export const roleEnum = pgEnum('role', ['pelanggan', 'jastiper', 'admin']);
 export const hargaTipeEnum = pgEnum('harga_tipe', ['tetap', 'nego']);
 export const statusPengajuanEnum = pgEnum('status_pengajuan', ['menunggu', 'diterima', 'ditolak']);
 export const statusPesananEnum = pgEnum('status_pesanan', [
@@ -18,6 +19,7 @@ export const users = pgTable('users', {
 	email: text('email').notNull().unique(),
 	passwordHash: text('password_hash').notNull(),
 	role: roleEnum('role').notNull().default('pelanggan'),
+	aktif: boolean('aktif').notNull().default(true), // BARU: akun dinonaktifkan admin = false
 	createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
 });
 
@@ -125,10 +127,7 @@ export const pesanChat = pgTable('pesan_chat', {
 	createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
 });
 
-// DIUBAH: pesanan sekarang HEADER transaksi (1 checkout = 1 baris).
-// produkId/jasaId/jumlah/hargaSatuan/titikJemput/jarakKm/pengajuanHargaId
-// pindah ke pesananItem di bawah, karena satu transaksi bisa berisi
-// lebih dari satu produk sekaligus.
+// pesanan = HEADER transaksi (1 checkout = 1 baris).
 export const pesanan = pgTable('pesanan', {
 	id: text('id').primaryKey(),
 	pelangganId: text('pelanggan_id').notNull().references(() => users.id),
@@ -145,7 +144,7 @@ export const pesanan = pgTable('pesanan', {
 	updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow()
 });
 
-// BARU: item di dalam satu transaksi. Satu pesanan bisa punya banyak baris ini.
+// item di dalam satu transaksi. Satu pesanan bisa punya banyak baris ini.
 export const pesananItem = pgTable('pesanan_item', {
 	id: text('id').primaryKey(),
 	pesananId: text('pesanan_id')
@@ -157,8 +156,8 @@ export const pesananItem = pgTable('pesanan_item', {
 	jumlah: integer('jumlah').notNull().default(1),
 	hargaSatuan: integer('harga_satuan').notNull(),
 	titikJemput: text('titik_jemput'), // khusus item jasa — alamat teks
-	titikJemputLat: doublePrecision('titik_jemput_lat'), // BARU
-	titikJemputLng: doublePrecision('titik_jemput_lng'), // BARU
+	titikJemputLat: doublePrecision('titik_jemput_lat'),
+	titikJemputLng: doublePrecision('titik_jemput_lng'),
 	jarakKm: doublePrecision('jarak_km') // khusus item jasa
 });
 
@@ -182,4 +181,15 @@ export const tawaranHarga = pgTable('tawaran_harga', {
 	jumlah: integer('jumlah').notNull(),
 	status: text('status').notNull().default('menunggu'),
 	createdAt: timestamp('created_at').notNull().defaultNow()
+});
+
+// BARU: jejak semua aksi admin (nonaktifkan akun, batalkan pesanan, dll.)
+export const logAdmin = pgTable('log_admin', {
+	id: text('id').primaryKey(),
+	adminId: text('admin_id').notNull().references(() => users.id),
+	aksi: text('aksi').notNull(), // contoh: 'nonaktifkan_akun', 'batalkan_pesanan'
+	targetTipe: text('target_tipe').notNull(), // 'user' | 'produk' | 'jasa' | 'pesanan'
+	targetId: text('target_id').notNull(),
+	alasan: text('alasan'),
+	createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
 });
