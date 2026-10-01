@@ -2,7 +2,7 @@
 	let { data, children } = $props();
 	const menu = [
 		{ href: '/admin', label: 'Dashboard', aktif: true },
-		{ href: '#', label: 'Verifikasi jastiper', aktif: false },
+		{ href: '/admin/verifikasi-jastiper', label: 'Verifikasi jastiper', aktif: true },
 		{ href: '#', label: 'Akun', aktif: false },
 		{ href: '#', label: 'Produk & jasa', aktif: false },
 		{ href: '#', label: 'Pesanan', aktif: false }

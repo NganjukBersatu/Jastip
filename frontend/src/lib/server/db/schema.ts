@@ -193,3 +193,24 @@ export const logAdmin = pgTable('log_admin', {
 	alasan: text('alasan'),
 	createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
 });
+
+// BARU: verifikasi jastiper oleh admin
+export const statusVerifikasiEnum = pgEnum('status_verifikasi', [
+	'menunggu',
+	'disetujui',
+	'ditolak'
+]);
+
+export const verifikasiJastiper = pgTable('verifikasi_jastiper', {
+	id: text('id').primaryKey(),
+	userId: text('user_id')
+		.notNull()
+		.references(() => users.id, { onDelete: 'cascade' }),
+	status: statusVerifikasiEnum('status').notNull().default('menunggu'),
+	alasanPenolakan: text('alasan_penolakan'),
+	dokumenKtpUrl: text('dokumen_ktp_url'),
+	dokumenSelfieUrl: text('dokumen_selfie_url'),
+	diprosesOleh: text('diproses_oleh').references(() => users.id),
+	diprosesPada: timestamp('diproses_pada', { withTimezone: true }),
+	createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
+});
