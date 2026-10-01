@@ -8,7 +8,7 @@
 	// siap: true kalau halamannya sudah dibuat. Ubah jadi true saat halamanmu selesai.
 	const menu = [
 		{ href: '/admin', label: 'Dashboard', siap: true },
-		{ href: '/admin/jastiper', label: 'Verifikasi jastiper', siap: false },
+		{ href: '/admin/verifikasi-jastiper', label: 'Verifikasi jastiper', siap: true },
 		{ href: '/admin/akun', label: 'Akun', siap: false },
 		{ href: '/admin/produk', label: 'Produk', siap: true },
 		{ href: '/admin/pesanan', label: 'Pesanan', siap: true }
