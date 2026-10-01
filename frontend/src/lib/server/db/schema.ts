@@ -190,6 +190,7 @@ export const logAdmin = pgTable('log_admin', {
 	aksi: text('aksi').notNull(), // contoh: 'nonaktifkan_akun', 'batalkan_pesanan'
 	targetTipe: text('target_tipe').notNull(), // 'user' | 'produk' | 'jasa' | 'pesanan'
 	targetId: text('target_id').notNull(),
+	targetNama: text('target_nama'),
 	alasan: text('alasan'),
 	createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
 });
