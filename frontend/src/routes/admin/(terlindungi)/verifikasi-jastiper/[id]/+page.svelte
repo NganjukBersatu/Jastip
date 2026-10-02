@@ -35,14 +35,14 @@
 	Kembali ke daftar
 </a>
 
-<div class="mt-3 grid items-start gap-6 lg:grid-cols-3">
+<div class="mt-3 grid items-start gap-4 sm:gap-6 lg:grid-cols-3">
 	<!-- Kolom kiri -->
-	<div class="space-y-6 lg:col-span-2">
+	<div class="min-w-0 space-y-4 sm:space-y-6 lg:col-span-2">
 		<section class="overflow-hidden rounded-2xl border border-[#F0E3CB] bg-white shadow-sm">
-			<div class="h-20 bg-gradient-to-r from-[#FFE9C7] to-[#FFD8A8]"></div>
-			<div class="px-6 pb-6">
-				<div class="-mt-9 flex items-end justify-between">
-					<span class="flex size-[72px] items-center justify-center rounded-2xl border-4 border-white bg-[#FF6A1F] text-3xl font-bold text-white shadow-sm">
+			<div class="h-16 bg-gradient-to-r from-[#FFE9C7] to-[#FFD8A8] sm:h-20"></div>
+			<div class="px-4 pb-5 sm:px-6 sm:pb-6">
+				<div class="-mt-9 flex items-end justify-between gap-3">
+					<span class="flex size-[72px] shrink-0 items-center justify-center rounded-2xl border-4 border-white bg-[#FF6A1F] text-3xl font-bold text-white shadow-sm">
 						{p.nama.trim().charAt(0).toUpperCase()}
 					</span>
 					<span class="mb-1 rounded-full px-3 py-1 text-xs font-semibold capitalize {badge[p.status]}">
@@ -50,7 +50,7 @@
 					</span>
 				</div>
 
-				<h1 class="mt-3 text-xl font-bold tracking-tight">{p.nama}</h1>
+				<h1 class="mt-3 break-words text-xl font-bold tracking-tight">{p.nama}</h1>
 				<p class="text-sm text-[#7A5E44]">Mendaftar pada {tanggal(p.createdAt)}</p>
 
 				<dl class="mt-5 divide-y divide-[#F6ECD9] border-t border-[#F6ECD9] text-sm">
@@ -66,22 +66,22 @@
 			</div>
 		</section>
 
-						<section class="rounded-2xl border border-[#F0E3CB] bg-white p-6 shadow-sm">
+		<section class="rounded-2xl border border-[#F0E3CB] bg-white p-4 shadow-sm sm:p-6">
 			<h2 class="font-bold">Foto selfie</h2>
 			<p class="text-sm text-[#7A5E44]">Pastikan wajah terlihat jelas dan foto tidak buram.</p>
 
 			<div class="mt-4">
 				{#if p.dokumenSelfieUrl}
-										<button
-						type="button"
-						onclick={() => (fotoBesar = true)}
-						class="block h-80 w-full cursor-zoom-in overflow-hidden rounded-xl border border-[#F0E3CB] bg-[#FFFBF3] transition hover:border-[#FF6A1F]"
-					>
-						<img src={p.dokumenSelfieUrl} alt="Foto selfie pendaftar" class="h-full w-full object-contain" />
-					</button>
+					<button
+	type="button"
+	onclick={() => (fotoBesar = true)}
+	class="block h-64 w-full cursor-zoom-in overflow-hidden rounded-xl border border-[#F0E3CB] bg-[#FFFBF3] transition hover:border-[#FF6A1F] sm:h-80"
+>
+	<img src={p.dokumenSelfieUrl} alt="Foto selfie pendaftar" class="h-full w-full object-contain" />
+</button>
 					<p class="mt-2 text-xs text-[#7A5E44]">Klik foto untuk memperbesar.</p>
 				{:else}
-					<div class="flex h-80 w-full flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-[#E8D5B5] bg-[#FFFBF3] text-[#7A5E44]">
+					<div class="flex h-64 w-full flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-[#E8D5B5] bg-[#FFFBF3] text-[#7A5E44] sm:h-80">
 						<svg viewBox="0 0 24 24" class="h-8 w-8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 							<rect x="3" y="4" width="18" height="16" rx="3" />
 							<circle cx="9" cy="10" r="1.8" />
@@ -95,8 +95,8 @@
 	</div>
 
 	<!-- Kolom kanan -->
-	<div class="space-y-6 lg:sticky lg:top-6">
-		<section class="rounded-2xl border border-[#F0E3CB] bg-white p-6 shadow-sm">
+	<div class="min-w-0 space-y-4 sm:space-y-6 lg:sticky lg:top-6">
+		<section class="rounded-2xl border border-[#F0E3CB] bg-white p-4 shadow-sm sm:p-6">
 			<h2 class="font-bold">Daftar periksa</h2>
 
 			<ul class="mt-4 space-y-3 text-sm">
@@ -107,8 +107,8 @@
 								{#if c.lolos}<path d="m6 12.5 4 4 8-9" />{:else}<path d="m7 7 10 10M17 7 7 17" />{/if}
 							</svg>
 						</span>
-						<span>{c.label}</span>
-						<span class="ml-auto text-xs text-[#7A5E44]">otomatis</span>
+						<span class="min-w-0">{c.label}</span>
+						<span class="ml-auto shrink-0 text-xs text-[#7A5E44]">otomatis</span>
 					</li>
 				{/each}
 				{#each ['Nomor aktif di WhatsApp', 'Gambar jelas dan sesuai'] as label}
@@ -136,7 +136,7 @@
 			{/if}
 		</section>
 
-		<section class="rounded-2xl border border-[#F0E3CB] bg-white p-6 shadow-sm">
+		<section class="rounded-2xl border border-[#F0E3CB] bg-white p-4 shadow-sm sm:p-6">
 			<h2 class="font-bold">Keputusan</h2>
 
 			{#if p.status === 'disetujui'}
@@ -146,7 +146,7 @@
 			{:else if p.status === 'ditolak'}
 				<div class="mt-3 rounded-xl bg-red-50 p-3 text-sm text-red-700">
 					<p class="font-semibold">Pengajuan ini sudah ditolak.</p>
-					{#if p.alasanPenolakan}<p class="mt-1">Alasan: {p.alasanPenolakan}</p>{/if}
+					{#if p.alasanPenolakan}<p class="mt-1 break-words">Alasan: {p.alasanPenolakan}</p>{/if}
 				</div>
 			{:else}
 				<form method="POST" action="?/tolak" use:enhance class="mt-3 space-y-3">

@@ -192,6 +192,7 @@ export const logAdmin = pgTable('log_admin', {
 	targetId: text('target_id').notNull(),
 	targetNama: text('target_nama'),
 	alasan: text('alasan'),
+	aduanId: text('aduan_id').references(() => aduan.id, { onDelete: 'set null' }),
 	createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
 });
 
@@ -213,5 +214,52 @@ export const verifikasiJastiper = pgTable('verifikasi_jastiper', {
 	dokumenSelfieUrl: text('dokumen_selfie_url'),
 	diprosesOleh: text('diproses_oleh').references(() => users.id),
 	diprosesPada: timestamp('diproses_pada', { withTimezone: true }),
+	createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
+});
+// BARU: pengaduan
+export const statusAduanEnum = pgEnum('status_aduan', ['baru', 'diproses', 'selesai', 'ditolak']);
+export const targetAduanEnum = pgEnum('target_aduan', ['akun', 'produk', 'pesanan', 'umum']);
+
+export const aduan = pgTable('aduan', {
+	id: text('id').primaryKey(),
+	pelaporId: text('pelapor_id')
+		.notNull()
+		.references(() => users.id, { onDelete: 'cascade' }),
+	targetTipe: targetAduanEnum('target_tipe').notNull(),
+	targetId: text('target_id'), // kosong untuk 'umum'
+	targetNama: text('target_nama'), // snapshot nama saat dilaporkan
+	kategori: text('kategori').notNull(),
+	deskripsi: text('deskripsi').notNull(),
+	status: statusAduanEnum('status').notNull().default('baru'),
+	tindakan: text('tindakan'),
+	catatanAdmin: text('catatan_admin'),
+	ditanganiOleh: text('ditangani_oleh').references(() => users.id),
+	createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+	updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow()
+});
+
+export const aduanPesan = pgTable('aduan_pesan', {
+	id: text('id').primaryKey(),
+	aduanId: text('aduan_id')
+		.notNull()
+		.references(() => aduan.id, { onDelete: 'cascade' }),
+	pengirimId: text('pengirim_id')
+		.notNull()
+		.references(() => users.id, { onDelete: 'cascade' }),
+	peran: text('peran').notNull(), // 'pelapor' | 'admin'
+	isi: text('isi').notNull(),
+	dibaca: boolean('dibaca').notNull().default(false), // dibaca oleh pihak penerima
+	createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
+});
+export const aduanLampiran = pgTable('aduan_lampiran', {
+	id: text('id').primaryKey(),
+	aduanId: text('aduan_id')
+		.notNull()
+		.references(() => aduan.id, { onDelete: 'cascade' }),
+	pesanId: text('pesan_id').references(() => aduanPesan.id, { onDelete: 'cascade' }), // kosong = lampiran isi aduan awal
+	namaFile: text('nama_file').notNull(), // nama file di disk server
+	namaAsli: text('nama_asli'),
+	mime: text('mime').notNull(),
+	ukuran: integer('ukuran').notNull(),
 	createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
 });
