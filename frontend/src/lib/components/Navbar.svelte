@@ -3,10 +3,11 @@
   import { fly, fade } from 'svelte/transition';
   import { onMount } from 'svelte';
   import { notifikasiState } from '$lib/stores/notifikasi.svelte';
-  
-import { heroThemeState } from '$lib/stores/heroTheme.svelte.js';
+
+  import { heroThemeState } from '$lib/stores/heroTheme.svelte.js';
 
   let jumlahKeranjang = $derived($page.data.jumlahKeranjang ?? 0);
+  let jumlahPengaduan = $derived($page.data.jumlahPengaduanBaru ?? 0);
   let path = $derived($page.url.pathname);
   let user = $derived($page.data.user);
 
@@ -21,13 +22,15 @@ import { heroThemeState } from '$lib/stores/heroTheme.svelte.js';
             ? 'cara-kerja'
             : path.startsWith('/pelanggan/chat')
               ? 'chat'
-              : path.startsWith('/pesanan')
-                ? 'pesanan'
-                : path.startsWith('/jastiper/dashboard')
-                  ? 'dashboard'
-                  : path === '/profile' && user?.role === 'jastiper'
+              : path.startsWith('/pelanggan/pengaduan')
+                ? 'pengaduan'
+                : path.startsWith('/pesanan')
+                  ? 'pesanan'
+                  : path.startsWith('/jastiper/dashboard')
                     ? 'dashboard'
-                    : ''
+                    : path === '/profile' && user?.role === 'jastiper'
+                      ? 'dashboard'
+                      : ''
   );
 
   let displayNama = $state('');
@@ -201,6 +204,24 @@ import { heroThemeState } from '$lib/stores/heroTheme.svelte.js';
           >
             Lihat pesanan
           </a>
+
+          <a
+            href="/pelanggan/pengaduan"
+            class="relative opacity-80 hover:opacity-100 transition {active === 'pengaduan'
+              ? blendWithHero
+                ? 'opacity-100'
+                : 'opacity-100 text-primary-dark'
+              : ''}"
+          >
+            Pengaduan
+            {#if jumlahPengaduan > 0}
+              <span
+                class="absolute -top-2 -right-3 bg-primary text-white text-[10px] font-bold rounded-full min-w-4 h-4 px-1 flex items-center justify-center"
+              >
+                {jumlahPengaduan > 9 ? '9+' : jumlahPengaduan}
+              </span>
+            {/if}
+          </a>
         {/if}
 
         {#if user?.role === 'jastiper'}
@@ -367,13 +388,13 @@ import { heroThemeState } from '$lib/stores/heroTheme.svelte.js';
                 : 'opacity-80 hover:bg-ink/5'}"
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4.5 h-4.5 shrink-0">
-               <path d="M4 5h16" />
+                <path d="M4 5h16" />
                 <path d="M4 12h16" />
-                  <path d="M4 19h16" />
+                <path d="M4 19h16" />
                 <circle cx="8" cy="5" r="1.2" fill="currentColor" stroke="none" />
-             <circle cx="8" cy="12" r="1.2" fill="currentColor" stroke="none" />
-           <circle cx="8" cy="19" r="1.2" fill="currentColor" stroke="none" />
-        </svg>
+                <circle cx="8" cy="12" r="1.2" fill="currentColor" stroke="none" />
+                <circle cx="8" cy="19" r="1.2" fill="currentColor" stroke="none" />
+              </svg>
               Katalog
             </a>
           {/if}
@@ -445,6 +466,27 @@ import { heroThemeState } from '$lib/stores/heroTheme.svelte.js';
                 <line x1="15" y1="10" x2="15" y2="14" />
               </svg>
               Lihat pesanan
+            </a>
+
+            <a
+              href="/pelanggan/pengaduan"
+              onclick={tutupMenu}
+              class="flex items-center justify-between px-4 py-3 rounded-xl font-semibold text-sm transition {active === 'pengaduan'
+                ? 'text-primary-dark bg-primary/10'
+                : 'opacity-80 hover:bg-ink/5'}"
+            >
+              <span class="flex items-center gap-3">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4.5 h-4.5 shrink-0">
+                  <path d="M4 22V4" />
+                  <path d="M4 4h13l-2 4 2 4H4" />
+                </svg>
+                Pengaduan
+              </span>
+              {#if jumlahPengaduan > 0}
+                <span class="inline-flex items-center justify-center bg-primary text-white text-[10px] font-bold rounded-full min-w-4.5 h-4.5 px-1">
+                  {jumlahPengaduan > 9 ? '9+' : jumlahPengaduan}
+                </span>
+              {/if}
             </a>
           {/if}
 

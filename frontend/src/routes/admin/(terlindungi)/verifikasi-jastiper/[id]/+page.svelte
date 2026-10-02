@@ -51,10 +51,10 @@
 				<p class="text-sm text-[#7A5E44]">Mendaftar pada {tanggal(p.createdAt)}</p>
 
 				<dl class="mt-5 divide-y divide-[#F6ECD9] border-t border-[#F6ECD9] text-sm">
-					{#each [{ k: 'Email', v: p.email }, { k: 'Nomor WhatsApp', v: p.noWa }, { k: 'Area', v: p.area }, { k: 'Bio jasa', v: p.deskripsi }] as baris}
-						<div class="flex flex-col gap-0.5 py-3 sm:grid sm:grid-cols-[150px_1fr] sm:gap-4">
-							<dt class="text-xs text-[#7A5E44] sm:text-sm">{baris.k}</dt>
-							<dd class="min-w-0 break-words font-medium">
+					{#each [{ k: 'Email', v: p.email }, { k: 'Nomor WhatsApp', v: p.noWa }, { k: 'Area', v: p.area }, { k: 'Alamat', v: p.alamat }] as baris}
+						<div class="grid grid-cols-[150px_1fr] gap-4 py-3">
+							<dt class="text-[#7A5E44]">{baris.k}</dt>
+							<dd class="font-medium">
 								{#if baris.v}{baris.v}{:else}<span class="font-normal text-[#7A5E44]/70">Belum diisi</span>{/if}
 							</dd>
 						</div>
