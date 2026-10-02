@@ -17,6 +17,13 @@
 	let tindakan = $state('');
 	let alasan = $state('');
 
+		// area chat: otomatis turun ke pesan terakhir
+	let areaChat = $state<HTMLDivElement>();
+	$effect(() => {
+		void data.pesan.length;
+		if (areaChat) areaChat.scrollTop = areaChat.scrollHeight;
+	});
+
 	const linkWa = $derived(
 		data.terlapor?.noWa
 			? `https://wa.me/${noWaIntl(data.terlapor.noWa)}?text=${encodeURIComponent(alasan)}`
@@ -45,47 +52,58 @@
 
 <div class="mt-4 grid gap-6 lg:grid-cols-[1fr_360px]">
 	<!-- kiri: isi aduan + thread -->
-	<div class="space-y-5">
-		<div class="rounded-[26px] bg-white p-6 shadow-sm">
-			<div class="flex flex-wrap items-center justify-between gap-2">
-				<h1 class="font-display text-2xl font-bold text-ink">
-					{TIPE_LABEL[a.targetTipe]}{a.targetNama ? ` · ${a.targetNama}` : ''}
-				</h1>
-				<span class="rounded-full px-3 py-1 text-xs font-semibold {STATUS_WARNA[a.status]}">{STATUS_LABEL[a.status]}</span>
-			</div>
-			<p class="mt-1 text-sm text-ink-soft">
-				{KATEGORI_LABEL[a.kategori] ?? a.kategori} · {fmtTgl(a.createdAt)}
-			</p>
-			<p class="mt-4 whitespace-pre-wrap text-ink">{a.deskripsi}</p>
-			{@render bukti(data.lampiranAduan)}
-		</div>
-
-		<div class="space-y-3">
-			{#each data.pesan as p (p.id)}
-				<div class="flex {p.peran === 'admin' ? 'justify-end' : 'justify-start'}">
-					<div class="max-w-[80%] rounded-2xl px-4 py-2 {p.peran === 'admin' ? 'bg-primary text-white' : 'bg-white text-ink shadow-sm'}">
-						<div class="text-xs opacity-70">{p.peran === 'admin' ? 'Admin' : data.pelapor?.nama} · {fmtTgl(p.createdAt)}</div>
-						{#if p.isi}<div class="whitespace-pre-wrap">{p.isi}</div>{/if}
-						{@render bukti(p.lampiran)}
-					</div>
+	<div class="flex h-[calc(100dvh-7rem)] min-h-[26rem] min-w-0 flex-col">
+		
+		<!-- area chat yang bisa di-scroll -->
+		<div bind:this={areaChat} class="min-h-0 flex-1 space-y-5 overflow-y-auto pr-1">
+			<div class="rounded-[26px] bg-white p-6 shadow-sm">
+				<div class="flex flex-wrap items-center justify-between gap-2">
+					<h1 class="font-display text-2xl font-bold text-ink">
+						{TIPE_LABEL[a.targetTipe]}{a.targetNama ? ` · ${a.targetNama}` : ''}
+					</h1>
+					<span class="rounded-full px-3 py-1 text-xs font-semibold {STATUS_WARNA[a.status]}">{STATUS_LABEL[a.status]}</span>
 				</div>
-			{/each}
+				<p class="mt-1 text-sm text-ink-soft">
+					{KATEGORI_LABEL[a.kategori] ?? a.kategori} · {fmtTgl(a.createdAt)}
+				</p>
+				<p class="mt-4 whitespace-pre-wrap text-ink">{a.deskripsi}</p>
+				{@render bukti(data.lampiranAduan)}
+			</div>
+
+			<div class="space-y-3">
+				{#each data.pesan as p (p.id)}
+					<div class="flex {p.peran === 'admin' ? 'justify-end' : 'justify-start'}">
+						<div class="max-w-[80%] rounded-2xl px-4 py-2 {p.peran === 'admin' ? 'bg-primary text-white' : 'bg-white text-ink shadow-sm'}">
+							<div class="text-xs opacity-70">{p.peran === 'admin' ? 'Admin' : data.pelapor?.nama} · {fmtTgl(p.createdAt)}</div>
+							{#if p.isi}<div class="whitespace-pre-wrap">{p.isi}</div>{/if}
+							{@render bukti(p.lampiran)}
+						</div>
+					</div>
+				{/each}
+			</div>
 		</div>
 
+		<!-- kotak balas: selalu di dasar -->
 		{#if terbuka}
-			<form method="POST" action="?/balas" use:enhance class="flex gap-2">
+			<form
+				method="POST"
+				action="?/balas"
+				use:enhance
+				class="flex shrink-0 gap-2 border-t border-[#FFE9C7] pt-3"
+			>
 				<textarea
 					name="isi"
 					rows="2"
 					maxlength="1000"
 					required
 					placeholder="Balas pelapor..."
-					class="flex-1 rounded-xl border border-bg-alt px-3 py-2"
+					class="flex-1 resize-none rounded-xl border border-bg-alt bg-white px-3 py-2"
 				></textarea>
 				<button class="self-end rounded-full bg-primary px-5 py-2 font-semibold text-white">Kirim</button>
 			</form>
 		{/if}
 	</div>
+
 
 	<!-- kanan: info + tindakan -->
 	<div class="space-y-5">

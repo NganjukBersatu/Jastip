@@ -43,6 +43,7 @@
   const heroTheme = heroThemeState();
 
   let isJastiperPage = $derived($page.url.pathname.startsWith('/jastiper'));
+  let isAdminPage = $derived($page.url.pathname.startsWith('/admin'));
   let isHomePage = $derived($page.url.pathname === '/');
   let menuTerbuka = $state(false);
   let blendWithHero = $derived(isHomePage && heroTheme.overHero && !menuTerbuka);
@@ -107,7 +108,7 @@
   });
 </script>
 
-{#if !isJastiperPage}
+{#if !isJastiperPage && !isAdminPage}
   <nav
     class="sticky top-0 z-50 transition-colors duration-300 {blendWithHero
       ? 'bg-transparent text-ink -mb-17 sm:-mb-19'
