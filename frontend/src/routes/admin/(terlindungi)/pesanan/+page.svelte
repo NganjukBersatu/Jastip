@@ -44,12 +44,12 @@
 
 <svelte:head><title>Pesanan · Nitip Admin</title></svelte:head>
 
-<h1 class="text-2xl font-bold">Pesanan</h1>
+<h1 class="text-xl font-bold sm:text-2xl">Pesanan</h1>
 <p class="mt-1 text-sm text-[#7A5E44]">
 	Pantau semua pesanan di Nitip. Halaman ini hanya untuk melihat, tidak ada yang bisa diubah.
 </p>
 
-<form method="GET" class="mt-6 flex flex-wrap items-center gap-3">
+<form method="GET" class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
 	{#if data.filter !== 'semua'}
 		<input type="hidden" name="filter" value={data.filter} />
 	{/if}
@@ -57,7 +57,7 @@
 		name="q"
 		value={data.q}
 		placeholder="Cari id pesanan, pembeli, atau jastiper..."
-		class="w-80 rounded-full border border-[#FFE9C7] bg-white px-4 py-2 text-sm outline-none focus:border-[#FF6A1F]"
+		class="w-full rounded-full border border-[#FFE9C7] bg-white px-4 py-2 text-sm outline-none focus:border-[#FF6A1F] sm:w-80"
 	/>
 	<button class="rounded-full bg-[#FF6A1F] px-4 py-2 text-sm font-semibold text-white hover:bg-[#C23B0A]">
 		Cari
@@ -68,7 +68,7 @@
 	{#each chips as c}
 		<a
 			href={tautan(c.id)}
-			class="rounded-full px-4 py-1.5 text-sm {data.filter === c.id
+			class="rounded-full px-3 py-1.5 text-xs sm:px-4 sm:text-sm {data.filter === c.id
 				? 'bg-[#FF6A1F] font-semibold text-white'
 				: 'bg-white text-[#7A5E44] hover:bg-[#FFE9C7]'}"
 		>
@@ -77,7 +77,7 @@
 	{/each}
 </div>
 
-<div class="mt-4 flex items-center justify-between gap-3">
+<div class="mt-4 flex flex-wrap items-center justify-between gap-3">
 	<p class="text-sm text-[#7A5E44]">{data.totalBaris} pesanan</p>
 
 	{#if data.totalHalaman > 1}
@@ -89,7 +89,7 @@
 			>
 				←
 			</a>
-			<span class="min-w-[120px] text-center text-sm text-[#7A5E44]">
+			<span class="min-w-[100px] text-center text-sm text-[#7A5E44] sm:min-w-[120px]">
 				Halaman {data.halaman} dari {data.totalHalaman}
 			</span>
 			<a
@@ -103,7 +103,58 @@
 	{/if}
 </div>
 
-<div class="mt-4 overflow-x-auto rounded-[26px] bg-white shadow-sm">
+<!-- Tampilan kartu (layar kecil) -->
+<div class="mt-4 space-y-3 lg:hidden">
+	{#each data.daftar as p (p.id)}
+		{@const st = labelStatus[p.status]}
+		<div class="rounded-[22px] bg-white p-4 shadow-sm">
+			<div class="flex items-start justify-between gap-3">
+				<div class="min-w-0">
+					<p class="break-words font-medium">{p.namaItem}</p>
+					<p class="text-xs text-[#7A5E44]">#{p.id.slice(0, 8)}</p>
+				</div>
+				<span
+					class="inline-flex shrink-0 items-center whitespace-nowrap rounded-full px-3 py-1 text-xs font-medium {st?.kelas ?? 'bg-gray-100 text-gray-600'}"
+				>
+					{st?.teks ?? p.status}
+				</span>
+			</div>
+
+			<dl class="mt-3 grid grid-cols-2 gap-x-3 gap-y-2 text-sm">
+				<div class="min-w-0">
+					<dt class="text-xs text-[#7A5E44]">Pembeli</dt>
+					<dd class="break-words">{p.pembeliNama}</dd>
+				</div>
+				<div class="min-w-0">
+					<dt class="text-xs text-[#7A5E44]">Jastiper</dt>
+					<dd class="break-words">{p.jastiperNama}</dd>
+				</div>
+				<div>
+					<dt class="text-xs text-[#7A5E44]">Total</dt>
+					<dd class="font-medium">Rp{rupiah(p.totalHarga)}</dd>
+				</div>
+				<div>
+					<dt class="text-xs text-[#7A5E44]">Tanggal</dt>
+					<dd class="text-[#7A5E44]">{waktu(p.createdAt)}</dd>
+				</div>
+			</dl>
+
+			<a
+				href="/admin/pesanan/{p.id}"
+				class="mt-4 inline-flex h-9 w-full items-center justify-center whitespace-nowrap rounded-full border border-[#FF6A1F] text-xs font-medium text-[#C23B0A] transition hover:bg-[#FFE9C7]"
+			>
+				Lihat detail
+			</a>
+		</div>
+	{:else}
+		<div class="rounded-[22px] bg-white px-5 py-10 text-center text-sm text-[#7A5E44] shadow-sm">
+			Tidak ada pesanan.
+		</div>
+	{/each}
+</div>
+
+<!-- Tampilan tabel (layar besar) -->
+<div class="mt-4 hidden overflow-x-auto rounded-[26px] bg-white shadow-sm lg:block">
 	<table class="w-full text-left text-sm">
 		<thead class="border-b border-[#FFE9C7] text-[#7A5E44]">
 			<tr>
@@ -150,4 +201,3 @@
 		</tbody>
 	</table>
 </div>
-
