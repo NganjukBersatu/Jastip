@@ -9,9 +9,10 @@
 	const menu = [
 		{ href: '/admin', label: 'Dashboard', siap: true },
 		{ href: '/admin/verifikasi-jastiper', label: 'Verifikasi jastiper', siap: true },
-		{ href: '/admin/akun', label: 'Akun', siap: false },
+		{ href: '/admin/akun', label: 'Akun', siap: true },
 		{ href: '/admin/produk', label: 'Produk', siap: true },
-		{ href: '/admin/pesanan', label: 'Pesanan', siap: true }
+		{ href: '/admin/pesanan', label: 'Pesanan', siap: true },
+		{ href: '/admin/pengaduan', label: 'Pengaduan', siap: true }
 	];
 
 	function sedangDibuka(href: string) {

@@ -4,3 +4,4 @@ build
 .git
 .env
 dump_jastip.sql
+uploads
