@@ -26,7 +26,7 @@ async function ambilPengajuan(id: string) {
 			email: users.email,
 			noWa: jastiperProfiles.noWa,
 			area: jastiperProfiles.area,
-			deskripsi: jastiperProfiles.deskripsi
+			alamat: jastiperProfiles.alamat
 		})
 		.from(verifikasiJastiper)
 		.innerJoin(users, eq(verifikasiJastiper.userId, users.id))

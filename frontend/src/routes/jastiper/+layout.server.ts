@@ -1,7 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
-import { pesanan, pesananItem } from '$lib/server/db/schema';
-import { and, count, eq, isNotNull, notExists } from 'drizzle-orm';
+import { pesanan, pesananItem, verifikasiJastiper } from '$lib/server/db/schema';
+import { and, count, desc, eq, isNotNull, notExists } from 'drizzle-orm';
 import { JASA_AKTIF } from '$lib/config';
 import type { LayoutServerLoad } from './$types';
 
@@ -16,12 +16,25 @@ export const load: LayoutServerLoad = async ({ locals, url, depends }) => {
 		throw redirect(303, '/profil');
 	}
 
-	// BARU: kunci ini dipakai layout untuk memuat ulang angka notifikasi secara berkala
+	// BARU (verifikasi): hanya jastiper yang sudah disetujui admin boleh masuk dashboard.
+	// Menunggu, ditolak, atau belum punya data verifikasi -> dialihkan ke halaman status.
+	const [verifikasi] = await db
+		.select({ status: verifikasiJastiper.status })
+		.from(verifikasiJastiper)
+		.where(eq(verifikasiJastiper.userId, locals.user.id))
+		.orderBy(desc(verifikasiJastiper.createdAt))
+		.limit(1);
+
+	if (verifikasi?.status !== 'disetujui') {
+		throw redirect(303, '/publik/menunggu-verifikasi');
+	}
+
+	// kunci ini dipakai layout untuk memuat ulang angka notifikasi secara berkala
 	depends('app:pesanan-baru');
-	// BARU: membaca pathname membuat angka ikut diperbarui setiap pindah halaman
+	// membaca pathname membuat angka ikut diperbarui setiap pindah halaman
 	void url.pathname;
 
-	// BARU: jumlah pesanan yang masih menunggu konfirmasi jastiper ini
+	// jumlah pesanan yang masih menunggu konfirmasi jastiper ini
 	const kondisi = [
 		eq(pesanan.jastiperId, locals.user.id),
 		eq(pesanan.status, 'menunggu_konfirmasi')

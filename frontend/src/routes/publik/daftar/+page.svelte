@@ -1,10 +1,35 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import { KECAMATAN_NGANJUK, DESA_NGANJUK } from '$lib/data/kecamatan';
+	import type { ActionData } from './$types';
 
-	let role: 'pelanggan' | 'jastiper' = $state('pelanggan');
+	let { form }: { form: ActionData } = $props();
+
+	 // svelte-ignore state_referenced_locally
+	 let kecamatan = $state(form?.kecamatan ?? '');
+     // svelte-ignore state_referenced_locally
+     let desa = $state(form?.desa ?? '');
+     let daftarDesa = $derived(kecamatan ? (DESA_NGANJUK[kecamatan] ?? []) : []);
+
+	// Role awal: dari hasil kirim sebelumnya (kalau gagal validasi),
+	// kalau tidak ada, dari ?role=jastiper di URL (tombol dari halaman Gabung)
+	function roleAwal(): 'pelanggan' | 'jastiper' {
+		const r = form?.role ?? $page.url.searchParams.get('role');
+		return r === 'jastiper' ? 'jastiper' : 'pelanggan';
+	}
+
+	let role: 'pelanggan' | 'jastiper' = $state(roleAwal());
 	let showPassword = $state(false);
+	let selfiePreview = $state('');
+
 	function pilihRole(r: 'pelanggan' | 'jastiper') {
 		role = r;
+	}
+
+	function pilihSelfie(e: Event) {
+		const file = (e.currentTarget as HTMLInputElement).files?.[0];
+		if (selfiePreview) URL.revokeObjectURL(selfiePreview);
+		selfiePreview = file ? URL.createObjectURL(file) : '';
 	}
 </script>
 
@@ -145,10 +170,14 @@
 				</div>
 			{/if}
 
+			{#if form?.error}
+	            <div class="alert-error" role="alert">{form.error}</div>
+            {/if}
+
 			<!-- =================================================
 			     FORM
 			================================================= -->
-			<form method="POST">
+			<form method="POST" enctype="multipart/form-data">
 				<!-- =================================================
 				     PILIH ROLE
 				================================================= -->
@@ -251,10 +280,12 @@
 							name="nama"
 							type="text"
 							placeholder="Masukkan nama lengkap"
+							value={form?.nama ?? ''}
 							required
 						/>
 					</div>
 				</div>
+
 
 				<!-- =================================================
 				     EMAIL
@@ -285,10 +316,12 @@
 							name="email"
 							type="email"
 							placeholder="Masukkan email aktif"
+							value={form?.email ?? ''}
 							required
 						/>
 					</div>
 				</div>
+
 
 				<!-- =================================================
 				     PASSWORD
@@ -357,6 +390,110 @@
 					</div>
 				</div>
 
+								{#if role === 'jastiper'}
+					<!-- NOMOR WHATSAPP -->
+					<div class="form-group">
+						<label for="noWa">Nomor WhatsApp</label>
+						<div class="input-wrapper">
+							<svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+								<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+							</svg>
+							<input
+								id="noWa"
+								name="noWa"
+								type="tel"
+								inputmode="numeric"
+								placeholder="08xxxxxxxxxx"
+								value={form?.noWa ?? ''}
+								required
+							/>
+						</div>
+						<div class="field-help">Harus aktif, dipakai pelanggan untuk pembayaran.</div>
+					</div>
+
+										<!-- KABUPATEN (dikunci) -->
+					<div class="form-group">
+						<label for="kabupaten">Kabupaten</label>
+						<div class="input-wrapper tanpa-ikon">
+							<input id="kabupaten" type="text" value="Nganjuk" disabled />
+						</div>
+					</div>
+
+					<!-- KECAMATAN -->
+					<div class="form-group">
+						<label for="kecamatan">Kecamatan</label>
+						<div class="input-wrapper">
+							<svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+								<path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11Z"></path>
+								<circle cx="12" cy="10" r="2.5"></circle>
+							</svg>
+							<select id="kecamatan" name="kecamatan" required bind:value={kecamatan} onchange={() => (desa = '')}>
+								<option value="" disabled>Pilih kecamatan</option>
+								{#each KECAMATAN_NGANJUK as k}
+									<option value={k}>{k}</option>
+								{/each}
+							</select>
+						</div>
+					</div>
+
+					<!-- DESA -->
+					<div class="form-group">
+						<label for="desa">Desa / Kelurahan</label>
+						<div class="input-wrapper">
+							<svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+								<path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11Z"></path>
+								<circle cx="12" cy="10" r="2.5"></circle>
+							</svg>
+							<select id="desa" name="desa" required bind:value={desa} disabled={!kecamatan}>
+								<option value="" disabled>{kecamatan ? 'Pilih desa' : 'Pilih kecamatan dulu'}</option>
+								{#each daftarDesa as d}
+									<option value={d}>{d}</option>
+								{/each}
+							</select>
+						</div>
+					</div>
+
+					<!-- RT/RW & DETAIL JALAN (manual) -->
+					<div class="form-group">
+						<label for="detail">RT/RW dan detail jalan</label>
+						<div class="input-wrapper tanpa-ikon">
+							<input
+								id="detail"
+								name="detail"
+								maxlength="150"
+								placeholder="Contoh: RT 02 RW 01, Jl. Raya Baron No. 12"
+								value={form?.detail ?? ''}
+								required
+							/>
+						</div>
+					</div>
+
+					<!-- SELFIE -->
+					<div class="form-group">
+						<label for="selfie">Foto selfie</label>
+						<input
+							id="selfie"
+							name="selfie"
+							type="file"
+							accept="image/jpeg,image/png"
+							capture="user"
+							class="file-input"
+							onchange={pilihSelfie}
+							required
+						/>
+						<div class="field-help">Wajah terlihat jelas, tanpa masker/kacamata hitam. JPG atau PNG, maks. 2 MB.</div>
+						{#if selfiePreview}
+							<img class="selfie-preview" src={selfiePreview} alt="Pratinjau selfie" />
+						{/if}
+					</div>
+
+					<!-- SYARAT -->
+					<label class="terms">
+						<input type="checkbox" name="setuju" required />
+						<span>Saya setuju dengan syarat dan ketentuan Nitip, termasuk akun akan dinonaktifkan jika terbukti menipu.</span>
+					</label>
+				{/if}
+
 				<!-- =================================================
 				     BUTTON
 				================================================= -->
@@ -364,9 +501,9 @@
 					type="submit"
 					class="register-button"
 				>
-					Daftar sebagai
-					{role === 'pelanggan' ? 'Pelanggan' : 'Jastiper'}
-					<span>→</span>
+				{role === 'pelanggan' ? 'Daftar sebagai Pelanggan' : 'Kirim Pendaftaran'}
+					<span>→
+				   </span>
 				</button>
 			</form>
 
@@ -1129,6 +1266,115 @@
 
 	.login-link a:hover {
 		text-decoration: underline;
+	}
+
+		/* =====================================================
+	   PESAN ERROR
+	===================================================== */
+	.alert-error {
+		margin-bottom: 16px;
+		padding: 12px 14px;
+		border: 1px solid #f6c9b8;
+		border-radius: 11px;
+		background: #fff1ec;
+		color: #b3401a;
+		font-family: var(--font-sans);
+		font-size: 13px;
+		line-height: 1.5;
+	}
+
+	/* =====================================================
+	   ISIAN KHUSUS JASTIPER
+	===================================================== */
+	.input-wrapper select {
+		width: 100%;
+		height: 48px;
+		box-sizing: border-box;
+		padding: 0 42px;
+		border: 1px solid #e1d9d2;
+		border-radius: 11px;
+		outline: none;
+		appearance: none;
+		background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a29a94' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 14px center / 16px;
+		color: var(--color-ink);
+		font-family: var(--font-sans);
+		font-size: 14px;
+		cursor: pointer;
+	}
+
+	.input-wrapper select:focus {
+		border-color: var(--color-primary);
+		box-shadow: 0 0 0 3px rgba(255, 106, 31, .07);
+	}
+
+	.field-help {
+		margin-top: 6px;
+		color: #a49b94;
+		font-family: var(--font-sans);
+		font-size: 12px;
+	}
+
+	.input-wrapper.tanpa-ikon input {
+	padding-left: 14px;
+	padding-right: 14px;
+    }
+
+   .input-wrapper input:disabled,
+    .input-wrapper select:disabled {
+	background-color: #fffaf4;
+	color: var(--color-ink-soft);
+	cursor: not-allowed;
+    }
+
+	.file-input {
+		width: 100%;
+		box-sizing: border-box;
+		padding: 8px;
+		border: 1px dashed #e1d9d2;
+		border-radius: 11px;
+		background: #fffaf4;
+		color: var(--color-ink-soft);
+		font-family: var(--font-sans);
+		font-size: 13px;
+	}
+
+	.file-input::file-selector-button {
+		margin-right: 10px;
+		padding: 8px 14px;
+		border: 0;
+		border-radius: 100px;
+		background: #fff0df;
+		color: var(--color-primary-dark);
+		font-family: var(--font-sans);
+		font-size: 12px;
+		font-weight: 700;
+		cursor: pointer;
+	}
+
+	.selfie-preview {
+		display: block;
+		width: 96px;
+		height: 96px;
+		margin-top: 10px;
+		border: 1px solid #e1d9d2;
+		border-radius: 12px;
+		object-fit: cover;
+	}
+
+	.terms {
+		display: flex;
+		align-items: flex-start;
+		gap: 10px;
+		color: var(--color-ink-soft);
+		font-family: var(--font-sans);
+		font-size: 12.5px;
+		line-height: 1.5;
+		cursor: pointer;
+	}
+
+	.terms input {
+		margin-top: 3px;
+		accent-color: var(--color-primary);
 	}
 
 	/* =====================================================
