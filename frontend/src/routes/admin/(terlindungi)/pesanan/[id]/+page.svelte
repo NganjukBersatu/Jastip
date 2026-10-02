@@ -34,8 +34,8 @@
 
 <a href="/admin/pesanan" class="text-sm text-[#C23B0A] hover:underline">← Kembali ke pesanan</a>
 
-<div class="mt-2 flex flex-wrap items-center gap-3">
-	<h1 class="text-2xl font-bold">Pesanan #{p.id.slice(0, 8)}</h1>
+<div class="mt-2 flex flex-wrap items-center gap-2 sm:gap-3">
+	<h1 class="text-xl font-bold sm:text-2xl">Pesanan #{p.id.slice(0, 8)}</h1>
 	<span
 		class="inline-flex items-center whitespace-nowrap rounded-full px-3 py-1 text-xs font-medium {st?.kelas ?? 'bg-gray-100 text-gray-600'}"
 	>
@@ -45,22 +45,22 @@
 <p class="mt-1 text-sm text-[#7A5E44]">Dibuat {waktu(p.createdAt)}</p>
 
 <div class="mt-6 grid gap-4 md:grid-cols-2">
-	<section class="rounded-[26px] bg-white p-5 shadow-sm">
+	<section class="min-w-0 rounded-[22px] bg-white p-4 shadow-sm sm:rounded-[26px] sm:p-5">
 		<h2 class="text-sm font-medium text-[#7A5E44]">Pembeli</h2>
-		<p class="mt-1 font-medium">{p.pembeliNama}</p>
-		<p class="text-sm text-[#7A5E44]">{p.pembeliEmail}</p>
+		<p class="mt-1 break-words font-medium">{p.pembeliNama}</p>
+		<p class="break-all text-sm text-[#7A5E44]">{p.pembeliEmail}</p>
 	</section>
 
-	<section class="rounded-[26px] bg-white p-5 shadow-sm">
+	<section class="min-w-0 rounded-[22px] bg-white p-4 shadow-sm sm:rounded-[26px] sm:p-5">
 		<h2 class="text-sm font-medium text-[#7A5E44]">Jastiper</h2>
-		<p class="mt-1 font-medium">{p.jastiperNama}</p>
-		<p class="text-sm text-[#7A5E44]">{p.jastiperEmail}</p>
+		<p class="mt-1 break-words font-medium">{p.jastiperNama}</p>
+		<p class="break-all text-sm text-[#7A5E44]">{p.jastiperEmail}</p>
 		{#if linkWa}
 			<a
 				href={linkWa}
 				target="_blank"
 				rel="noopener"
-				class="mt-3 inline-flex h-8 items-center justify-center whitespace-nowrap rounded-full border border-[#FF6A1F] px-4 text-xs font-medium text-[#C23B0A] transition hover:bg-[#FFE9C7]"
+				class="mt-3 inline-flex h-9 items-center justify-center whitespace-nowrap rounded-full border border-[#FF6A1F] px-4 text-xs font-medium text-[#C23B0A] transition hover:bg-[#FFE9C7] sm:h-8"
 			>
 				Hubungi lewat WA
 			</a>
@@ -70,46 +70,51 @@
 	</section>
 </div>
 
-<section class="mt-4 rounded-[26px] bg-white p-5 shadow-sm">
+<section class="mt-4 rounded-[22px] bg-white p-4 shadow-sm sm:rounded-[26px] sm:p-5">
 	<h2 class="text-sm font-medium text-[#7A5E44]">Isi pesanan</h2>
 	<div class="mt-2 divide-y divide-[#FFF8EC]">
 		{#each data.items as it (it.id)}
-			<div class="flex items-start justify-between gap-4 py-3 text-sm">
-				<div>
-					<p class="font-medium">
+			<div class="flex items-start justify-between gap-3 py-3 text-sm sm:gap-4">
+				<div class="min-w-0">
+					<p class="break-words font-medium">
 						{it.nama} <span class="font-normal text-[#7A5E44]">× {it.jumlah}</span>
 					</p>
 					{#if it.titikJemput}
-						<p class="text-xs text-[#7A5E44]">Titik jemput: {it.titikJemput}</p>
+						<p class="break-words text-xs text-[#7A5E44]">Titik jemput: {it.titikJemput}</p>
 					{/if}
 				</div>
-				<p class="whitespace-nowrap">Rp{rupiah(it.hargaSatuan * it.jumlah)}</p>
+				<p class="shrink-0 whitespace-nowrap">Rp{rupiah(it.hargaSatuan * it.jumlah)}</p>
 			</div>
 		{/each}
-		<div class="flex justify-between py-3 text-sm">
+		<div class="flex justify-between gap-3 py-3 text-sm">
 			<span class="text-[#7A5E44]">Ongkir</span>
 			<span>Rp{rupiah(p.ongkir)}</span>
 		</div>
-		<div class="flex justify-between py-3 font-bold">
+		<div class="flex justify-between gap-3 py-3 font-bold">
 			<span>Total</span>
 			<span class="text-[#C23B0A]">Rp{rupiah(p.totalHarga)}</span>
 		</div>
 	</div>
 </section>
 
-<section class="mt-4 rounded-[26px] bg-white p-5 text-sm shadow-sm">
+<section class="mt-4 rounded-[22px] bg-white p-4 text-sm shadow-sm sm:rounded-[26px] sm:p-5">
 	<h2 class="text-sm font-medium text-[#7A5E44]">Pembayaran dan pengiriman</h2>
-	<div class="mt-2 grid gap-2 sm:grid-cols-[200px_1fr]">
-		<span class="text-[#7A5E44]">Metode pembayaran</span>
-		<span>{p.metodePembayaran ?? '-'}</span>
-
-		<span class="text-[#7A5E44]">Pembayaran dikonfirmasi</span>
-		<span>{p.pembayaranDikonfirmasi ? `Ya, ${waktu(p.dibayarPada)}` : 'Belum'}</span>
-
-		<span class="text-[#7A5E44]">Alamat kirim</span>
-		<span>{p.alamatKirim ?? '-'}</span>
-
-		<span class="text-[#7A5E44]">Terakhir diperbarui</span>
-		<span>{waktu(p.updatedAt)}</span>
+	<div class="mt-2 divide-y divide-[#FFF8EC]">
+		<div class="flex flex-col gap-0.5 py-2 sm:grid sm:grid-cols-[200px_1fr] sm:gap-2">
+			<span class="text-xs text-[#7A5E44] sm:text-sm">Metode pembayaran</span>
+			<span class="break-words">{p.metodePembayaran ?? '-'}</span>
+		</div>
+		<div class="flex flex-col gap-0.5 py-2 sm:grid sm:grid-cols-[200px_1fr] sm:gap-2">
+			<span class="text-xs text-[#7A5E44] sm:text-sm">Pembayaran dikonfirmasi</span>
+			<span>{p.pembayaranDikonfirmasi ? `Ya, ${waktu(p.dibayarPada)}` : 'Belum'}</span>
+		</div>
+		<div class="flex flex-col gap-0.5 py-2 sm:grid sm:grid-cols-[200px_1fr] sm:gap-2">
+			<span class="text-xs text-[#7A5E44] sm:text-sm">Alamat kirim</span>
+			<span class="break-words">{p.alamatKirim ?? '-'}</span>
+		</div>
+		<div class="flex flex-col gap-0.5 py-2 sm:grid sm:grid-cols-[200px_1fr] sm:gap-2">
+			<span class="text-xs text-[#7A5E44] sm:text-sm">Terakhir diperbarui</span>
+			<span>{waktu(p.updatedAt)}</span>
+		</div>
 	</div>
 </section>

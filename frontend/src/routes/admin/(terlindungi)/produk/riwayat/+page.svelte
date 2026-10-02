@@ -59,16 +59,16 @@
 
 <a href="/admin/produk" class="text-sm text-[#C23B0A] hover:underline">← Kembali ke produk</a>
 
-<h1 class="mt-2 text-2xl font-bold">Riwayat produk</h1>
+<h1 class="mt-2 text-xl font-bold sm:text-2xl">Riwayat produk</h1>
 <p class="mt-1 text-sm text-[#7A5E44]">
 	Semua tindakan admin pada produk, lengkap dengan alasan atau catatannya.
 </p>
 
-<form method="GET" class="mt-6 flex flex-wrap items-center gap-3">
+<form method="GET" class="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
 	<select
 		name="bulan"
 		onchange={(e) => e.currentTarget.form?.requestSubmit()}
-		class="rounded-full border border-[#FFE9C7] bg-white px-4 py-2 text-sm outline-none focus:border-[#FF6A1F]"
+		class="w-full rounded-full border border-[#FFE9C7] bg-white px-4 py-2 text-sm outline-none focus:border-[#FF6A1F] sm:w-auto"
 	>
 		{#each data.bulanList as b}
 			<option value={b} selected={b === data.bulan}>{namaBulan(b)}</option>
@@ -78,7 +78,7 @@
 		name="q"
 		value={data.q}
 		placeholder="Cari nama produk atau catatan..."
-		class="w-72 rounded-full border border-[#FFE9C7] bg-white px-4 py-2 text-sm outline-none focus:border-[#FF6A1F]"
+		class="w-full rounded-full border border-[#FFE9C7] bg-white px-4 py-2 text-sm outline-none focus:border-[#FF6A1F] sm:w-72"
 	/>
 	<input type="hidden" name="jenis" value={data.jenis} />
 	<button class="rounded-full bg-[#FF6A1F] px-4 py-2 text-sm font-semibold text-white hover:bg-[#C23B0A]">
@@ -87,7 +87,7 @@
 </form>
 
 <h2 class="mt-6 text-sm font-medium text-[#7A5E44]">Ringkasan {namaBulan(data.bulan)}</h2>
-<div class="mt-2 grid grid-cols-2 gap-3 md:grid-cols-6">
+<div class="mt-2 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
 	{#each kartu as k}
 		<a
 			href={tautan(k.jenis)}
@@ -101,7 +101,42 @@
 	{/each}
 </div>
 
-<div class="mt-4 overflow-x-auto rounded-[26px] bg-white shadow-sm">
+<!-- Tampilan kartu (layar kecil) -->
+<div class="mt-4 space-y-3 lg:hidden">
+	{#each data.rows as r (r.id)}
+		<div class="rounded-[22px] bg-white p-4 shadow-sm">
+			<div class="flex items-start justify-between gap-3">
+				<span
+					class="inline-flex items-center whitespace-nowrap rounded-full px-3 py-1 text-xs font-medium {warnaAksi[r.aksi] ?? 'bg-gray-100'}"
+				>
+					{labelAksi[r.aksi] ?? r.aksi}
+				</span>
+				<span class="text-right text-xs text-[#7A5E44]">{waktu(r.createdAt)}</span>
+			</div>
+
+			<div class="mt-3 text-sm">
+				{#if r.namaProduk}
+					<p class="break-words font-medium">{r.namaProduk}</p>
+				{:else}
+					<p class="text-xs italic text-[#7A5E44]">(produk sudah dihapus)</p>
+				{/if}
+				<p class="mt-0.5 text-xs text-[#7A5E44]">Oleh {r.adminNama}</p>
+			</div>
+
+			<div class="mt-3 border-t border-[#FFF8EC] pt-3 text-sm">
+				<p class="text-xs text-[#7A5E44]">Alasan / catatan</p>
+				<p class="break-words">{r.alasan ?? '-'}</p>
+			</div>
+		</div>
+	{:else}
+		<div class="rounded-[22px] bg-white px-5 py-10 text-center text-sm text-[#7A5E44] shadow-sm">
+			Belum ada aktivitas di {namaBulan(data.bulan)}.
+		</div>
+	{/each}
+</div>
+
+<!-- Tampilan tabel (layar besar) -->
+<div class="mt-4 hidden overflow-x-auto rounded-[26px] bg-white shadow-sm lg:block">
 	<table class="w-full text-left text-sm">
 		<thead class="border-b border-[#FFE9C7] text-[#7A5E44]">
 			<tr>
@@ -117,12 +152,12 @@
 				<tr class="border-b border-[#FFF8EC] align-top last:border-0">
 					<td class="whitespace-nowrap px-5 py-3 text-[#7A5E44]">{waktu(r.createdAt)}</td>
 					<td class="px-5 py-3">
-	                <span
-	                	class="inline-flex w-[150px] items-center justify-center whitespace-nowrap rounded-full px-3 py-1 text-xs font-medium {warnaAksi[r.aksi] ?? 'bg-gray-100'}"
-	                >
-		            {labelAksi[r.aksi] ?? r.aksi}
-	                </span>
-                    </td>
+						<span
+							class="inline-flex w-[150px] items-center justify-center whitespace-nowrap rounded-full px-3 py-1 text-xs font-medium {warnaAksi[r.aksi] ?? 'bg-gray-100'}"
+						>
+							{labelAksi[r.aksi] ?? r.aksi}
+						</span>
+					</td>
 					<td class="px-5 py-3">
 						{#if r.namaProduk}
 							<span class="font-medium">{r.namaProduk}</span>
