@@ -93,7 +93,7 @@
 <div bind:this={bagianAtas}>
 	<div>
 		<h1 class="text-xl font-bold tracking-tight sm:text-2xl">Verifikasi jastiper</h1>
-		<p class="mt-1 text-sm text-[#7A5E44] sm:text-base">
+		<p class="mt-1 text-sm text-ink-softm:text-base">
 			Periksa pendaftar sebelum mereka bisa berjualan di Nitip.
 		</p>
 	</div>
@@ -106,7 +106,7 @@
 				aria-current={data.status === t.nilai ? 'page' : undefined}
 				class="flex items-center gap-4 rounded-2xl p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md sm:p-5 {t.kartu} {data.status ===
 				t.nilai
-					? 'ring-2 ring-[#2A1A0E] ring-offset-2 ring-offset-[#FFF8EC]'
+					? 'ring-2 ring-inkoffset-2 ring-offset-bg'
 					: ''}"
 			>
 				<span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl sm:h-12 sm:w-12 {t.chip}">
@@ -132,14 +132,14 @@
 
 	<!-- Keterangan filter aktif dan pencarian -->
 	<div class="mt-6 flex flex-col gap-3 sm:mt-8 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
-		<p class="text-sm text-[#7A5E44]">
-			Menampilkan pengajuan <span class="font-semibold text-[#2A1A0E]">{labelAktif}</span>
+		<p class="text-sm text-ink-soft">
+			Menampilkan pengajuan <span class="font-semibold text-ink">{labelAktif}</span>
 			<span class="ml-1">({data.daftar.length})</span>
 		</p>
 
 		<form method="GET" class="relative w-full sm:w-72">
 			<input type="hidden" name="status" value={data.status} />
-			<svg viewBox="0 0 24 24" class="pointer-events-none absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2 text-[#7A5E44]" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+			<svg viewBox="0 0 24 24" class="pointer-events-none absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2 text-ink-soft" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 				<circle cx="11" cy="11" r="7" />
 				<path d="m20 20-3.5-3.5" />
 			</svg>
@@ -150,7 +150,7 @@
 				oninput={(e) => cari(e.currentTarget.value)}
 				autocomplete="off"
 				placeholder="Cari nama atau email"
-				class="w-full rounded-full border border-[#E8D5B5] bg-white py-2.5 pr-4 pl-10 text-sm outline-none transition focus:border-[#FF6A1F] focus:ring-2 focus:ring-[#FF6A1F]/15"
+				class="w-full rounded-full border border-[#E8D5B5] bg-white py-2.5 pr-4 pl-10 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
 			/>
 		</form>
 	</div>
@@ -161,12 +161,12 @@
 	{#each data.daftar as d (d.id)}
 		<div class="rounded-2xl border border-[#E8D5B5] bg-white p-4 shadow-sm">
 			<div class="flex items-start gap-3">
-				<span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#FFE9C7] font-bold text-[#C23B0A]">
+				<span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-bg-alt font-bold text-primary-dark">
 					{inisial(d.nama)}
 				</span>
 				<div class="min-w-0 flex-1">
-					<p class="break-words font-semibold">{d.nama}</p>
-					<p class="break-all text-xs text-[#7A5E44]">{d.email}</p>
+					<p class="wrap-break-word font-semibold">{d.nama}</p>
+					<p class="break-all text-xs text-ink-soft">{d.email}</p>
 				</div>
 				<span class="inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold capitalize {badge[d.status]}">
 					<span class="h-1.5 w-1.5 rounded-full {titik[d.status]}"></span>
@@ -176,7 +176,7 @@
 
 			<dl class="mt-3 grid grid-cols-2 gap-x-3 gap-y-2 text-sm">
 				<div class="min-w-0">
-					<dt class="text-xs text-[#7A5E44]">Nomor WhatsApp</dt>
+					<dt class="text-xs text-ink-soft">Nomor WhatsApp</dt>
 					<dd>
 						{#if d.noWa}
 							<span class="font-medium tabular-nums">{d.noWa}</span>
@@ -186,14 +186,14 @@
 					</dd>
 				</div>
 				<div>
-					<dt class="text-xs text-[#7A5E44]">Tanggal</dt>
-					<dd class="text-[#7A5E44]">{tanggal(d.createdAt)}</dd>
+					<dt class="text-xs text-ink-soft">Tanggal</dt>
+					<dd class="text-ink-soft">{tanggal(d.createdAt)}</dd>
 				</div>
 			</dl>
 
 			<a
 				href="/admin/verifikasi-jastiper/{d.id}"
-				class="mt-4 flex items-center justify-center gap-1.5 rounded-full border border-[#E8D5B5] py-2 text-sm font-semibold text-[#C23B0A] transition hover:border-[#FF6A1F] hover:bg-[#FFE9C7]"
+				class="mt-4 flex items-center justify-center gap-1.5 rounded-full border border-[#E8D5B5] py-2 text-sm font-semibold text-primary-dark transition hover:border-primary hover:bg-bg-alt"
 			>
 				Periksa
 				<svg viewBox="0 0 24 24" class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -204,7 +204,7 @@
 	{:else}
 		<div class="rounded-2xl border border-[#E8D5B5] bg-white px-5 py-12 text-center shadow-sm">
 			<p class="font-semibold">Tidak ada pengajuan</p>
-			<p class="text-sm text-[#7A5E44]">
+			<p class="text-sm text-ink-soft">
 				{data.q ? 'Coba kata pencarian yang lain.' : 'Belum ada pengajuan dengan status ini.'}
 			</p>
 		</div>
@@ -214,7 +214,7 @@
 <!-- Tabel (layar besar): tingginya memanjang ke bawah, hanya isi yang bergulir -->
 <div class="mt-4 hidden overflow-hidden rounded-2xl border border-[#E8D5B5] bg-white shadow-sm lg:block">
 	<div class="overflow-auto overscroll-contain" style="height: {tinggiTabel}px">
-		<table class="w-full min-w-[640px] border-separate border-spacing-0 text-sm">
+		<table class="w-full min-w-160 border-separate border-spacing-0 text-sm">
 			<thead>
 				<tr>
 					{#each kolom as k}
@@ -231,12 +231,12 @@
 					<tr class="transition hover:bg-[#FFFBF3]">
 						<td class="border-b border-[#F6ECD9] px-5 py-4">
 							<div class="flex items-center gap-3">
-								<span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#FFE9C7] font-bold text-[#C23B0A]">
+								<span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-bg-alt font-bold text-primary-dark">
 									{inisial(d.nama)}
 								</span>
 								<div class="min-w-0">
 									<p class="truncate font-semibold">{d.nama}</p>
-									<p class="truncate text-xs text-[#7A5E44]">{d.email}</p>
+									<p class="truncate text-xs text-ink-soft">{d.email}</p>
 								</div>
 							</div>
 						</td>
@@ -247,7 +247,7 @@
 								<span class="rounded-full bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-700">Belum diisi</span>
 							{/if}
 						</td>
-						<td class="border-b border-[#F6ECD9] px-5 py-4 whitespace-nowrap text-[#7A5E44]">
+						<td class="border-b border-[#F6ECD9] px-5 py-4 whitespace-nowrap text-ink-soft">
 							{tanggal(d.createdAt)}
 						</td>
 						<td class="border-b border-[#F6ECD9] px-5 py-4">
@@ -259,7 +259,7 @@
 						<td class="border-b border-[#F6ECD9] px-5 py-4 text-center">
 							<a
 								href="/admin/verifikasi-jastiper/{d.id}"
-								class="inline-flex items-center gap-1.5 rounded-full border border-[#E8D5B5] px-4 py-1.5 text-sm font-semibold text-[#C23B0A] transition hover:border-[#FF6A1F] hover:bg-[#FFE9C7]"
+								class="inline-flex items-center gap-1.5 rounded-full border border-[#E8D5B5] px-4 py-1.5 text-sm font-semibold text-primary-dark transition hover:border-primary hover:bg-bg-alt"
 							>
 								Periksa
 								<svg viewBox="0 0 24 24" class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -272,7 +272,7 @@
 					<tr>
 						<td colspan="5" class="px-5 py-14 text-center">
 							<p class="font-semibold">Tidak ada pengajuan</p>
-							<p class="text-sm text-[#7A5E44]">
+							<p class="text-sm text-ink-soft">
 								{data.q ? 'Coba kata pencarian yang lain.' : 'Belum ada pengajuan dengan status ini.'}
 							</p>
 						</td>
