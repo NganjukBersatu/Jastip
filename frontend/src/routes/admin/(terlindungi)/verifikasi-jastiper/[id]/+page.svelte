@@ -51,7 +51,7 @@
 				<p class="text-sm text-[#7A5E44]">Mendaftar pada {tanggal(p.createdAt)}</p>
 
 				<dl class="mt-5 divide-y divide-[#F6ECD9] border-t border-[#F6ECD9] text-sm">
-					{#each [{ k: 'Email', v: p.email }, { k: 'Nomor WhatsApp', v: p.noWa }, { k: 'Area', v: p.area }, { k: 'Bio jasa', v: p.deskripsi }] as baris}
+					{#each [{ k: 'Email', v: p.email }, { k: 'Nomor WhatsApp', v: p.noWa }, { k: 'Area', v: p.area }, { k: 'Alamat', v: p.alamat }] as baris}
 						<div class="grid grid-cols-[150px_1fr] gap-4 py-3">
 							<dt class="text-[#7A5E44]">{baris.k}</dt>
 							<dd class="font-medium">
