@@ -255,7 +255,7 @@
 	</div>
 {/if}
 
-<!-- Tabel -->
+<!-- Daftar akun: tabel di layar lebar, kartu di layar kecil -->
 <div class="tabel-wrap">
 	<table>
 		<thead>
@@ -272,7 +272,7 @@
 				<tr>
 					<td class="nama">{a.nama}</td>
 					<td class="email">{a.email}</td>
-					<td>
+					<td class="td-role">
 						<form method="POST" action="?/ubah" use:enhance>
 							<input type="hidden" name="id" value={a.id} />
 							<select
@@ -287,13 +287,13 @@
 							</select>
 						</form>
 					</td>
-					<td class="tengah">
+					<td class="tengah td-status">
 						<span class="badge" class:aktif={a.aktif}>
 							<span class="titik"></span>
 							{a.aktif ? 'Aktif' : 'Nonaktif'}
 						</span>
 					</td>
-					<td class="tengah">
+					<td class="tengah td-aksi">
 						<div class="aksi">
 							<form method="POST" action="?/ubah" use:enhance>
 								<input type="hidden" name="id" value={a.id} />
@@ -323,6 +323,7 @@
 	input:focus, select:focus { outline: none; border-color: #c2410c; box-shadow: 0 0 0 3px rgba(194, 65, 12, 0.15); }
 	button { padding: 0.5rem 0.9rem; border: 1px solid #e5d3b8; border-radius: 10px; background: #fff; cursor: pointer; font: inherit; color: #2b2116; transition: background 0.15s, border-color 0.15s, transform 0.1s; }
 	button:active:not(:disabled) { transform: translateY(1px); }
+	button:focus-visible { outline: 3px solid rgba(194, 65, 12, 0.35); outline-offset: 2px; }
 	button:disabled { opacity: 0.6; cursor: not-allowed; }
 	.utama { background: #c2410c; color: #fff; border-color: #c2410c; font-weight: 600; }
 	.utama:hover:not(:disabled) { background: #9a3412; border-color: #9a3412; }
@@ -384,8 +385,9 @@
 		display: flex;
 		align-items: center;
 		gap: 0.7rem;
-		min-width: 260px;
+		width: 100%;
 		max-width: 460px;
+		box-sizing: border-box;
 		padding: 0.7rem 0.9rem;
 		border-radius: 12px;
 		background: #fff;
@@ -410,7 +412,7 @@
 	}
 	.toast.sukses .toast-ikon { background: #16a34a; }
 	.toast.error .toast-ikon { background: #dc2626; }
-	.toast-teks { flex: 1; color: #2b2116; }
+	.toast-teks { flex: 1; min-width: 0; color: #2b2116; overflow-wrap: anywhere; }
 	.toast-tutup { flex: none; border: none; background: transparent; padding: 0.1rem 0.3rem; color: #8a7760; font-size: 0.9rem; }
 
 	/* Tabel */
@@ -484,14 +486,17 @@
 		align-items: center;
 		justify-content: center;
 		padding: 1rem;
-		z-index: 50;
+		z-index: 70;
 	}
-	.overlay.konfirmasi { z-index: 60; background: rgba(30, 15, 5, 0.5); backdrop-filter: blur(2px); }
+	.overlay.konfirmasi { z-index: 80; background: rgba(30, 15, 5, 0.5); backdrop-filter: blur(2px); }
 	.modal {
 		background: #fffaf2;
 		border-radius: 16px;
 		width: 100%;
 		max-width: 420px;
+		max-height: calc(100dvh - 2rem);
+		overflow-y: auto;
+		box-sizing: border-box;
 		padding: 1.4rem 1.6rem;
 		box-shadow: 0 14px 40px rgba(0, 0, 0, 0.28);
 	}
@@ -533,10 +538,82 @@
 	}
 	.modal-hapus h2 { font-family: serif; margin: 0 0 0.5rem; font-size: 1.25rem; color: #2b2116; }
 	.modal-hapus p { margin: 0 0 1.4rem; color: #6b5b45; font-size: 0.92rem; line-height: 1.5; }
-	.modal-hapus strong { color: #2b2116; }
+	.modal-hapus strong { color: #2b2116; overflow-wrap: anywhere; }
 	.hapus-aksi { display: flex; gap: 0.6rem; margin: 0; }
 	.hapus-aksi button { flex: 1; padding: 0.6rem 0.8rem; font-weight: 600; }
 	.btn-batal:hover { background: #fdebd0; }
 	.btn-hapus { background: #dc2626; color: #fff; border-color: #dc2626; }
 	.btn-hapus:hover:not(:disabled) { background: #b91c1c; border-color: #b91c1c; }
+
+	/* ===== RESPONSIF ===== */
+
+	/* Tablet & HP (dan laptop kecil yang masih ada sidebar): tabel jadi kartu */
+	@media (max-width: 1279px) {
+		.tabel-wrap {
+			background: transparent;
+			border: none;
+			box-shadow: none;
+			overflow: visible;
+		}
+		table { display: block; min-width: 0; }
+		thead { display: none; }
+		tbody {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+			gap: 0.75rem;
+		}
+		tbody tr,
+		tbody tr:hover {
+			display: grid;
+			grid-template-columns: 1fr auto;
+			align-items: center;
+			gap: 0.3rem 0.75rem;
+			background: #fff;
+			border: 1px solid #f1e6d3;
+			border-radius: 14px;
+			padding: 0.9rem 1rem;
+			box-shadow: 0 2px 10px rgba(120, 80, 30, 0.06);
+		}
+		td { display: block; padding: 0; border: none; text-align: left; }
+
+		td.nama { grid-column: 1; grid-row: 1; white-space: normal; overflow-wrap: anywhere; }
+		td.td-status { grid-column: 2; grid-row: 1; }
+		td.email { grid-column: 1 / -1; grid-row: 2; white-space: normal; overflow-wrap: anywhere; margin-bottom: 0.4rem; }
+		td.td-role { grid-column: 1 / -1; grid-row: 3; }
+		td.td-role::before {
+			content: 'Role';
+			display: block;
+			margin-bottom: 0.25rem;
+			font-size: 0.75rem;
+			font-weight: 600;
+			color: #8a7760;
+		}
+		td.td-role .pilih-role { width: 100%; box-sizing: border-box; }
+		td.td-aksi { grid-column: 1 / -1; grid-row: 4; margin-top: 0.5rem; }
+		td.kosong {
+			grid-column: 1 / -1;
+			padding: 2rem 0;
+			text-align: center;
+		}
+
+		.aksi { justify-content: stretch; }
+		.aksi form { flex: 1; }
+		.aksi > .btn-aksi { flex: 1; }
+		.btn-aksi { width: 100%; min-width: 0; padding: 0.55rem 0.7rem; }
+	}
+
+	/* HP */
+	@media (max-width: 767px) {
+		/* 16px mencegah browser iPhone memperbesar layar saat mengetik */
+		input, select { font-size: 16px; }
+		h1 { font-size: 1.9rem; }
+		.sub { font-size: 0.88rem; }
+		.kepala { margin-bottom: 1.1rem; }
+		.tambah { width: 100%; justify-content: center; }
+		.cari { max-width: none; flex: 1 1 100%; min-width: 0; }
+		.filter { flex: 1; min-width: 0; }
+		tbody { grid-template-columns: 1fr; }
+		.modal { padding: 1.2rem 1.1rem; }
+		.modal-aksi button { flex: 1; }
+	}
 </style>

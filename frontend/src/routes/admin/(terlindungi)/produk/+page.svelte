@@ -55,8 +55,9 @@
 	);
 
 	const rupiah = (n: number) => new Intl.NumberFormat('id-ID').format(n);
-    const tombol =
-	'inline-flex h-8 w-[124px] items-center justify-center whitespace-nowrap rounded-full border text-xs font-medium transition disabled:opacity-50';
+	// w-full: lebar mengikuti kolom grid (di tabel desktop = 124px, di kartu mobile = setengah kartu)
+	const tombol =
+		'inline-flex h-9 w-full items-center justify-center whitespace-nowrap rounded-full border px-2 text-xs font-medium transition disabled:opacity-50 lg:h-8';
 
 	function buka(item: Item, jenisAksi: Aksi) {
 		target = item;
@@ -113,22 +114,88 @@
 	);
 </script>
 
+<!-- Badge status, dipakai di tabel dan kartu -->
+{#snippet badgeStatus(item: Item)}
+	<div class="flex flex-wrap gap-1">
+		<span
+			class="rounded-full px-3 py-1 text-xs font-medium {item.aktif
+				? 'bg-green-100 text-green-800'
+				: 'bg-gray-100 text-gray-600'}"
+		>
+			{item.aktif ? 'Tampil' : 'Disembunyikan'}
+		</span>
+		{#if item.ditegur}
+			<span
+				title={item.teguranTerakhir ? `Teguran: ${item.teguranTerakhir}` : 'Ditegur'}
+				class="rounded-full bg-[#FFC93C] px-3 py-1 text-xs font-medium text-[#2A1A0E]"
+			>
+				Ditegur
+			</span>
+		{/if}
+	</div>
+{/snippet}
+
+<!-- Tombol aksi, dipakai di tabel dan kartu -->
+{#snippet tombolAksi(item: Item)}
+	<button
+		onclick={() => buka(item, 'tegur')}
+		class="{tombol} border-[#FFE9C7] text-[#7A5E44] hover:bg-[#FFF8EC]"
+	>
+		Tegur
+	</button>
+
+	{#if item.ditegur}
+		<button
+			onclick={() => buka(item, 'diperbaiki')}
+			class="{tombol} border-green-700 text-green-800 hover:bg-green-50"
+		>
+			Sudah diperbaiki
+		</button>
+	{:else}
+		<span aria-hidden="true" class="hidden lg:block"></span>
+	{/if}
+
+	{#if item.aktif}
+		<button
+			onclick={() => buka(item, 'sembunyikan')}
+			class="{tombol} border-[#FF6A1F] text-[#C23B0A] hover:bg-[#FFE9C7]"
+		>
+			Sembunyikan
+		</button>
+	{:else}
+		<button
+			onclick={() => kirim('tampilkan', item)}
+			disabled={memuat}
+			class="{tombol} border-[#FF6A1F] bg-[#FF6A1F] font-semibold text-white hover:bg-[#C23B0A]"
+		>
+			Tampilkan
+		</button>
+	{/if}
+
+	<button
+		onclick={() => klikHapus(item)}
+		class="{tombol} border-[#C23B0A] text-[#C23B0A] hover:bg-[#FFE9C7]"
+	>
+		Hapus
+	</button>
+{/snippet}
+
 <svelte:head><title>Produk · Nitip Admin</title></svelte:head>
 
-<h1 class="text-2xl font-bold">Produk</h1>
+<h1 class="text-xl font-bold sm:text-2xl">Produk</h1>
 <p class="mt-1 text-sm text-[#7A5E44]">
 	Sembunyikan untuk menarik produk dari katalog sementara. Hapus hanya untuk produk yang belum pernah dipesan.
 </p>
 
-<div class="mt-6 flex flex-wrap items-center gap-3">
+<div class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
 	<input
 		bind:value={cari}
 		placeholder="Cari produk atau jastiper..."
-		class="w-72 rounded-full border border-[#FFE9C7] bg-white px-4 py-2 text-sm outline-none focus:border-[#FF6A1F]"
+		class="w-full rounded-full border border-[#FFE9C7] bg-white px-4 py-2 text-sm outline-none focus:border-[#FF6A1F] sm:w-72"
 	/>
 	<a
 		href="/admin/produk/riwayat"
-		class="rounded-full border border-[#FF6A1F] px-4 py-2 text-sm font-medium text-[#C23B0A] hover:bg-[#FFE9C7]"
+		class="rounded-full border border-[#FF6A1F] px-4 py-2 text-center text-sm font-medium text-[#C23B0A] hover:bg-[#FFE9C7]"
 	>
 		Riwayat
 	</a>
@@ -138,7 +205,7 @@
 	{#each chips as c}
 		<button
 			onclick={() => (filter = c.id)}
-			class="rounded-full px-4 py-1.5 text-sm {filter === c.id
+			class="rounded-full px-3 py-1.5 text-xs sm:px-4 sm:text-sm {filter === c.id
 				? 'bg-[#FF6A1F] font-semibold text-white'
 				: 'bg-white text-[#7A5E44] hover:bg-[#FFE9C7]'}"
 		>
@@ -147,7 +214,47 @@
 	{/each}
 </div>
 
-<div class="mt-4 overflow-x-auto rounded-[26px] bg-white shadow-sm">
+<!-- Tampilan kartu (layar kecil) -->
+<div class="mt-4 space-y-3 lg:hidden">
+	{#each daftar as item (item.id)}
+		<div class="rounded-[22px] bg-white p-4 shadow-sm">
+			<div class="flex items-start gap-3">
+				<img
+					src={item.gambarUrl}
+					alt=""
+					loading="lazy"
+					class="h-12 w-12 shrink-0 rounded-xl bg-[#FFE9C7] object-cover"
+				/>
+				<div class="min-w-0 flex-1">
+					<p class="break-words font-medium">{item.nama}</p>
+					<p class="text-xs text-[#7A5E44]">{item.kategori ?? '-'}</p>
+					<p class="mt-0.5 break-words text-xs text-[#7A5E44]">Jastiper: {item.jastiperNama}</p>
+				</div>
+			</div>
+
+			<div class="mt-3 flex flex-wrap items-center justify-between gap-2 text-sm">
+				<p>
+					Rp{rupiah(item.harga)}
+					{#if item.hargaTipe === 'nego'}
+						<span class="ml-1 rounded-full bg-[#FFC93C] px-2 py-0.5 text-xs">Nego</span>
+					{/if}
+				</p>
+				{@render badgeStatus(item)}
+			</div>
+
+			<div class="mt-4 grid grid-cols-2 gap-2">
+				{@render tombolAksi(item)}
+			</div>
+		</div>
+	{:else}
+		<div class="rounded-[22px] bg-white px-5 py-10 text-center text-sm text-[#7A5E44] shadow-sm">
+			Tidak ada produk.
+		</div>
+	{/each}
+</div>
+
+<!-- Tampilan tabel (layar besar) -->
+<div class="mt-4 hidden overflow-x-auto rounded-[26px] bg-white shadow-sm lg:block">
 	<table class="w-full text-left text-sm">
 		<thead class="border-b border-[#FFE9C7] text-[#7A5E44]">
 			<tr>
@@ -183,71 +290,15 @@
 						{/if}
 					</td>
 					<td class="px-5 py-3">
-						<div class="flex flex-wrap gap-1">
-							<span
-								class="rounded-full px-3 py-1 text-xs font-medium {item.aktif
-									? 'bg-green-100 text-green-800'
-									: 'bg-gray-100 text-gray-600'}"
-							>
-								{item.aktif ? 'Tampil' : 'Disembunyikan'}
-							</span>
-							{#if item.ditegur}
-								<span
-									title={item.teguranTerakhir ? `Teguran: ${item.teguranTerakhir}` : 'Ditegur'}
-									class="rounded-full bg-[#FFC93C] px-3 py-1 text-xs font-medium text-[#2A1A0E]"
-								>
-									Ditegur
-								</span>
-							{/if}
-						</div>
+						{@render badgeStatus(item)}
 					</td>
 					<td class="px-5 py-3">
 						<div class="ml-auto grid w-[256px] grid-cols-2 gap-2">
-							<button
-								onclick={() => buka(item, 'tegur')}
-								class="{tombol} border-[#FFE9C7] text-[#7A5E44] hover:bg-[#FFF8EC]"
-							>
-								Tegur
-							</button>
-
-							{#if item.ditegur}
-								<button
-									onclick={() => buka(item, 'diperbaiki')}
-									class="{tombol} border-green-700 text-green-800 hover:bg-green-50"
-								>
-									Sudah diperbaiki
-								</button>
-							{:else}
-								<span aria-hidden="true"></span>
-							{/if}
-
-							{#if item.aktif}
-								<button
-									onclick={() => buka(item, 'sembunyikan')}
-									class="{tombol} border-[#FF6A1F] text-[#C23B0A] hover:bg-[#FFE9C7]"
-								>
-									Sembunyikan
-								</button>
-							{:else}
-								<button
-									onclick={() => kirim('tampilkan', item)}
-									disabled={memuat}
-									class="{tombol} border-[#FF6A1F] bg-[#FF6A1F] font-semibold text-white hover:bg-[#C23B0A]"
-								>
-									Tampilkan
-								</button>
-							{/if}
-
-							<button
-								onclick={() => klikHapus(item)}
-								class="{tombol} border-[#C23B0A] text-[#C23B0A] hover:bg-[#FFE9C7]"
-							>
-								Hapus
-							</button>
+							{@render tombolAksi(item)}
 						</div>
 					</td>
 				</tr>
-                {:else}
+			{:else}
 				<tr><td colspan="5" class="px-5 py-10 text-center text-[#7A5E44]">Tidak ada produk.</td></tr>
 			{/each}
 		</tbody>
@@ -295,10 +346,12 @@
 
 <!-- Modal teguran -->
 {#if target && aksi === 'tegur'}
-	<div class="fixed inset-0 z-50 flex items-center justify-center bg-[#2A1A0E]/50 px-4">
-		<div class="w-full max-w-md rounded-[26px] bg-white p-6 shadow-xl">
+	<div class="fixed inset-0 z-50 flex items-center justify-center bg-[#2A1A0E]/50 px-4 py-4">
+		<div
+			class="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-[22px] bg-white p-5 shadow-xl sm:rounded-[26px] sm:p-6"
+		>
 			<h2 class="text-lg font-bold text-[#2A1A0E]">Tegur jastiper</h2>
-			<p class="mt-1 text-sm text-[#7A5E44]">
+			<p class="mt-1 break-words text-sm text-[#7A5E44]">
 				Produk "{target.nama}" milik {target.jastiperNama}
 			</p>
 
@@ -312,7 +365,7 @@
 			></textarea>
 
 			{#if teguranPesan.trim()}
-				<p class="mt-3 rounded-xl bg-[#FFF8EC] p-3 text-xs text-[#7A5E44]">{isiPesan}</p>
+				<p class="mt-3 break-words rounded-xl bg-[#FFF8EC] p-3 text-xs text-[#7A5E44]">{isiPesan}</p>
 			{/if}
 
 			{#if !target.noWa}
@@ -321,7 +374,7 @@
 				</p>
 			{/if}
 
-			<div class="mt-5 flex justify-end gap-2">
+			<div class="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
 				<button
 					onclick={tutup}
 					class="rounded-full border border-[#FFE9C7] px-4 py-2 text-sm text-[#7A5E44] hover:bg-[#FFF8EC]"
@@ -334,7 +387,7 @@
 						target="_blank"
 						rel="noopener"
 						onclick={() => kirim('tegur', target, teguranPesan.trim())}
-						class="rounded-full bg-[#FF6A1F] px-4 py-2 text-sm font-semibold text-white hover:bg-[#C23B0A]"
+						class="rounded-full bg-[#FF6A1F] px-4 py-2 text-center text-sm font-semibold text-white hover:bg-[#C23B0A]"
 					>
 						Kirim teguran lewat WA
 					</a>
