@@ -4,6 +4,7 @@
 	let { data, form } = $props();
 	const p = $derived(data.pengajuan);
 	const sudahDiproses = $derived(p.status !== 'menunggu');
+	let fotoBesar = $state(false);
 
 	const badge: Record<string, string> = {
 		menunggu: 'bg-[#FFE9C7] text-[#C23B0A]',
@@ -21,6 +22,8 @@
 </script>
 
 <svelte:head><title>Detail pengajuan · Nitip Admin</title></svelte:head>
+
+<svelte:window onkeydown={(e) => e.key === 'Escape' && (fotoBesar = false)} />
 
 <a
 	href="/admin/verifikasi-jastiper"
@@ -69,15 +72,14 @@
 
 			<div class="mt-4">
 				{#if p.dokumenSelfieUrl}
-					<a
-						href={p.dokumenSelfieUrl}
-						target="_blank"
-						rel="noopener"
-						class="block h-64 w-full overflow-hidden rounded-xl border border-[#F0E3CB] bg-[#FFFBF3] transition hover:border-[#FF6A1F] sm:h-80"
-					>
-						<img src={p.dokumenSelfieUrl} alt="Foto selfie pendaftar" class="h-full w-full object-contain" />
-					</a>
-					<p class="mt-2 text-xs text-[#7A5E44]">Klik foto untuk membuka ukuran penuh.</p>
+					<button
+	type="button"
+	onclick={() => (fotoBesar = true)}
+	class="block h-64 w-full cursor-zoom-in overflow-hidden rounded-xl border border-[#F0E3CB] bg-[#FFFBF3] transition hover:border-[#FF6A1F] sm:h-80"
+>
+	<img src={p.dokumenSelfieUrl} alt="Foto selfie pendaftar" class="h-full w-full object-contain" />
+</button>
+					<p class="mt-2 text-xs text-[#7A5E44]">Klik foto untuk memperbesar.</p>
 				{:else}
 					<div class="flex h-64 w-full flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-[#E8D5B5] bg-[#FFFBF3] text-[#7A5E44] sm:h-80">
 						<svg viewBox="0 0 24 24" class="h-8 w-8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -109,7 +111,7 @@
 						<span class="ml-auto shrink-0 text-xs text-[#7A5E44]">otomatis</span>
 					</li>
 				{/each}
-				{#each ['Nomor aktif di WhatsApp', 'Dokumen jelas dan sesuai'] as label}
+				{#each ['Nomor aktif di WhatsApp', 'Gambar jelas dan sesuai'] as label}
 					<li>
 						<label class="flex cursor-pointer items-center gap-3">
 							<input type="checkbox" class="size-5 shrink-0 rounded accent-[#FF6A1F]" />
@@ -180,3 +182,27 @@
 		</section>
 	</div>
 </div>
+
+{#if fotoBesar && p.dokumenSelfieUrl}
+	<!-- svelte-ignore a11y_click_events_have_key_events -->
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
+	<div
+		class="fixed inset-0 z-50 flex items-center justify-center bg-black/95 p-4"
+		onclick={() => (fotoBesar = false)}
+	>
+		<button
+			type="button"
+			onclick={() => (fotoBesar = false)}
+			class="absolute top-4 right-4 flex items-center gap-1.5 rounded-full bg-white px-4 py-2 text-sm font-semibold text-[#C23B0A] shadow transition hover:bg-[#FFE9C7]"
+		>
+			✕ Tutup
+		</button>
+		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+		<img
+			src={p.dokumenSelfieUrl}
+			alt="Foto selfie ukuran penuh"
+			class="h-[85vh] w-auto max-w-full rounded-xl object-contain"
+			onclick={(e) => e.stopPropagation()}
+		/>
+	</div>
+{/if}
