@@ -51,11 +51,12 @@
 			siap: true,
 			ikon: ['M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z', 'M3 6h18', 'M16 10a4 4 0 0 1-8 0']
 		},
-   {
-    href: '/admin/pengaduan',
-    label: 'Pengaduan',
-    siap: true
-    }
+   		{
+			href: '/admin/pengaduan',
+			label: 'Pengaduan',
+			siap: true,
+			ikon: ['M4 22V4', 'M4 4h13l-2 4 2 4H4']
+		}
 	];
 
 	function sedangDibuka(href: string) {
@@ -95,8 +96,8 @@
 	</svg>
 {/snippet}
 
-<div class="flex min-h-[70vh] bg-[#FFF8EC] text-[#2A1A0E]">
-	<!-- Latar gelap saat menu mobile terbuka -->
+<div class="flex min-h-dvh bg-[#FFF8EC] text-[#2A1A0E]">
+		<!-- Latar gelap saat menu mobile terbuka -->
 	{#if terbuka}
 		<button
 			type="button"
@@ -118,8 +119,7 @@
 			Kalau tinggi navbar-mu beda, ubah dua angka 4.5rem di bawah.
 		-->
 		<div
-			class="flex h-full flex-col p-5 lg:sticky lg:top-[4.5rem] lg:h-[calc(100dvh-4.5rem)] lg:overflow-y-auto"
-		>
+			class="flex h-full flex-col p-5 lg:sticky lg:top-0 lg:h-dvh lg:overflow-y-auto"	>
 			<!-- Judul panel -->
 			<div class="mb-6 flex items-center justify-between">
 				<div class="flex items-center gap-3">
