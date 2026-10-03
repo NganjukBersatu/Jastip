@@ -41,6 +41,37 @@
     return () => clearInterval(timer);
   });
 
+  // ==========================================
+  // Buka / tutup sidebar desktop (tersimpan di localStorage)
+  // ==========================================
+
+  let sidebarTutup = $state(false);
+
+  onMount(() => {
+    try {
+      sidebarTutup = localStorage.getItem('sidebar_tutup') === '1';
+    } catch (e) {
+      console.error(e);
+    }
+  });
+
+  function toggleSidebar() {
+    sidebarTutup = !sidebarTutup;
+    try {
+      localStorage.setItem('sidebar_tutup', sidebarTutup ? '1' : '0');
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  // Jumlah notifikasi per menu (dipakai untuk titik notifikasi saat sidebar tertutup)
+  function jumlahBadge(href: string): number {
+    if (href === '/jastiper/pengajuan-harga') return notifikasi.jumlah ?? 0;
+    if (href === '/jastiper/pesanan') return data.jumlahPesananBaru ?? 0;
+    if (href === '/jastiper/pengaduan') return data.jumlahPengaduanBaru ?? 0;
+    return 0;
+  }
+
   const menu = [
     {
       href: '/jastiper/dashboard',
@@ -143,131 +174,201 @@
   <!-- ========================= -->
 
   <aside
-    class="hidden lg:flex lg:w-64 lg:h-screen lg:sticky lg:top-0
-           bg-white border-r border-ink/10 flex-col shrink-0"
+    class="hidden lg:flex lg:h-screen lg:sticky lg:top-0
+           flex-col shrink-0 overflow-hidden
+           border-r border-[#FFE9C7] bg-white
+           transition-[width] duration-200 ease-out
+           {sidebarTutup ? 'lg:w-[76px]' : 'lg:w-64'}"
   >
+    <div class="flex h-full min-h-0 flex-col {sidebarTutup ? 'p-4' : 'p-5'}">
 
-    <!-- Header sidebar -->
-    <div class="px-5 py-6 border-b border-ink/10">
-      <a
-        href="/profile"
-        class="inline-flex items-center gap-2.5 px-2 py-1.5 -mx-2 rounded-xl text-[13px] font-bold
-               text-ink-soft transition hover:bg-bg-alt hover:text-primary-dark"
+      <!-- Judul panel + tombol buka/tutup -->
+      <div
+        class="mb-5 flex items-center justify-between gap-2
+               {sidebarTutup ? 'flex-col justify-start gap-1.5' : ''}"
       >
-        <svg
-          class="w-4 h-4"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <path d="M15 18l-6-6 6-6" />
-        </svg>
-        Panel Jastiper
-      </a>
-    </div>
-
-    <!-- Menu -->
-    <nav class="flex-1 p-4 flex flex-col gap-1.5 overflow-y-auto">
-      {#each menuTampil as item}
         <a
-          href={item.href}
-          aria-current={aktif(item.href) ? 'page' : undefined}
-          class="relative flex items-center gap-3 px-4 py-3 rounded-2xl
-                 text-sm font-semibold transition
-                 {aktif(item.href)
-            ? 'bg-primary text-white shadow-sm'
-            : 'text-ink-soft hover:bg-bg-alt hover:text-primary-dark'}"
+          href="/profile"
+          title="Kembali ke profil"
+          class="flex min-w-0 items-center gap-3 rounded-xl transition hover:opacity-90"
         >
-          <svg
-            class="w-4.5 h-4.5 shrink-0"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.75"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+          <span
+            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl
+                   bg-gradient-to-br from-[#FF6A1F] to-[#C23B0A]
+                   text-lg font-bold text-white shadow-sm"
           >
-            {@html item.icon}
-          </svg>
+            N
+          </span>
 
-          <span>{item.label}</span>
-
-          {#if item.href === '/jastiper/pengajuan-harga' && notifikasi.jumlah > 0}
-            <span
-              class="ml-auto text-[10px] font-bold
-                     rounded-full min-w-5 h-5 px-1.5
-                     flex items-center justify-center
-                     {aktif(item.href)
-                ? 'bg-white text-primary-dark'
-                : 'bg-primary text-bg'}"
-            >
-              {notifikasi.jumlah > 9 ? '9+' : notifikasi.jumlah}
-            </span>
-          {/if}
-
-          {#if item.href === '/jastiper/pesanan' && data.jumlahPesananBaru > 0}
-            <span
-              class="ml-auto text-[10px] font-bold
-                     rounded-full min-w-5 h-5 px-1.5
-                     flex items-center justify-center
-                     {aktif(item.href)
-                ? 'bg-white text-primary-dark'
-                : 'bg-primary text-bg'}"
-            >
-              {data.jumlahPesananBaru > 9 ? '9+' : data.jumlahPesananBaru}
-            </span>
-          {/if}
-
-          {#if item.href === '/jastiper/pengaduan' && data.jumlahPengaduanBaru > 0}
-            <span
-              class="ml-auto text-[10px] font-bold
-                     rounded-full min-w-5 h-5 px-1.5
-                     flex items-center justify-center
-                     {aktif(item.href)
-                ? 'bg-white text-primary-dark'
-                : 'bg-primary text-bg'}"
-            >
-              {data.jumlahPengaduanBaru > 9 ? '9+' : data.jumlahPengaduanBaru}
+          {#if !sidebarTutup}
+            <span class="min-w-0 leading-tight">
+              <span class="block text-lg font-bold text-[#C23B0A]">Nitip</span>
+              <span class="block text-xs text-[#7A5E44]">Panel jastiper</span>
             </span>
           {/if}
         </a>
-      {/each}
-    </nav>
 
-    <!-- Profile -->
-    <div class="p-4 border-t border-ink/10">
-      <a
-        href="/profile"
-        class="flex items-center gap-3 px-3 py-2.5 rounded-2xl
-               text-ink transition hover:bg-bg-alt hover:text-primary-dark"
-      >
-        {#if avatarUrl}
-          <img
-            src={avatarUrl}
-            alt="Foto profil"
-            class="w-9 h-9 rounded-full object-cover shrink-0"
-          />
-        {:else}
-          <span
-            class="w-9 h-9 rounded-full bg-primary text-white
-                   flex items-center justify-center text-xs font-bold shrink-0"
+        <!-- Tombol buka / tutup sidebar -->
+        <button
+          type="button"
+          onclick={toggleSidebar}
+          aria-label={sidebarTutup ? 'Buka sidebar' : 'Tutup sidebar'}
+          aria-expanded={!sidebarTutup}
+          title={sidebarTutup ? 'Buka sidebar' : 'Tutup sidebar'}
+          class="{sidebarTutup ? 'h-11 w-11 rounded-xl' : 'h-9 w-9 rounded-xl'}
+                 flex shrink-0 cursor-pointer items-center justify-center
+                 text-[#7A5E44] transition hover:bg-[#FFF3DF] hover:text-[#C23B0A]
+                 focus-visible:outline-2 focus-visible:outline-[#FF6A1F]"
+        >
+          <svg
+            class="h-[18px] w-[18px]"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
           >
-            {inisial}
-          </span>
-        {/if}
+            <rect x="3" y="4" width="18" height="16" rx="3" />
+            <path d="M9 4v16" />
+          </svg>
+        </button>
+      </div>
 
-        <div class="min-w-0">
-          <div class="text-sm font-bold truncate">
-            {displayNama || data.user?.nama}
-          </div>
-          <div class="text-[12px] text-ink-soft">
-            Lihat profil
-          </div>
-        </div>
-      </a>
+      <!-- Menu -->
+      {#if !sidebarTutup}
+        <p class="mb-2 px-3 text-[11px] font-semibold uppercase tracking-wider text-[#7A5E44]/70">
+          Menu
+        </p>
+      {:else}
+        <div class="mx-auto mb-2 h-px w-6 bg-[#FFE9C7]"></div>
+      {/if}
+
+      <nav
+        class="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto overflow-x-hidden
+               [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+        {#each menuTampil as item}
+          <a
+            href={item.href}
+            title={sidebarTutup ? item.label : undefined}
+            aria-label={sidebarTutup ? item.label : undefined}
+            aria-current={aktif(item.href) ? 'page' : undefined}
+            class="group flex shrink-0 items-center gap-3 rounded-xl text-sm transition
+                   {sidebarTutup ? 'mx-auto h-11 w-11 justify-center gap-0' : 'px-3 py-2'}
+                   {aktif(item.href)
+              ? 'bg-[#FFE9C7] font-semibold text-[#C23B0A]'
+              : 'text-[#7A5E44] hover:bg-[#FFF3DF] hover:text-[#2A1A0E]'}"
+          >
+            <!-- Ikon dalam kotak kecil -->
+            <span
+              class="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition
+                     {aktif(item.href)
+                ? 'bg-gradient-to-br from-[#FF6A1F] to-[#C23B0A] text-white shadow-sm'
+                : 'bg-[#FFF8EC] text-[#7A5E44] group-hover:bg-white group-hover:text-[#C23B0A]'}"
+            >
+              <svg
+                class="h-[18px] w-[18px]"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                {@html item.icon}
+              </svg>
+
+              <!-- Titik notifikasi saat sidebar tertutup -->
+              {#if sidebarTutup && jumlahBadge(item.href) > 0}
+                <span
+                  class="absolute -right-1 -top-1 h-2.5 w-2.5 rounded-full
+                         bg-[#FF6A1F] ring-2 ring-white"
+                ></span>
+              {/if}
+            </span>
+
+            {#if !sidebarTutup}
+              <span class="flex-1 truncate">{item.label}</span>
+
+              {#if item.href === '/jastiper/pengajuan-harga' && notifikasi.jumlah > 0}
+                <span
+                  class="flex h-5 min-w-5 items-center justify-center
+                         rounded-full bg-[#FF6A1F] px-1.5 text-[10px] font-bold text-white"
+                >
+                  {notifikasi.jumlah > 9 ? '9+' : notifikasi.jumlah}
+                </span>
+              {/if}
+
+              {#if item.href === '/jastiper/pesanan' && data.jumlahPesananBaru > 0}
+                <span
+                  class="flex h-5 min-w-5 items-center justify-center
+                         rounded-full bg-[#FF6A1F] px-1.5 text-[10px] font-bold text-white"
+                >
+                  {data.jumlahPesananBaru > 9 ? '9+' : data.jumlahPesananBaru}
+                </span>
+              {/if}
+
+              {#if item.href === '/jastiper/pengaduan' && data.jumlahPengaduanBaru > 0}
+                <span
+                  class="flex h-5 min-w-5 items-center justify-center
+                         rounded-full bg-[#FF6A1F] px-1.5 text-[10px] font-bold text-white"
+                >
+                  {data.jumlahPengaduanBaru > 9 ? '9+' : data.jumlahPengaduanBaru}
+                </span>
+              {/if}
+            {/if}
+          </a>
+        {/each}
+      </nav>
+
+      <!-- Profil: menempel di bawah -->
+      <div class="mt-auto shrink-0 border-t border-[#FFE9C7] pt-3">
+        <a
+          href="/profile"
+          title={sidebarTutup ? (displayNama || data.user?.nama) : undefined}
+          class="group flex items-center gap-2.5 rounded-2xl bg-[#FFF8EC] text-[#2A1A0E]
+                 transition hover:bg-[#FFF3DF]
+                 {sidebarTutup ? 'mx-auto h-11 w-11 justify-center' : 'p-2.5'}"
+        >
+          {#if avatarUrl}
+            <img
+              src={avatarUrl}
+              alt="Foto profil"
+              class="h-9 w-9 shrink-0 rounded-full object-cover ring-2 ring-white"
+            />
+          {:else}
+            <span
+              class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full
+                     bg-gradient-to-br from-[#FF6A1F] to-[#FFC93C]
+                     text-sm font-bold text-white ring-2 ring-white"
+            >
+              {inisial}
+            </span>
+          {/if}
+
+          {#if !sidebarTutup}
+            <div class="min-w-0 flex-1 leading-tight">
+              <p class="truncate text-sm font-semibold group-hover:text-[#C23B0A]">
+                {displayNama || data.user?.nama}
+              </p>
+              <p class="text-[11px] text-[#7A5E44]">Lihat profil</p>
+            </div>
+
+            <svg
+              class="h-4 w-4 text-[#7A5E44]/60 transition group-hover:translate-x-0.5 group-hover:text-[#C23B0A]"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M9 18l6-6-6-6" />
+            </svg>
+          {/if}
+        </a>
+      </div>
     </div>
   </aside>
 
@@ -290,7 +391,7 @@
           />
         {:else}
           <span
-            class="w-9 h-9 rounded-xl bg-primary text-white
+            class="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-primary-dark text-white
                    flex items-center justify-center text-sm
                    font-extrabold shrink-0"
           >
@@ -310,7 +411,8 @@
 
       <a
         href="/profile"
-        class="shrink-0 text-[12px] font-bold text-primary-dark"
+        class="shrink-0 text-[12px] font-bold text-primary-dark
+               px-3 py-1.5 rounded-full bg-primary/10 transition hover:bg-primary/20"
       >
         Profil
       </a>
@@ -328,7 +430,7 @@
                    rounded-xl text-[12px] font-bold whitespace-nowrap
                    transition
                    {aktif(item.href)
-              ? 'bg-primary text-white'
+              ? 'bg-primary text-white shadow-sm'
               : 'bg-bg text-ink-soft hover:bg-bg-alt hover:text-primary-dark'}"
           >
             <svg
@@ -352,7 +454,7 @@
                        flex items-center justify-center
                        {aktif(item.href)
                   ? 'bg-white text-primary-dark'
-                  : 'bg-primary text-bg'}"
+                  : 'bg-primary text-white'}"
               >
                 {notifikasi.jumlah > 9 ? '9+' : notifikasi.jumlah}
               </span>
@@ -365,7 +467,7 @@
                        flex items-center justify-center
                        {aktif(item.href)
                   ? 'bg-white text-primary-dark'
-                  : 'bg-primary text-bg'}"
+                  : 'bg-primary text-white'}"
               >
                 {data.jumlahPesananBaru > 9 ? '9+' : data.jumlahPesananBaru}
               </span>
@@ -378,7 +480,7 @@
                        flex items-center justify-center
                        {aktif(item.href)
                   ? 'bg-white text-primary-dark'
-                  : 'bg-primary text-bg'}"
+                  : 'bg-primary text-white'}"
               >
                 {data.jumlahPengaduanBaru > 9 ? '9+' : data.jumlahPengaduanBaru}
               </span>
