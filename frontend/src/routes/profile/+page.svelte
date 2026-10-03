@@ -14,7 +14,8 @@
 
   const labelRole: Record<string, string> = {
     pelanggan: 'Pelanggan',
-    jastiper: 'Jastiper'
+    jastiper: 'Jastiper',
+    admin: 'Admin'
   };
 
   let isEditing = $state(false);
@@ -482,6 +483,23 @@
                   <div class="flex-1 min-w-0">
                     <p class="text-sm font-semibold text-white m-0">Dashboard jastiper</p>
                     <p class="text-xs text-bg-alt m-0">Kelola produk, pesanan, dan chat pelanggan</p>
+                  </div>
+                  <span class="text-white shrink-0 text-lg">→</span>
+                </a>
+              {:else if user?.role === 'admin'}
+                <a
+                  href="/admin"
+                  class="bg-linear-to-br from-primary to-primary-dark rounded-card px-6 py-5 flex items-center gap-4 hover:opacity-95 transition-opacity"
+                >
+                  <div class="w-11 h-11 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-5 h-5 text-bg">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 3 4.5 6v5.5c0 4.5 3.2 7.8 7.5 9.5 4.3-1.7 7.5-5 7.5-9.5V6L12 3Z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m9 12 2.2 2.2L15.5 10" />
+                    </svg>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-sm font-semibold text-white m-0">Dashboard admin</p>
+                    <p class="text-xs text-bg-alt m-0">Kelola akun, produk, dan pesanan</p>
                   </div>
                   <span class="text-white shrink-0 text-lg">→</span>
                 </a>
