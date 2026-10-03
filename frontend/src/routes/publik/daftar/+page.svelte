@@ -37,7 +37,7 @@
 	<title>Daftar — Nitip</title>
 </svelte:head>
 
-<div class="register-page">
+<div class="register-page" class:jastiper={role === 'jastiper'}>
 	<!-- =====================================================
 	     BAGIAN KIRI — HERO
 	===================================================== -->
@@ -1375,6 +1375,21 @@
 	.terms input {
 		margin-top: 3px;
 		accent-color: var(--color-primary);
+	}
+
+		/* =====================================================
+	   MODE JASTIPER: tanpa hero, form jadi satu kolom lebar
+	===================================================== */
+	.register-page.jastiper {
+		grid-template-columns: 1fr;
+	}
+
+	.register-page.jastiper .hero-section {
+		display: none;
+	}
+
+	.register-page.jastiper .register-card {
+		max-width: 760px;
 	}
 
 	/* =====================================================
