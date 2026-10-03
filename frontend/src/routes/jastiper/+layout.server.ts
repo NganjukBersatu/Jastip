@@ -58,8 +58,16 @@ export const load: LayoutServerLoad = async ({ locals, url, depends }) => {
 		.from(pesanan)
 		.where(and(...kondisi));
 
+	// ------------------------------------------------------------------
+	// jumlah pengaduan baru untuk jastiper ini (badge menu "Pengaduan").
+	// SEMENTARA 0 supaya error merah hilang. Ganti dengan hitungan dari
+	// tabel pengaduan kamu (lihat catatan dari Claude) agar badge muncul.
+	// ------------------------------------------------------------------
+	const jumlahPengaduanBaru = 0;
+
 	return {
 		user: locals.user,
-		jumlahPesananBaru: Number(row?.jumlah ?? 0)
+		jumlahPesananBaru: Number(row?.jumlah ?? 0),
+		jumlahPengaduanBaru
 	};
 };
